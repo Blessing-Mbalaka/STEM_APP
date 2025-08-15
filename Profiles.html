@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-orange: rgb(184, 67, 0);
+            --secondary-orange: rgb(128, 49, 3);
+            --accent-yellow: #FBBC05;
+            --accent-red: #EA4335;
+            --accent-green: #34A853;
+            --accent-blue: #4285F4;
+            --light-gray: #F5F5F5;
+            --medium-gray: #E0E0E0;
+            --dark-gray: #333333;
+            --text-light: #666666;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            background-image: linear-gradient(180deg, #fcfcfcf0, #f6f6f6);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            background-image: linear-gradient(#f4bc4238, #f3af55e0, rgb(255, 166, 0));
+            background-image: linear-gradient(180deg, #fdc2c2a0, #a1030386), url("images/wallpaper8.jpg");
+
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: rgb(128, 49, 3);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 10px;
+            top: 20px; 
+            padding: 8px 15px;
+            border-radius: 30px;
+            background-color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid var(--medium-gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--dark-gray);
+        }
+
+        .back-btn:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        /* Main Content Sections */
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: var(--primary-orange);
+        }
+
+        /* Profile Section */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .profile-sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--primary-orange);
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--accent-blue);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-avatar-edit:hover {
+            transform: scale(1.1);
+            background-color: var(--secondary-orange);
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .profile-role {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background-color: var(--light-gray);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-orange);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .profile-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .profile-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--light-gray);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .profile-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .profile-tab:hover {
+            color: var(--primary-orange);
+        }
+
+        .profile-tab.active {
+            border-bottom-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-orange);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(184, 67, 0, 0.1);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .language-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .language-toggle-btn {
+            padding: 5px 15px;
+            border-radius: 20px;
+            background-color: var(--light-gray);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .language-toggle-btn:hover {
+            background-color: var(--medium-gray);
+        }
+
+        .language-toggle-btn.active {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-orange);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--medium-gray);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--primary-orange);
+            transform: scale(1.1);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-orange);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Subject Stream Selection */
+        .stream-selection {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stream-option {
+            border: 2px solid var(--medium-gray);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .stream-option:hover {
+            border-color: var(--primary-orange);
+        }
+
+        .stream-option.selected {
+            border-color: var(--primary-orange);
+            background-color: rgba(184, 67, 0, 0.05);
+        }
+
+        .stream-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .stream-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-gray);
+        }
+
+        .stream-description {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-sidebar {
+                margin-bottom: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .back-btn {
+                position: static;
+                margin-bottom: 15px;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .language-toggle {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .stream-selection {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-tabs {
+                flex-direction: column;
+                border-bottom: none;
+            }
+            
+            .profile-tab {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+                margin-bottom: 5px;
+            }
+            
+            .profile-tab.active {
+                border-bottom: none;
+                border-left: 3px solid var(--primary-orange);
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .modal-actions .btn {
+                width: 100%;
+            }
+        }
+         .back-to-dashboard {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            padding: 8px 15px;
+            background-color: white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-orange);
+        }
+
+        .back-to-dashboard:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            .back-to-dashboard {
+                position: static;
+                margin-bottom: 15px;
+                display: inline-flex;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+              <a href="./Index.html" class="back-to-dashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1>Profile</h1>
+            <p class="subtitle">Let's get to know you</p>  
+             <!-- <a href="#" class="back-btn" id="backToDashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>   -->
+        </header>
+        <!-- <a href="#" class="back-btn" id="backToDashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>   -->
+        <!-- Profile Section -->
+        <div id="profile-section" class="section">
+            <div class="section-header">
+                <h2 class="section-title">My Profile</h2>
+                <div class="language-toggle">
+                    <div class="language-toggle-btn active" data-lang="en">English</div>
+                    <div class="language-toggle-btn" data-lang="zu">Zulu</div>
+                </div>
+            </div>
+
+            <div class="profile-container">
+                <div class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                        <div class="profile-avatar-edit">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="profile-name" id="profileName">Thando Mkhize</div>
+                    <div class="profile-role">Matric Learner</div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="completedSessions">12</div>
+                            <div class="stat-label">Sessions</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="quizScore">85%</div>
+                            <div class="stat-label">Avg. Quiz Score</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="streakDays">7</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="pointsEarned">1,250</div>
+                            <div class="stat-label">Points</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="saveProfileBtn" style="width: 100%;">
+                        <i class="fas fa-save"></i> Save Profile
+                    </button>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-tabs">
+                        <div class="profile-tab active" data-tab="personal">Personal Info</div>
+                        <div class="profile-tab" data-tab="academic">Academic Info</div>
+                        <div class="profile-tab" data-tab="preferences">Preferences</div>
+                    </div>
+                    
+                    <div class="profile-tab-content active" id="personal-tab">
+                        <form class="profile-form" id="personalForm">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" value="Thando">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" value="Mkhize">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" value="thando.mkhize@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" value="0712345678">
+                            </div>
+                            <div class="form-group">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" id="dob" value="2005-05-15">
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender">
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                    <option value="other">Other</option>
+                                    <option value="prefer-not-to-say">Prefer not to say</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" rows="3">I'm a matric learner passionate about STEM subjects, especially Mathematics and Physical Sciences. My goal is to study Engineering at university.</textarea>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="profile-tab-content" id="academic-tab">
+                        <form class="profile-form" id="academicForm">
+                            <div class="form-group">
+                                <label for="school">School</label>
+                                <input type="text" id="school" value="Durban High School">
+                            </div>
+                            <div class="form-group">
+                                <label for="grade">Grade</label>
+                                <select id="grade">
+                                    <option value="12">Grade 12</option>
+                                    <option value="11">Grade 11</option>
+                                    <option value="10">Grade 10</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Stream Selection</label>
+                                <div class="stream-selection">
+                                    <label class="stream-option" id="stemOption">
+                                        <input type="radio" name="stream" value="stem" checked>
+                                        <div class="stream-title">STEM (Science, Technology, Engineering, Mathematics)</div>
+                                        <div class="stream-description">Includes Mathematics, Physical Sciences, Life Sciences, IT, etc.</div>
+                                    </label>
+                                    <label class="stream-option" id="commerceOption">
+                                        <input type="radio" name="stream" value="commerce">
+                                        <div class="stream-title">Commerce</div>
+                                        <div class="stream-description">Includes Accounting, Business Studies, Economics, etc.</div>
+                                    </label>
+                                    <label class="stream-option" id="artsOption">
+                                        <input type="radio" name="stream" value="arts">
+                                        <div class="stream-title">Arts</div>
+                                        <div class="stream-description">Includes History, Geography, Visual Arts, Dramatic Arts, etc.</div>
+                                    </label>
+                                    <label class="stream-option" id="slpOption">
+                                        <input type="radio" name="stream" value="slp">
+                                        <div class="stream-title">SLP (Short Learning Programmes)</div>
+                                        <div class="stream-description">Vocational and skills-based courses</div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="academicGoals">Academic Goals</label>
+                                <textarea id="academicGoals" rows="3">1. Achieve 80%+ in Mathematics and Physical Sciences\n2. Improve my problem-solving skills\n3. Prepare thoroughly for final exams</textarea>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="profile-tab-content" id="preferences-tab">
+                        <form class="profile-form" id="preferencesForm">
+                            <div class="form-group">
+                                <label for="languagePref">Language Preference</label>
+                                <select id="languagePref">
+                                    <option value="english">English</option>
+                                    <option value="zulu">IsiZulu</option>
+                                    <option value="both">Both</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="notificationPref">Notification Preferences</label>
+                                <select id="notificationPref">
+                                    <option value="all">All notifications</option>
+                                    <option value="important">Important only</option>
+                                    <option value="none">No notifications</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Preferred Learning Styles</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" name="learning-style" value="visual" checked> Visual (Diagrams, Charts)
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" name="learning-style" value="auditory" checked> Auditory (Listening)
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" name="learning-style" value="reading"> Reading/Writing
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" name="learning-style" value="kinesthetic" checked> Kinesthetic (Hands-on)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="studyTimes">Preferred Study Times</label>
+                                <textarea id="studyTimes" rows="2">Weekdays: 4pm-7pm\nWeekends: 9am-12pm</textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Upload Modal -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeAvatarModal">&times;</span>
+            <h3 class="modal-title">Update Profile Picture</h3>
+            <div style="margin: 20px 0; text-align: center;">
+                <div class="profile-avatar" style="width: 150px; height: 150px; margin: 0 auto 20px;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <button class="btn btn-primary" id="uploadBtn" style="width: 100%;">
+                    <i class="fas fa-upload"></i> Upload New Photo
+                </button>
+                <p style="margin-top: 10px; color: var(--text-light); font-size: 14px;">
+                    Recommended size: 300x300 pixels
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelAvatar">Cancel</button>
+                <button class="btn btn-primary" id="saveAvatar">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Profile data
+        const profileData = {
+            firstName: "Thando",
+            lastName: "Mkhize",
+            email: "thando.mkhize@example.com",
+            phone: "0712345678",
+            dob: "2005-05-15",
+            gender: "female",
+            bio: "I'm a matric learner passionate about STEM subjects, especially Mathematics and Physical Sciences. My goal is to study Engineering at university.",
+            school: "Durban High School",
+            grade: "12",
+            stream: "stem",
+            academicGoals: "1. Achieve 80%+ in Mathematics and Physical Sciences\n2. Improve my problem-solving skills\n3. Prepare thoroughly for final exams",
+            languagePref: "english",
+            notificationPref: "all",
+            learningStyles: ["visual", "auditory", "kinesthetic"],
+            studyTimes: "Weekdays: 4pm-7pm\nWeekends: 9am-12pm",
+            stats: {
+                completedSessions: 12,
+                quizScore: "85%",
+                streakDays: 7,
+                pointsEarned: "1,250"
+            }
+        };
+
+        // Profile elements
+        const profileName = document.getElementById('profileName');
+        const completedSessions = document.getElementById('completedSessions');
+        const quizScore = document.getElementById('quizScore');
+        const streakDays = document.getElementById('streakDays');
+        const pointsEarned = document.getElementById('pointsEarned');
+        const languageToggleBtns = document.querySelectorAll('.language-toggle-btn');
+        const profileTabs = document.querySelectorAll('.profile-tab');
+        const profileTabContents = document.querySelectorAll('.profile-tab-content');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const backToDashboard = document.getElementById('backToDashboard');
+        const avatarEdit = document.querySelector('.profile-avatar-edit');
+        const avatarModal = document.getElementById('avatarModal');
+        const closeAvatarModal = document.getElementById('closeAvatarModal');
+        const cancelAvatar = document.getElementById('cancelAvatar');
+        const saveAvatar = document.getElementById('saveAvatar');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const avatarUpload = document.getElementById('avatarUpload');
+        const streamOptions = document.querySelectorAll('.stream-option');
+
+        // Initialize the app
+        function init() {
+            renderProfile();
+            setupEventListeners();
+        }
+
+        // Render profile data
+        function renderProfile() {
+            profileName.textContent = `${profileData.firstName} ${profileData.lastName}`;
+            completedSessions.textContent = profileData.stats.completedSessions;
+            quizScore.textContent = profileData.stats.quizScore;
+            streakDays.textContent = profileData.stats.streakDays;
+            pointsEarned.textContent = profileData.stats.pointsEarned;
+            
+            // Update form fields
+            document.getElementById('firstName').value = profileData.firstName;
+            document.getElementById('lastName').value = profileData.lastName;
+            document.getElementById('email').value = profileData.email;
+            document.getElementById('phone').value = profileData.phone;
+            document.getElementById('dob').value = profileData.dob;
+            document.getElementById('gender').value = profileData.gender;
+            document.getElementById('bio').value = profileData.bio;
+            document.getElementById('school').value = profileData.school;
+            document.getElementById('grade').value = profileData.grade;
+            document.getElementById('academicGoals').value = profileData.academicGoals;
+            document.getElementById('languagePref').value = profileData.languagePref;
+            document.getElementById('notificationPref').value = profileData.notificationPref;
+            document.getElementById('studyTimes').value = profileData.studyTimes;
+            
+            // Update stream selection
+            document.querySelector(`input[name="stream"][value="${profileData.stream}"]`).checked = true;
+            document.getElementById(`${profileData.stream}Option`).classList.add('selected');
+            
+            // Update learning styles checkboxes
+            document.querySelectorAll('input[name="learning-style"]').forEach(checkbox => {
+                checkbox.checked = profileData.learningStyles.includes(checkbox.value);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Back to dashboard button
+            backToDashboard.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Navigating back to dashboard...');
+                // In a real app, this would navigate to the dashboard
+            });
+            
+            // Language toggle
+            languageToggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    languageToggleBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const lang = this.dataset.lang;
+                    alert(`Language preference changed to ${lang === 'en' ? 'English' : 'Zulu'}`);
+                });
+            });
+            
+            // Profile tabs
+            profileTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    profileTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    profileTabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Stream selection
+            streamOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    streamOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const streamValue = this.querySelector('input').value;
+                    profileData.stream = streamValue;
+                });
+            });
+            
+            // Save profile
+            saveProfileBtn.addEventListener('click', function() {
+                // Update profile data from form fields
+                profileData.firstName = document.getElementById('firstName').value;
+                profileData.lastName = document.getElementById('lastName').value;
+                profileData.email = document.getElementById('email').value;
+                profileData.phone = document.getElementById('phone').value;
+                profileData.dob = document.getElementById('dob').value;
+                profileData.gender = document.getElementById('gender').value;
+                profileData.bio = document.getElementById('bio').value;
+                profileData.school = document.getElementById('school').value;
+                profileData.grade = document.getElementById('grade').value;
+                profileData.academicGoals = document.getElementById('academicGoals').value;
+                profileData.languagePref = document.getElementById('languagePref').value;
+                profileData.notificationPref = document.getElementById('notificationPref').value;
+                profileData.studyTimes = document.getElementById('studyTimes').value;
+                
+                // Update stream
+                profileData.stream = document.querySelector('input[name="stream"]:checked').value;
+                
+                // Update learning styles
+                profileData.learningStyles = [];
+                document.querySelectorAll('#preferencesForm input[name="learning-style"]:checked').forEach(checkbox => {
+                    profileData.learningStyles.push(checkbox.value);
+                });
+                
+                // Update profile name
+                profileName.textContent = `${profileData.firstName} ${profileData.lastName}`;
+                
+                alert('Profile saved successfully!');
+            });
+            
+            // Avatar edit
+            avatarEdit.addEventListener('click', function() {
+                avatarModal.style.display = 'flex';
+            });
+            
+            // Close avatar modal
+            closeAvatarModal.addEventListener('click', () => avatarModal.style.display = 'none');
+            cancelAvatar.addEventListener('click', () => avatarModal.style.display = 'none');
+            
+            // Save avatar
+            saveAvatar.addEventListener('click', function() {
+                alert('Profile picture updated!');
+                avatarModal.style.display = 'none';
+            });
+            
+            // Upload avatar
+            uploadBtn.addEventListener('click', function() {
+                avatarUpload.click();
+            });
+            
+            avatarUpload.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const avatar = document.querySelector('.profile-avatar');
+                        avatar.innerHTML = `<img src="${e.target.result}" alt="Profile Avatar">`;
+                        avatar.querySelector('img').style.objectFit = 'cover';
+                        
+                        // Also update the avatar in the modal
+                        const modalAvatar = avatarModal.querySelector('.profile-avatar');
+                        modalAvatar.innerHTML = `<img src="${e.target.result}" alt="Profile Avatar">`;
+                        modalAvatar.querySelector('img').style.objectFit = 'cover';
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

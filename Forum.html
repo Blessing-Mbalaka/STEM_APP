@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Forum with AI Tutor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #530475;
+            --secondary-blue: #fdb4f7a1;
+            --accent-yellow: #FBBC05;
+            --accent-red: #EA4335;
+            --accent-green: #34A853;
+            --light-gray: #F5F5F5;
+            --medium-gray: #E0E0E0;
+            --dark-gray: #333333;
+            --text-light: #666666;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --bot-color: #530475;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            background-image: linear-gradient(135deg, #cd42f400,#fdb4f7a1, #a533d6eb, #530475), url("images/wallpaper12.jpg");
+            background-size: cover;
+            background-position: center;
+            /* background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); */
+            color: rgb(106, 1, 99);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .forum-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .forum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #fdb4f7a1;
+            color:#530475;
+        }
+        
+        .btn-primary:hover {
+            background-color: #fdb4f7a1;
+        }
+        
+        .btn-secondary {
+            background-color: var(--medium-gray);
+            color: var(--dark-gray);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d0d0d0;
+        }
+        
+        .btn-bot {
+            background-color: var(--bot-color);
+            color: white;
+        }
+        
+        .btn-bot:hover {
+            background-color:#fdb4f7a1;
+        }
+        
+        .search-bar {
+            flex-grow: 1;
+            max-width: 400px;
+            padding: 10px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--medium-gray);
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-bar:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+        
+        .forum-tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .forum-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .forum-tab {
+            padding: 12px 20px;
+            margin-right: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .forum-tab.active {
+            border-bottom-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .question-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fdb4f7a1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .question-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+        }
+        
+        .question-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .question-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+        
+        .question-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            padding: 4px 10px;
+            background-color: var(--light-gray);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .question-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--medium-gray);
+            padding-top: 15px;
+        }
+        
+        .question-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .action-btn.liked {
+            color: var(--accent-red);
+        }
+        
+        .answers-count {
+            font-weight: 600;
+            color: var(--primary-blue);
+            cursor: pointer;
+        }
+        
+        /* New Question Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-container {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+            outline: none;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 16px;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+        
+        .form-textarea:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+            outline: none;
+        }
+        
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border: 2px dashed var(--medium-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary-blue);
+            background-color: rgba(66, 133, 244, 0.05);
+        }
+        
+        .file-upload i {
+            font-size: 40px;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--medium-gray);
+            text-align: right;
+        }
+        
+        /* Answer Section */
+        .answers-section {
+            margin-top: 30px;
+            border-top: 1px solid var(--medium-gray);
+            padding-top: 20px;
+        }
+        
+        .answers-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .answer-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 15px;
+        }
+        
+        .answer-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .answer-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .answer-user .user-avatar {
+            background-color: var(--accent-green);
+            color: white;
+        }
+        
+        .answer-content {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .answer-image {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+        
+        .answer-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        /* Reply Form */
+        .reply-form {
+            margin-top: 20px;
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .reply-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        
+        .reply-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* AI Bot Chat */
+        .bot-chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            max-width: 90%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .bot-chat.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .bot-header {
+            background-color: #530475;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bot-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .bot-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--bot-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .bot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .bot-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: white;
+            border-radius: 15px 15px 15px 0;
+            padding: 10px 15px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--primary-blue);
+            color: white;
+            border-radius: 15px 15px 0 15px;
+            padding: 10px 15px;
+            margin-left: auto;
+        }
+        
+        .bot-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid var(--medium-gray);
+            background-color: white;
+        }
+        
+        .bot-input-field {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 30px;
+            outline: none;
+        }
+        
+        .bot-send {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            font-size: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .forum-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                max-width: 100%;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .question-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .question-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .bot-chat {
+                width: 90%;
+                right: 5%;
+            }
+        }
+         .back-to-dashboard {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            padding: 8px 15px;
+            background-color: white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-orange);
+        }
+
+        .back-to-dashboard:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            .back-to-dashboard {
+                position: static;
+                margin-bottom: 15px;
+                display: inline-flex;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="./Index.html" class="back-to-dashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1>Student Forum with AI Tutor</h1>
+            <p class="subtitle">Ask questions, get answers from tutors and our AI assistant</p>
+        </header>
+        
+        <div class="forum-container">
+            <div class="forum-header">
+                <div class="search-bar-container">
+                    <input type="text" class="search-bar" id="search-input" placeholder="Search questions...">
+                </div>
+                <button class="btn btn-primary" id="new-question-btn">
+                    <i class="fas fa-plus"></i> New Question
+                </button>
+                <button class="btn btn-bot" id="ask-bot-btn">
+                    <i class="fas fa-robot"></i> Ask AI Tutor
+                </button>
+            </div>
+            
+            <div class="forum-tabs">
+                <div class="forum-tab active" data-sort="recent">Recent</div>
+                <div class="forum-tab" data-sort="popular">Popular</div>
+                <div class="forum-tab" data-sort="unanswered">Unanswered</div>
+                <div class="forum-tab" data-tag="mathematics">Mathematics</div>
+                <div class="forum-tab" data-tag="science">Science</div>
+                <div class="forum-tab" data-tag="literature">Literature</div>
+                <div class="forum-tab" data-tag="history">History</div>
+            </div>
+            
+            <div class="questions-list" id="questions-list">
+                <!-- Questions will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Question Modal -->
+    <div class="modal-overlay" id="new-question-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title">Ask a New Question</div>
+                <button class="modal-close" id="close-question-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="question-title" class="form-label">Question Title</label>
+                    <input type="text" id="question-title" class="form-input" placeholder="Be specific and concise">
+                </div>
+                
+                <div class="form-group">
+                    <label for="question-content" class="form-label">Details</label>
+                    <textarea id="question-content" class="form-textarea" placeholder="Provide all the details someone would need to answer your question"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Add Image (optional)</label>
+                    <div class="file-upload" id="file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload or drag and drop</p>
+                        <p>JPG, PNG up to 5MB</p>
+                        <input type="file" id="question-image" accept="image/*">
+                        <img id="preview-image" class="preview-image" alt="Preview">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question-tags" class="form-label">Tags</label>
+                    <input type="text" id="question-tags" class="form-input" placeholder="Add tags separated by commas (math, algebra, calculus)">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-question">Cancel</button>
+                <button class="btn btn-primary" id="submit-question">Post Question</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Answer Modal -->
+    <div class="modal-overlay" id="answer-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title">Post Your Answer</div>
+                <button class="modal-close" id="close-answer-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="answer-content" class="form-label">Your Answer</label>
+                    <textarea id="answer-content" class="form-textarea" placeholder="Write your detailed answer here"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Add Image (optional)</label>
+                    <div class="file-upload" id="answer-file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload or drag and drop</p>
+                        <p>JPG, PNG up to 5MB</p>
+                        <input type="file" id="answer-image" accept="image/*">
+                        <img id="answer-preview-image" class="preview-image" alt="Preview">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-answer">Cancel</button>
+                <button class="btn btn-primary" id="submit-answer">Post Answer</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Bot Chat -->
+    <div class="bot-chat" id="bot-chat">
+        <div class="bot-header">
+            <div class="bot-title">
+                <div class="bot-avatar">AI</div>
+                <span>AI Tutor Assistant</span>
+            </div>
+            <button class="bot-close" id="close-bot">&times;</button>
+        </div>
+        <div class="bot-messages" id="bot-messages">
+            <div class="message bot-message">
+                Hello! I'm your AI tutor assistant. How can I help you with your studies today?
+            </div>
+        </div>
+        <div class="bot-input">
+            <input type="text" class="bot-input-field" id="bot-input" placeholder="Type your question...">
+            <button class="bot-send" id="bot-send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const newQuestionBtn = document.getElementById('new-question-btn');
+        const newQuestionModal = document.getElementById('new-question-modal');
+        const closeQuestionModal = document.getElementById('close-question-modal');
+        const cancelQuestionBtn = document.getElementById('cancel-question');
+        const submitQuestionBtn = document.getElementById('submit-question');
+        const askBotBtn = document.getElementById('ask-bot-btn');
+        const botChat = document.getElementById('bot-chat');
+        const closeBotBtn = document.getElementById('close-bot');
+        const botMessages = document.getElementById('bot-messages');
+        const botInput = document.getElementById('bot-input');
+        const botSendBtn = document.getElementById('bot-send');
+        const fileUpload = document.getElementById('file-upload');
+        const questionImage = document.getElementById('question-image');
+        const previewImage = document.getElementById('preview-image');
+        const questionsList = document.getElementById('questions-list');
+        const forumTabs = document.querySelectorAll('.forum-tab');
+        const searchInput = document.getElementById('search-input');
+        const answerModal = document.getElementById('answer-modal');
+        const closeAnswerModal = document.getElementById('close-answer-modal');
+        const cancelAnswerBtn = document.getElementById('cancel-answer');
+        const submitAnswerBtn = document.getElementById('submit-answer');
+        const answerFileUpload = document.getElementById('answer-file-upload');
+        const answerImage = document.getElementById('answer-image');
+        const answerPreviewImage = document.getElementById('answer-preview-image');
+        
+        // Current state
+        let currentQuestionId = null;
+        let currentSort = 'recent';
+        let currentTag = null;
+        let currentSearch = '';
+        
+        // Initialize forum data from localStorage or create sample data
+        let forumData = JSON.parse(localStorage.getItem('forumData')) || {
+            questions: [
+                {
+                    id: 'q1',
+                    title: 'How do I solve this quadratic equation?',
+                    content: "I'm having trouble understanding how to solve quadratic equations using the quadratic formula. Can someone explain it step by step?",
+                    image: 'https://via.placeholder.com/600x300?text=Math+Problem+Image',
+                    tags: ['mathematics', 'algebra', 'quadratic equations'],
+                    userId: 'u1',
+                    timestamp: Date.now() - 7200000, // 2 hours ago
+                    likes: 12,
+                    answers: [
+                        {
+                            id: 'a1',
+                            content: "The quadratic formula is x = [-b ± √(b² - 4ac)] / (2a). Let me break it down:\n\n1. Identify coefficients a, b, c from ax² + bx + c = 0\n2. Calculate discriminant (b² - 4ac)\n3. If discriminant ≥ 0, plug values into formula\n4. Simplify to get two solutions",
+                            userId: 'u2',
+                            timestamp: Date.now() - 3600000, // 1 hour ago
+                            likes: 8,
+                            image: null
+                        },
+                        {
+                            id: 'a2',
+                            content: "Here's a visual explanation that helped me understand it better:",
+                            userId: 'u3',
+                            timestamp: Date.now() - 1800000, // 30 minutes ago
+                            likes: 3,
+                            image: 'https://via.placeholder.com/500x200?text=Quadratic+Formula+Diagram'
+                        }
+                    ]
+                },
+                {
+                    id: 'q2',
+                    title: 'Need help with Shakespeare\'s Hamlet',
+                    content: "I'm writing an essay about the theme of revenge in Hamlet. Can anyone suggest some good quotes and analysis to include?",
+                    image: null,
+                    tags: ['literature', 'shakespeare', 'hamlet'],
+                    userId: 'u3',
+                    timestamp: Date.now() - 18000000, // 5 hours ago
+                    likes: 5,
+                    answers: [
+                        {
+                            id: 'a3',
+                            content: "Some key revenge quotes in Hamlet:\n\n1. \"Revenge his foul and most unnatural murder.\" (Act 1, Scene 5) - The ghost's command sets the revenge plot in motion.\n\n2. \"The play's the thing wherein I'll catch the conscience of the king.\" (Act 2, Scene 2) - Hamlet's plan to confirm Claudius's guilt.\n\n3. \"Now might I do it pat, now he is praying...\" (Act 3, Scene 3) - Hamlet's hesitation about killing Claudius while he's praying.",
+                            userId: 'u4',
+                            timestamp: Date.now() - 10800000, // 3 hours ago
+                            likes: 6,
+                            image: null
+                        }
+                    ]
+                }
+            ],
+            users: [
+                { id: 'u1', name: 'John Smith', role: 'student' },
+                { id: 'u2', name: 'Prof. Thompson', role: 'tutor' },
+                { id: 'u3', name: 'Maria Johnson', role: 'student' },
+                { id: 'u4', name: 'Dr. Williams', role: 'professor' }
+            ],
+            likedQuestions: [],
+            likedAnswers: []
+        };
+        
+        // Current user (in a real app, this would come from authentication)
+        const currentUser = { id: 'u1', name: 'John Smith', role: 'student' };
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('forumData', JSON.stringify(forumData));
+        }
+        
+        // Generate a unique ID
+        function generateId(prefix) {
+            return prefix + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // Format time as "X time ago"
+        function formatTime(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            
+            let interval = Math.floor(seconds / 31536000);
+            if (interval >= 1) return interval + " year" + (interval === 1 ? "" : "s") + " ago";
+            
+            interval = Math.floor(seconds / 2592000);
+            if (interval >= 1) return interval + " month" + (interval === 1 ? "" : "s") + " ago";
+            
+            interval = Math.floor(seconds / 86400);
+            if (interval >= 1) return interval + " day" + (interval === 1 ? "" : "s") + " ago";
+            
+            interval = Math.floor(seconds / 3600);
+            if (interval >= 1) return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
+            
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) return interval + " minute" + (interval === 1 ? "" : "s") + " ago";
+            
+            return Math.floor(seconds) + " second" + (seconds === 1 ? "" : "s") + " ago";
+        }
+        
+        // Get user by ID
+        function getUser(id) {
+            return forumData.users.find(user => user.id === id);
+        }
+        
+        // Check if current user liked a question
+        function isQuestionLiked(questionId) {
+            return forumData.likedQuestions.includes(questionId);
+        }
+        
+        // Check if current user liked an answer
+        function isAnswerLiked(answerId) {
+            return forumData.likedAnswers.includes(answerId);
+        }
+        
+        // Toggle like on a question
+        function toggleQuestionLike(questionId) {
+            const question = forumData.questions.find(q => q.id === questionId);
+            const index = forumData.likedQuestions.indexOf(questionId);
+            
+            if (index === -1) {
+                // Like the question
+                forumData.likedQuestions.push(questionId);
+                question.likes++;
+            } else {
+                // Unlike the question
+                forumData.likedQuestions.splice(index, 1);
+                question.likes--;
+            }
+            
+            saveData();
+            renderQuestions();
+        }
+        
+        // Toggle like on an answer
+        function toggleAnswerLike(answerId) {
+            let answer = null;
+            for (const question of forumData.questions) {
+                const foundAnswer = question.answers.find(a => a.id === answerId);
+                if (foundAnswer) {
+                    answer = foundAnswer;
+                    break;
+                }
+            }
+            
+            if (!answer) return;
+            
+            const index = forumData.likedAnswers.indexOf(answerId);
+            
+            if (index === -1) {
+                // Like the answer
+                forumData.likedAnswers.push(answerId);
+                answer.likes++;
+            } else {
+                // Unlike the answer
+                forumData.likedAnswers.splice(index, 1);
+                answer.likes--;
+            }
+            
+            saveData();
+            renderQuestions();
+        }
+        
+        // Filter and sort questions based on current state
+        function getFilteredQuestions() {
+            let questions = [...forumData.questions];
+            
+            // Filter by tag
+            if (currentTag) {
+                questions = questions.filter(q => q.tags.includes(currentTag.toLowerCase()));
+            }
+            
+            // Filter by search
+            if (currentSearch) {
+                const searchTerm = currentSearch.toLowerCase();
+                questions = questions.filter(q => 
+                    q.title.toLowerCase().includes(searchTerm) || 
+                    q.content.toLowerCase().includes(searchTerm) ||
+                    q.tags.some(tag => tag.includes(searchTerm))
+                );
+            }
+            
+            // Sort
+            switch (currentSort) {
+                case 'recent':
+                    questions.sort((a, b) => b.timestamp - a.timestamp);
+                    break;
+                case 'popular':
+                    questions.sort((a, b) => b.likes - a.likes);
+                    break;
+                case 'unanswered':
+                    questions.sort((a, b) => (a.answers.length === 0 ? -1 : 1) - (b.answers.length === 0 ? -1 : 1) || b.timestamp - a.timestamp);
+                    break;
+            }
+            
+            return questions;
+        }
+        
+        // Render questions to the DOM
+        function renderQuestions() {
+            const questions = getFilteredQuestions();
+            questionsList.innerHTML = '';
+            
+            if (questions.length === 0) {
+                questionsList.innerHTML = '<div class="question-card" style="text-align: center; padding: 30px;">No questions found matching your criteria</div>';
+                return;
+            }
+            
+            questions.forEach(question => {
+                const user = getUser(question.userId);
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question-card';
+                questionElement.dataset.id = question.id;
+                
+                let answersHTML = '';
+                if (question.answers.length > 0) {
+                    answersHTML = question.answers.map(answer => {
+                        const answerUser = getUser(answer.userId);
+                        return `
+                            <div class="answer-card">
+                                <div class="answer-header">
+                                    <div class="answer-user">
+                                        <div class="user-avatar">${answerUser.name.split(' ').map(n => n[0]).join('')}</div>
+                                        <div>
+                                            <div class="user-name">${answerUser.name}</div>
+                                            <div class="user-role">${answerUser.role.charAt(0).toUpperCase() + answerUser.role.slice(1)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="question-time">${formatTime(answer.timestamp)}</div>
+                                </div>
+                                
+                                <div class="answer-content">${answer.content.replace(/\n/g, '<br>')}</div>
+                                
+                                ${answer.image ? `<img src="${answer.image}" alt="Answer image" class="answer-image">` : ''}
+                                
+                                <div class="answer-footer">
+                                    <div class="action-btn ${isAnswerLiked(answer.id) ? 'liked' : ''}" onclick="toggleAnswerLike('${answer.id}')">
+                                        <i class="far fa-thumbs-up"></i> ${answer.likes}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                questionElement.innerHTML = `
+                    <div class="question-header">
+                        <div class="question-user">
+                            <div class="user-avatar">${user.name.split(' ').map(n => n[0]).join('')}</div>
+                            <div>
+                                <div class="user-name">${user.name}</div>
+                                <div class="user-role">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</div>
+                            </div>
+                        </div>
+                        <div class="question-time">${formatTime(question.timestamp)}</div>
+                    </div>
+                    
+                    <h3 class="question-title">${question.title}</h3>
+                    
+                    <div class="question-content">${question.content}</div>
+                    
+                    ${question.image ? `<img src="${question.image}" alt="Question image" class="question-image">` : ''}
+                    
+                    <div class="question-tags">
+                        ${question.tags.map(tag => `<div class="tag">${tag}</div>`).join('')}
+                    </div>
+                    
+                    <div class="question-footer">
+                        <div class="question-actions">
+                            <div class="action-btn ${isQuestionLiked(question.id) ? 'liked' : ''}" onclick="toggleQuestionLike('${question.id}')">
+                                <i class="far fa-thumbs-up"></i> ${question.likes}
+                            </div>
+                            <div class="action-btn" onclick="openAnswerModal('${question.id}')">
+                                <i class="far fa-comment"></i> Reply
+                            </div>
+                        </div>
+                        <div class="answers-count" onclick="toggleAnswers('${question.id}')">
+                            ${question.answers.length} ${question.answers.length === 1 ? 'answer' : 'answers'}
+                        </div>
+                    </div>
+                    
+                    <div class="answers-section" id="answers-${question.id}" style="display: none;">
+                        ${answersHTML}
+                        
+                        <div class="reply-form" id="reply-form-${question.id}">
+                            <textarea class="reply-textarea" placeholder="Write your answer..."></textarea>
+                            <div class="reply-actions">
+                                <button class="btn btn-secondary" onclick="cancelReply('${question.id}')">Cancel</button>
+                                <button class="btn btn-primary" onclick="submitReply('${question.id}')">Post Answer</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                questionsList.appendChild(questionElement);
+            });
+        }
+        
+        // Toggle answers visibility for a question
+        function toggleAnswers(questionId) {
+            const answersSection = document.getElementById(`answers-${questionId}`);
+            if (answersSection.style.display === 'none') {
+                answersSection.style.display = 'block';
+            } else {
+                answersSection.style.display = 'none';
+            }
+        }
+        
+        // Open answer modal
+        function openAnswerModal(questionId) {
+            currentQuestionId = questionId;
+            answerModal.classList.add('active');
+        }
+        
+        // Submit a new answer
+        function submitAnswer() {
+            const content = document.getElementById('answer-content').value;
+            const imageInput = document.getElementById('answer-image');
+            
+            if (!content.trim()) {
+                alert('Please enter your answer');
+                return;
+            }
+            
+            const question = forumData.questions.find(q => q.id === currentQuestionId);
+            if (!question) return;
+            
+            const newAnswer = {
+                id: generateId('a'),
+                content: content,
+                userId: currentUser.id,
+                timestamp: Date.now(),
+                likes: 0,
+                image: null
+            };
+            
+            // In a real app, you would upload the image to a server and get a URL
+            if (imageInput.files && imageInput.files[0]) {
+                newAnswer.image = URL.createObjectURL(imageInput.files[0]);
+            }
+            
+            question.answers.push(newAnswer);
+            saveData();
+            
+            // Reset form
+            document.getElementById('answer-content').value = '';
+            answerPreviewImage.style.display = 'none';
+            answerPreviewImage.src = '';
+            answerImage.value = '';
+            
+            answerModal.classList.remove('active');
+            renderQuestions();
+            
+            // Show answers section
+            const answersSection = document.getElementById(`answers-${currentQuestionId}`);
+            if (answersSection) {
+                answersSection.style.display = 'block';
+            }
+        }
+        
+        // Submit a new question
+        function submitQuestion() {
+            const title = document.getElementById('question-title').value;
+            const content = document.getElementById('question-content').value;
+            const tags = document.getElementById('question-tags').value;
+            const imageInput = document.getElementById('question-image');
+            
+            if (!title.trim() || !content.trim()) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const newQuestion = {
+                id: generateId('q'),
+                title: title,
+                content: content,
+                tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                userId: currentUser.id,
+                timestamp: Date.now(),
+                likes: 0,
+                answers: [],
+                image: null
+            };
+            
+            // In a real app, you would upload the image to a server and get a URL
+            if (imageInput.files && imageInput.files[0]) {
+                newQuestion.image = URL.createObjectURL(imageInput.files[0]);
+            }
+            
+            forumData.questions.unshift(newQuestion);
+            saveData();
+            
+            // Reset form
+            document.getElementById('question-title').value = '';
+            document.getElementById('question-content').value = '';
+            document.getElementById('question-tags').value = '';
+            previewImage.style.display = 'none';
+            previewImage.src = '';
+            questionImage.value = '';
+            
+            newQuestionModal.classList.remove('active');
+            renderQuestions();
+        }
+        
+        // Submit a reply from the inline form
+        function submitReply(questionId) {
+            const replyTextarea = document.querySelector(`#reply-form-${questionId} .reply-textarea`);
+            const content = replyTextarea.value;
+            
+            if (!content.trim()) {
+                alert('Please enter your answer');
+                return;
+            }
+            
+            const question = forumData.questions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            const newAnswer = {
+                id: generateId('a'),
+                content: content,
+                userId: currentUser.id,
+                timestamp: Date.now(),
+                likes: 0,
+                image: null
+            };
+            
+            question.answers.push(newAnswer);
+            saveData();
+            
+            // Reset form
+            replyTextarea.value = '';
+            renderQuestions();
+            
+            // Keep answers section open
+            const answersSection = document.getElementById(`answers-${questionId}`);
+            if (answersSection) {
+                answersSection.style.display = 'block';
+            }
+        }
+        
+        // Cancel reply from inline form
+        function cancelReply(questionId) {
+            const replyTextarea = document.querySelector(`#reply-form-${questionId} .reply-textarea`);
+            replyTextarea.value = '';
+        }
+        
+        // Handle bot messages
+        function sendBotMessage() {
+            const message = botInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user-message';
+            userMessage.textContent = message;
+            botMessages.appendChild(userMessage);
+            
+            // Clear input
+            botInput.value = '';
+            
+            // Scroll to bottom
+            botMessages.scrollTop = botMessages.scrollHeight;
+            
+            // Simulate bot response after a delay
+            setTimeout(() => {
+                const botResponse = getBotResponse(message);
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot-message';
+                botMessage.textContent = botResponse;
+                botMessages.appendChild(botMessage);
+                
+                // Scroll to bottom
+                botMessages.scrollTop = botMessages.scrollHeight;
+            }, 1000);
+        }
+        
+        // Simple bot response logic
+        function getBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
+                return "Hello! How can I help you with your studies today?";
+            } else if (lowerMessage.includes('math') || lowerMessage.includes('algebra') || lowerMessage.includes('calculus')) {
+                return "I can help with math topics! For algebra, remember the quadratic formula: x = [-b ± √(b² - 4ac)] / (2a). For calculus, the fundamental theorem relates differentiation and integration.";
+            } else if (lowerMessage.includes('science') || lowerMessage.includes('physics') || lowerMessage.includes('chemistry')) {
+                return "Science is fascinating! Newton's laws govern motion in physics. In chemistry, remember that elements in the same group have similar properties due to their valence electrons.";
+            } else if (lowerMessage.includes('literature') || lowerMessage.includes('book') || lowerMessage.includes('poem')) {
+                return "For literature analysis, focus on themes, symbols, and character development. A good approach is to examine how the author uses literary devices to convey meaning.";
+            } else if (lowerMessage.includes('history') || lowerMessage.includes('historical')) {
+                return "When studying history, consider both the events and their context. Understanding causes and effects is crucial, as is examining primary sources for different perspectives.";
+            } else {
+                const responses = [
+                    "I'm not sure I understand. Could you rephrase your question?",
+                    "That's an interesting question. Could you provide more details so I can give you a better answer?",
+                    "I specialize in academic topics. Could you clarify which subject area your question relates to?",
+                    "I'd be happy to help with that. What specific aspect are you having trouble with?"
+                ];
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+        
+        // Event Listeners
+        newQuestionBtn.addEventListener('click', () => {
+            newQuestionModal.classList.add('active');
+        });
+        
+        closeQuestionModal.addEventListener('click', () => {
+            newQuestionModal.classList.remove('active');
+        });
+        
+        cancelQuestionBtn.addEventListener('click', () => {
+            newQuestionModal.classList.remove('active');
+        });
+        
+        submitQuestionBtn.addEventListener('click', submitQuestion);
+        
+        askBotBtn.addEventListener('click', () => {
+            botChat.classList.toggle('active');
+        });
+        
+        closeBotBtn.addEventListener('click', () => {
+            botChat.classList.remove('active');
+        });
+        
+        botSendBtn.addEventListener('click', sendBotMessage);
+        
+        botInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBotMessage();
+            }
+        });
+        
+        closeAnswerModal.addEventListener('click', () => {
+            answerModal.classList.remove('active');
+        });
+        
+        cancelAnswerBtn.addEventListener('click', () => {
+            answerModal.classList.remove('active');
+        });
+        
+        submitAnswerBtn.addEventListener('click', submitAnswer);
+        
+        // File upload preview
+        fileUpload.addEventListener('click', () => {
+            questionImage.click();
+        });
+        
+        questionImage.addEventListener('change', () => {
+            if (questionImage.files && questionImage.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(questionImage.files[0]);
+            }
+        });
+        
+        answerFileUpload.addEventListener('click', () => {
+            answerImage.click();
+        });
+        
+        answerImage.addEventListener('change', () => {
+            if (answerImage.files && answerImage.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    answerPreviewImage.src = e.target.result;
+                    answerPreviewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(answerImage.files[0]);
+            }
+        });
+        
+        // Forum tabs
+        forumTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                forumTabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Update current sort or tag
+                if (tab.dataset.sort) {
+                    currentSort = tab.dataset.sort;
+                    currentTag = null;
+                } else if (tab.dataset.tag) {
+                    currentTag = tab.dataset.tag;
+                }
+                
+                renderQuestions();
+            });
+        });
+        
+        // Search functionality
+        searchInput.addEventListener('input', () => {
+            currentSearch = searchInput.value;
+            renderQuestions();
+        });
+        
+        // Make functions available globally for inline event handlers
+        window.toggleQuestionLike = toggleQuestionLike;
+        window.toggleAnswerLike = toggleAnswerLike;
+        window.openAnswerModal = openAnswerModal;
+        window.toggleAnswers = toggleAnswers;
+        window.submitReply = submitReply;
+        window.cancelReply = cancelReply;
+        
+        // Initialize the page
+        renderQuestions();
+    </script>
+</body>
+</html>

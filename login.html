@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEAM Explorers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --powder-blue: #A7D8F2;
+            --bright-yellow: #041667;
+            --orange: #bfc0c1;
+            --warm-red: #FF7F7F;
+            --blue:#60b8e7;
+            --dark-blue: #041667;
+            --white: #FFFFFF;
+            --black: #ffffff;
+            --gray: #E0E0E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            /* background-color: var(--powder-blue); */
+            color: var(--black);
+            overflow-x: hidden;
+
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--powder-blue);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            background-image: linear-gradient(135deg, #4286f400, #c4f4f8e3, #c4f4f8f7, #24adb7), url("images/wallpaper10.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .splash-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .mascot {
+            width: 120px;
+            height: 120px;
+            background-color: var(--bright-yellow);
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 1.5rem;
+            animation: wave 2s infinite;
+        }
+
+        .mascot::before, .mascot::after {
+            content: '';
+            position: absolute;
+            background-color: var(--black);
+            border-radius: 50%;
+        }
+
+        .mascot::before {
+            width: 25px;
+            height: 25px;
+            top: 35px;
+            left: 30px;
+        }
+
+        .mascot::after {
+            width: 25px;
+            height: 25px;
+            top: 35px;
+            right: 30px;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            color: var(--dark-blue);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            padding: 1rem;
+            background-color: var(--powder-blue);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(135deg, #4286f400, #c4f4f8e3, #c4f4f8f7, #24adb7), url("images/wallpaper3.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .auth-tabs {
+            display: flex;
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 1rem;
+            color: #041667;
+            background-color: var(--white);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background-color: var(--blue);
+            color: var(--white);
+        }
+
+        .auth-form {
+            width: 100%;
+            max-width: 350px;
+            background-color:rgba(255, 255, 255, 0.217);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            color: #041667;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--dark-blue);
+            border-radius: 8px;
+            color: #041667;
+            background-color: #ffffff5b;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus {
+            border-color: var(--blue);
+            outline: none;
+        }
+
+        .role-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bright-yellow);
+            padding: 0.4rem;
+            border-radius: 25px;
+            margin-bottom: 1rem;
+        }
+
+        .role-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.4rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .role-option.active {
+            background-color: var(--orange);
+            color: var(--white);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .forgot-password a {
+            color: var(--dark-blue);
+            text-decoration: none;
+            font-size: 0.8rem;
+
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--blue);
+            color: var(--white);
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            background-color: #3a7bc8;
+        }
+
+        .language-selector {
+            margin-top: 0.5rem;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .language-selector select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: var(--white);
+        }
+
+        .auth-mascot {
+            width: 80px;
+            height: 80px;
+            background-color: var(--bright-yellow);
+            border-radius: 50%;
+            margin-top: 1rem;
+            position: relative;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">STEAM Explorers</div>
+        <div class="mascot"></div>
+        <div class="tagline">Learn, Play, and Explore STEAM!</div>
+    </div>
+
+    <!-- Sign Up / Login Screen -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-tabs">
+            <div class="auth-tab active" id="loginTab">Login</div>
+            <div class="auth-tab" id="signupTab">Sign Up</div>
+        </div>
+        
+        <form class="auth-form" id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <div class="forgot-password">
+                <a href="#" id="forgotPassword">Forgot Password?</a>
+            </div>
+            <div class="role-toggle">
+                <div class="role-option active" id="childRole">I'm a Student</div>
+                <div class="role-option" id="parentRole">I'm a Teacher</div>
+            </div>
+            <button type="submit" class="auth-btn">Get Started!</button>
+        </form>
+        
+        <form class="auth-form" id="signupForm" style="display: none;">
+            <div class="form-group">
+                <label for="signupName">Name</label>
+                <input type="text" id="signupName" required>
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email</label>
+                <input type="email" id="signupEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+            </div>
+            <div class="role-toggle">
+                <div class="role-option active" id="signupChildRole">I'm a Student</div>
+                <div class="role-option" id="signupParentRole">I'm a Teacher</div>
+            </div>
+            <button type="submit" class="auth-btn">Create Account</button>
+        </form>
+        
+        <!-- <div class="language-selector">
+            <select id="languageSelect">
+                <option value="en">English</option>
+                <option value="zu">Zulu</option>
+            </select>
+        </div> -->
+        
+        <div class="auth-mascot"></div>
+    </div>
+
+    <script>
+        // Splash Screen Transition
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                document.getElementById('splashScreen').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('splashScreen').style.display = 'none';
+                    document.getElementById('authContainer').style.display = 'flex';
+                }, 500);
+            }, 2000); // Reduced splash screen time
+            
+            // Auth Tabs
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            loginTab.addEventListener('click', function() {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            });
+            
+            signupTab.addEventListener('click', function() {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.style.display = 'block';
+                loginForm.style.display = 'none';
+            });
+            
+            // Role Toggle
+            const childRole = document.getElementById('childRole');
+            const parentRole = document.getElementById('parentRole');
+            const signupChildRole = document.getElementById('signupChildRole');
+            const signupParentRole = document.getElementById('signupParentRole');
+            
+            childRole.addEventListener('click', function() {
+                childRole.classList.add('active');
+                parentRole.classList.remove('active');
+            });
+            
+            parentRole.addEventListener('click', function() {
+                parentRole.classList.add('active');
+                childRole.classList.remove('active');
+            });
+            
+            signupChildRole.addEventListener('click', function() {
+                signupChildRole.classList.add('active');
+                signupParentRole.classList.remove('active');
+            });
+            
+            signupParentRole.addEventListener('click', function() {
+                signupParentRole.classList.add('active');
+                signupChildRole.classList.remove('active');
+            });
+            
+            // Form Submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Here you would typically validate and send data to server
+                alert('Login functionality would be implemented here');
+            });
+            
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Here you would typically validate and send data to server
+                alert('Signup functionality would be implemented here');
+            });
+        });
+    </script>
+</body>
+</html>

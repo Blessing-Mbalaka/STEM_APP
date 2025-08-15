@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: rgb(184, 67, 0);
+            --secondary-blue: rgb(128, 49, 3);
+            --accent-yellow: #FBBC05;
+            --accent-red: #EA4335;
+            --accent-green: #34A853;
+            --light-gray: #F5F5F5;
+            --medium-gray: #E0E0E0;
+            --dark-gray: #333333;
+            --text-light: #666666;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --stem-color: #4285F4;
+            --steam-color: #EA4335;
+            --general-color: #34A853;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            background-image: linear-gradient(180deg, #fcfcfcf0, #f6f6f6), url("images/Frame 427319191.png");
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            background-image: linear-gradient(#f4bc4238, #f3af55e0, rgb(255, 166, 0)), url("images/wallpaper8.jpg");
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: rgb(128, 49, 3);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .category-filters {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .category-filter {
+            padding: 10px 20px;
+            border-radius: 30px;
+            background-color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+        }
+
+        /* .category-filter.active {
+            color: white;
+        } */
+
+        .category-filter[data-category="stem"] {
+            background-color: var(--stem-color);
+            color: white;
+        }
+
+        .category-filter[data-category="stem"].active:hover {
+            background-color: #2a6ad1;
+            color: white;
+        }
+         .category-filter[data-category="stem"] {
+            color: #2a6ad1;
+        }
+
+        .category-filter[data-category="stem"] {
+            background-color: #2a6ad16c;
+        }
+
+        .category-filter[data-category="steam"] {
+            background-color: var(--steam-color);
+            color: white;
+        }
+
+        .category-filter[data-category="steam"] {
+            background-color: #d1382d2b;
+            color: #d1382d;
+        }
+
+        .category-filter[data-category="steam"].active:hover {
+            background-color: #d1382d;
+            color: #ffffff;
+        }
+
+        .category-filter[data-category="general"] {
+            background-color: var(--general-color);
+            color: white;
+        }
+
+        .category-filter[data-category="general"] {
+            background-color: #2a8c4663;
+            color: #2a8c46;
+        }
+
+        .category-filter[data-category="general"].active:hover {
+            background-color: #2a8c46;
+            color: #ffffff;
+        }
+
+
+        .category-filter[data-category="all"] {
+            background-color: var(--accent-yellow);
+            color: var(--dark-gray);
+        }
+
+        .category-filter[data-category="all"]:hover:not(.active) {
+            background-color: #e6a90061;
+        }
+        
+
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .course-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-category {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 5px 15px;
+            border-radius: 0 0 10px 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .course-category.stem {
+            background-color: var(--stem-color);
+        }
+
+        .course-category.steam {
+            background-color: var(--steam-color);
+        }
+
+        .course-category.general {
+            background-color: var(--general-color);
+        }
+
+        .course-icon {
+            font-size: 48px;
+            margin: 15px 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-icon.stem {
+            color: var(--stem-color);
+        }
+
+        .course-icon.steam {
+            color: var(--steam-color);
+        }
+
+        .course-icon.general {
+            color: var(--general-color);
+        }
+
+        .course-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-details {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .course-duration {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .course-level {
+            background-color: var(--light-gray);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .course-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .start-button {
+            padding: 10px 20px;
+            background-color: rgba(255, 166, 0, 0.164);
+            color: rgb(255, 166, 0);
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .start-button:hover {
+            background-color: rgb(184, 67, 0);
+            transform: scale(1.05);
+        }
+
+        .learning-styles {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .style-tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .style-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .style-tab {
+            padding: 12px 20px;
+            margin-right: 10px;
+            border-radius: 30px;
+            background-color: white;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+        }
+
+        .style-tab.active {
+            background-color: rgb(255, 166, 0);
+            color: white;
+        }
+
+        .style-content {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .style-content.active {
+            display: block;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: rgb(255, 166, 0);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .back-button:hover {
+            background-color: rgb(128, 49, 3);
+        }
+
+        /* Visual Learners Section */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: scale(1.02);
+        }
+
+        .video-thumbnail {
+            height: 150px;
+            background-color: #ddd;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-thumbnail i {
+            font-size: 50px;
+            color: rgb(128, 49, 3);
+        }
+
+        .video-thumbnail::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg,
+                    rgba(255, 0, 0, 0.269),
+                    rgba(128, 0, 0, 0.178),
+                    rgba(222, 221, 221, 0.473),
+                    rgba(241, 91, 57, 0.228));
+            background-size: 200% 200%;
+            animation: gradient 5s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .video-duration {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Auditory Learners Section */
+        .audio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .audio-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .audio-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .audio-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--accent-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .audio-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .audio-info {
+            flex-grow: 1;
+        }
+
+        .audio-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .audio-duration {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Read/Write Learners Section */
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .material-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+        }
+
+        .material-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .material-cover {
+            height: 180px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .material-cover::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    #ddd,
+                    #ddd 20px,
+                    #eee 20px,
+                    #eee 40px);
+        }
+
+        .material-cover i {
+            font-size: 50px;
+            color: var(--primary-blue);
+            z-index: 1;
+        }
+
+        .material-info {
+            padding: 15px;
+        }
+
+        .material-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .material-author {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .material-pages {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .category-filters {
+                gap: 8px;
+            }
+
+            .category-filter {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .courses-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 20px;
+            }
+
+            .video-grid,
+            .audio-grid,
+            .material-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-filters {
+                display: flex;
+                flex-direction: row;
+                /* Items go left to right */
+                align-items: center;
+                /* Align items vertically (center of the row) */
+                justify-content: center;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-grid,
+            .audio-grid,
+            .material-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .style-tab {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+
+        .back-to-dashboard {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            padding: 8px 15px;
+            background-color: white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-orange);
+        }
+
+        .back-to-dashboard:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .back-to-dashboard {
+                position: static;
+                margin-bottom: 15px;
+                display: inline-flex;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <a href="./Index.html" class="back-to-dashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1>Interactive Learning Portal</h1>
+            <p class="subtitle">Browse courses by category and choose your learning style</p>
+
+        </header>
+        <div class="category-filters">
+            <div class="category-filter active" data-category="all">All</div>
+            <div class="category-filter" data-category="stem">STEM</div>
+            <div class="category-filter" data-category="steam">STEAM</div>
+            <div class="category-filter" data-category="general">General</div>
+        </div>
+
+        <!-- Course Selection Section -->
+        <div id="course-selection" class="courses-grid">
+            <!-- STEM Courses -->
+            <div class="course-card stem" data-category="stem">
+                <div class="course-category stem">STEM</div>
+                <div class="course-icon stem">
+                    <i class="fas fa-square-root-alt"></i>
+                </div>
+                <h3 class="course-name">Advanced Calculus</h3>
+                <p class="course-desc">Master advanced calculus concepts including integrals, derivatives, and limits.
+                </p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 24 hours
+                    </div>
+                    <div class="course-level">Advanced</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('math')">Start Learning</button>
+            </div>
+
+            <div class="course-card stem" data-category="stem">
+                <div class="course-category stem">STEM</div>
+                <div class="course-icon stem">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <h3 class="course-name">Quantum Physics</h3>
+                <p class="course-desc">Explore quantum mechanics principles and their applications in modern technology.
+                </p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 30 hours
+                    </div>
+                    <div class="course-level">Expert</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('science')">Start Learning</button>
+            </div>
+
+            <div class="course-card stem" data-category="stem">
+                <div class="course-category stem">STEM</div>
+                <div class="course-icon stem">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3 class="course-name">Machine Learning</h3>
+                <p class="course-desc">Learn algorithms and techniques for building intelligent systems and AI models.
+                </p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 40 hours
+                    </div>
+                    <div class="course-level">Intermediate</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('science')">Start Learning</button>
+            </div>
+
+            <!-- STEAM Courses -->
+            <div class="course-card steam" data-category="steam">
+                <div class="course-category steam">STEAM</div>
+                <div class="course-icon steam">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3 class="course-name">Digital Art & Design</h3>
+                <p class="course-desc">Combine artistic skills with technology to create stunning digital artwork.</p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 20 hours
+                    </div>
+                    <div class="course-level">Beginner</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('english')">Start Learning</button>
+            </div>
+
+            <div class="course-card steam" data-category="steam">
+                <div class="course-category steam">STEAM</div>
+                <div class="course-icon steam">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="course-name">Creative Robotics</h3>
+                <p class="course-desc">Design and build robots while exploring the intersection of engineering and art.
+                </p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 35 hours
+                    </div>
+                    <div class="course-level">Intermediate</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('science')">Start Learning</button>
+            </div>
+
+            <div class="course-card steam" data-category="steam">
+                <div class="course-category steam">STEAM</div>
+                <div class="course-icon steam">
+                    <i class="fas fa-music"></i>
+                </div>
+                <h3 class="course-name">Music Technology</h3>
+                <p class="course-desc">Explore how technology is transforming music creation and production.</p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 18 hours
+                    </div>
+                    <div class="course-level">Beginner</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('english')">Start Learning</button>
+            </div>
+
+            <!-- General Courses -->
+            <div class="course-card general" data-category="general">
+                <div class="course-category general">General</div>
+                <div class="course-icon general">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="course-name">Literature Analysis</h3>
+                <p class="course-desc">Develop critical reading skills and analyze classic and contemporary literature.
+                </p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 25 hours
+                    </div>
+                    <div class="course-level">Intermediate</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('english')">Start Learning</button>
+            </div>
+
+            <div class="course-card general" data-category="general">
+                <div class="course-category general">General</div>
+                <div class="course-icon general">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <h3 class="course-name">World History</h3>
+                <p class="course-desc">Explore major events, cultures, and civilizations that shaped our world.</p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 30 hours
+                    </div>
+                    <div class="course-level">Beginner</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('history')">Start Learning</button>
+            </div>
+
+            <div class="course-card general" data-category="general">
+                <div class="course-category general">General</div>
+                <div class="course-icon general">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h3 class="course-name">Cultural Geography</h3>
+                <p class="course-desc">Study how cultures and human activities shape and are shaped by geography.</p>
+                <div class="course-details">
+                    <div class="course-duration">
+                        <i class="far fa-clock"></i> 22 hours
+                    </div>
+                    <div class="course-level">Intermediate</div>
+                </div>
+                <button class="start-button" onclick="selectSubject('history')">Start Learning</button>
+            </div>
+        </div>
+
+        <!-- Learning Styles Section (hidden initially) -->
+        <div id="learning-styles" class="learning-styles">
+            <div class="back-button" onclick="goBackToCourses()">
+                <i class="fas fa-arrow-left"></i> Back to Courses
+            </div>
+
+            <h2 id="selected-subject-title">Mathematics Resources</h2>
+
+            <div class="style-tabs">
+                <div class="style-tab active" onclick="showLearningStyle('visual')">
+                    <i class="fas fa-eye"></i> Visual
+                </div>
+                <div class="style-tab" onclick="showLearningStyle('auditory')">
+                    <i class="fas fa-headphones"></i> Auditory
+                </div>
+                <div class="style-tab" onclick="showLearningStyle('readwrite')">
+                    <i class="fas fa-book"></i> Reader
+                </div>
+            </div>
+
+            <!-- Visual Learners Content -->
+            <div id="visual-content" class="style-content active">
+                <h3>Video Tutorials</h3>
+                <p>Learn through engaging video explanations and demonstrations.</p>
+
+                <div class="video-grid">
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Introduction to Calculus</div>
+                            <div class="video-duration">12:45 min</div>
+                        </div>
+                    </div>
+
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Algebra Fundamentals</div>
+                            <div class="video-duration">18:30 min</div>
+                        </div>
+                    </div>
+
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Geometry in Real World</div>
+                            <div class="video-duration">15:20 min</div>
+                        </div>
+                    </div>
+
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Statistics Made Easy</div>
+                            <div class="video-duration">22:10 min</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auditory Learners Content -->
+            <div id="auditory-content" class="style-content">
+                <h3>Audio Lessons</h3>
+                <p>Learn through audio explanations and podcasts you can listen to anywhere.</p>
+
+                <div class="audio-grid">
+                    <div class="audio-card">
+                        <div class="audio-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="audio-info">
+                            <div class="audio-title">Calculus Concepts Explained</div>
+                            <div class="audio-duration">24:15 min</div>
+                        </div>
+                    </div>
+
+                    <div class="audio-card">
+                        <div class="audio-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="audio-info">
+                            <div class="audio-title">Algebraic Formulas</div>
+                            <div class="audio-duration">18:45 min</div>
+                        </div>
+                    </div>
+
+                    <div class="audio-card">
+                        <div class="audio-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="audio-info">
+                            <div class="audio-title">Geometry Podcast</div>
+                            <div class="audio-duration">32:10 min</div>
+                        </div>
+                    </div>
+
+                    <div class="audio-card">
+                        <div class="audio-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="audio-info">
+                            <div class="audio-title">Probability Basics</div>
+                            <div class="audio-duration">15:30 min</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Read/Write Learners Content -->
+            <div id="readwrite-content" class="style-content">
+                <h3>Study Materials</h3>
+                <p>Learn through textbooks, study guides, and written materials.</p>
+
+                <div class="material-grid">
+                    <div class="material-card">
+                        <div class="material-cover">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="material-info">
+                            <div class="material-title">Advanced Calculus</div>
+                            <div class="material-author">By Dr. Math Expert</div>
+                            <div class="material-pages">320 pages</div>
+                        </div>
+                    </div>
+
+                    <div class="material-card">
+                        <div class="material-cover">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="material-info">
+                            <div class="material-title">Algebra Study Guide</div>
+                            <div class="material-author">By Professor Algebra</div>
+                            <div class="material-pages">210 pages</div>
+                        </div>
+                    </div>
+
+                    <div class="material-card">
+                        <div class="material-cover">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="material-info">
+                            <div class="material-title">Geometry Textbook</div>
+                            <div class="material-author">By The Geometry Team</div>
+                            <div class="material-pages">450 pages</div>
+                        </div>
+                    </div>
+
+                    <div class="material-card">
+                        <div class="material-cover">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="material-info">
+                            <div class="material-title">Statistics Handbook</div>
+                            <div class="material-author">By Stats Masters</div>
+                            <div class="material-pages">180 pages</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current selected subject
+        let currentSubject = '';
+
+        // Subject data with resources for each learning style
+        const subjects = {
+            'math': {
+                name: 'Mathematics',
+                visual: [
+                    { title: 'Introduction to Calculus', duration: '12:45 min' },
+                    { title: 'Algebra Fundamentals', duration: '18:30 min' },
+                    { title: 'Geometry in Real World', duration: '15:20 min' },
+                    { title: 'Statistics Made Easy', duration: '22:10 min' }
+                ],
+                auditory: [
+                    { title: 'Calculus Concepts Explained', duration: '24:15 min' },
+                    { title: 'Algebraic Formulas', duration: '18:45 min' },
+                    { title: 'Geometry Podcast', duration: '32:10 min' },
+                    { title: 'Probability Basics', duration: '15:30 min' }
+                ],
+                readwrite: [
+                    { title: 'Advanced Calculus', author: 'By Dr. Math Expert', pages: '320 pages' },
+                    { title: 'Algebra Study Guide', author: 'By Professor Algebra', pages: '210 pages' },
+                    { title: 'Geometry Textbook', author: 'By The Geometry Team', pages: '450 pages' },
+                    { title: 'Statistics Handbook', author: 'By Stats Masters', pages: '180 pages' }
+                ]
+            },
+            'science': {
+                name: 'Science',
+                visual: [
+                    { title: 'Physics of Motion', duration: '14:25 min' },
+                    { title: 'Chemistry Reactions', duration: '16:40 min' },
+                    { title: 'Biology Basics', duration: '19:15 min' },
+                    { title: 'Scientific Method', duration: '11:50 min' }
+                ],
+                auditory: [
+                    { title: 'Physics Concepts', duration: '28:30 min' },
+                    { title: 'Chemistry Explained', duration: '22:15 min' },
+                    { title: 'Biology Podcast', duration: '35:20 min' },
+                    { title: 'Science Discoveries', duration: '18:45 min' }
+                ],
+                readwrite: [
+                    { title: 'Physics Textbook', author: 'By Science Writers', pages: '380 pages' },
+                    { title: 'Chemistry Guide', author: 'By Chem Experts', pages: '290 pages' },
+                    { title: 'Biology Handbook', author: 'By Bio Team', pages: '420 pages' },
+                    { title: 'Science Encyclopedia', author: 'By Various Authors', pages: '510 pages' }
+                ]
+            },
+            'english': {
+                name: 'English',
+                visual: [
+                    { title: 'Grammar Rules', duration: '10:35 min' },
+                    { title: 'Writing Techniques', duration: '15:20 min' },
+                    { title: 'Literature Analysis', duration: '18:45 min' },
+                    { title: 'Poetry Explained', duration: '12:10 min' }
+                ],
+                auditory: [
+                    { title: 'Grammar Podcast', duration: '25:40 min' },
+                    { title: 'Writing Tips Audio', duration: '19:15 min' },
+                    { title: 'Literature Discussion', duration: '42:30 min' },
+                    { title: 'Poetry Readings', duration: '31:20 min' }
+                ],
+                readwrite: [
+                    { title: 'Grammar Handbook', author: 'By Language Experts', pages: '240 pages' },
+                    { title: 'Writing Guide', author: 'By Famous Authors', pages: '320 pages' },
+                    { title: 'Literature Anthology', author: 'By Literary Society', pages: '480 pages' },
+                    { title: 'Poetry Collection', author: 'By Various Poets', pages: '210 pages' }
+                ]
+            },
+            'history': {
+                name: 'History',
+                visual: [
+                    { title: 'Ancient Civilizations', duration: '16:25 min' },
+                    { title: 'World Wars Explained', duration: '22:40 min' },
+                    { title: 'Government Systems', duration: '14:15 min' },
+                    { title: 'Geography Basics', duration: '13:50 min' }
+                ],
+                auditory: [
+                    { title: 'History Podcast', duration: '38:20 min' },
+                    { title: 'Civics Audio Lesson', duration: '24:45 min' },
+                    { title: 'Geography Facts', duration: '29:10 min' },
+                    { title: 'Historical Events', duration: '33:25 min' }
+                ],
+                readwrite: [
+                    { title: 'World History', author: 'By Historians', pages: '450 pages' },
+                    { title: 'Civics Textbook', author: 'By Government Experts', pages: '310 pages' },
+                    { title: 'Geography Guide', author: 'By Travel Writers', pages: '280 pages' },
+                    { title: 'Historical Documents', author: 'By Various Authors', pages: '390 pages' }
+                ]
+            }
+        };
+
+        // Initialize category filter
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set up category filters
+            const filters = document.querySelectorAll('.category-filter');
+            filters.forEach(filter => {
+                filter.addEventListener('click', function () {
+                    // Remove active class from all filters
+                    filters.forEach(f => f.classList.remove('active'));
+
+                    // Add active class to clicked filter
+                    this.classList.add('active');
+
+                    // Filter courses
+                    const category = this.getAttribute('data-category');
+                    filterCourses(category);
+                });
+            });
+        });
+
+        // Filter courses by category
+        function filterCourses(category) {
+            const courses = document.querySelectorAll('.course-card');
+
+            courses.forEach(course => {
+                if (category === 'all') {
+                    course.style.display = 'flex';
+                } else {
+                    if (course.getAttribute('data-category') === category) {
+                        course.style.display = 'flex';
+                    } else {
+                        course.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Select a subject
+        function selectSubject(subjectId) {
+            currentSubject = subjectId;
+
+            // Update UI
+            document.getElementById('course-selection').style.display = 'none';
+            document.getElementById('learning-styles').style.display = 'block';
+            document.getElementById('selected-subject-title').textContent = subjects[subjectId].name + ' Resources';
+
+            // Load resources for the selected subject
+            loadResourcesForSubject(subjectId);
+        }
+
+        // Go back to course selection
+        function goBackToCourses() {
+            document.getElementById('course-selection').style.display = 'grid';
+            document.getElementById('learning-styles').style.display = 'none';
+        }
+
+        // Show a specific learning style content
+        function showLearningStyle(styleId) {
+            // Hide all content
+            document.querySelectorAll('.style-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Deactivate all tabs
+            document.querySelectorAll('.style-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected content
+            document.getElementById(styleId + '-content').classList.add('active');
+
+            // Activate selected tab
+            event.target.classList.add('active');
+        }
+
+        // Load resources for the selected subject
+        function loadResourcesForSubject(subjectId) {
+            const subject = subjects[subjectId];
+
+            // Load visual resources (videos)
+            const videoGrid = document.querySelector('#visual-content .video-grid');
+            videoGrid.innerHTML = '';
+            subject.visual.forEach(video => {
+                videoGrid.innerHTML += `
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-duration">${video.duration}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Load auditory resources
+            const audioGrid = document.querySelector('#auditory-content .audio-grid');
+            audioGrid.innerHTML = '';
+            subject.auditory.forEach(audio => {
+                audioGrid.innerHTML += `
+                    <div class="audio-card">
+                        <div class="audio-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="audio-info">
+                            <div class="audio-title">${audio.title}</div>
+                            <div class="audio-duration">${audio.duration}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Load read/write resources
+            const materialGrid = document.querySelector('#readwrite-content .material-grid');
+            materialGrid.innerHTML = '';
+            subject.readwrite.forEach(material => {
+                materialGrid.innerHTML += `
+                    <div class="material-card">
+                        <div class="material-cover">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="material-info">
+                            <div class="material-title">${material.title}</div>
+                            <div class="material-author">${material.author}</div>
+                            <div class="material-pages">${material.pages}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+
+</html>

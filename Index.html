@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnHub Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --powder-blue: #A7D8F2;
+            --bright-yellow: #FF7F50;
+            --orange: #FFD6A5;
+            --warm-red: #FF7F7F;
+            --blue: #5e2a3b;
+            --dark-blue: #2C3E50;
+            --white: #FFFFFF;
+            --black: #333333;
+            --gray: #E0E0E0;
+            --sidebar-width: 80px;
+            --sidebar-expanded: 220px;
+            --sidebar-bg: rgba(238, 179, 17, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            color: var(--black);
+            overflow-x: hidden;
+            background-image: linear-gradient(180deg, #fcefe0e7, #f6f6f6), url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=2070&auto=format&fit=crop");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile-first layout */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            padding-bottom: 80px;
+        }
+
+        /* Fixed sidebar with proper side-by-side layout */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            padding: 1.5rem 0;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar:hover {
+            width: var(--sidebar-expanded);
+        }
+
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            text-decoration: none;
+            color: rgb(89, 6, 102);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 1.2rem;
+            min-width: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 15px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        .sidebar .nav-item:hover, 
+        .sidebar .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar .nav-item.active {
+            border-left: 3px solid #f57c00;
+        }
+
+        /* Main content area */
+        .main-content {
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-left: var(--sidebar-width);
+        }
+
+        /* Header with Back Button */
+        .header-dashboard {
+            text-align: center;
+            height: 160px;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            background-image: linear-gradient(#f4bc4238, #f3af55e0, rgb(255, 166, 0)), url("./images/wallpaer7.jpg");
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            border-radius: 10px;
+            box-shadow: grey 0px 0px 10px;
+        }
+
+        .welcome-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1px;
+            color: #e4f4f5;
+        }
+
+        /* Dashboard Tiles */
+        .tiles-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tile {
+            background-color: rgba(176, 224, 230, 0.221);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 220px;
+            backdrop-filter: blur(5px);
+        }
+
+        .tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .tile-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--blue);
+        }
+
+        .tile-title {
+            font-weight: 600;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            margin-bottom: 8px;
+            font-size: 1.4rem;
+            color: var(--blue);
+        }
+
+        .tile-description {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .tile-action {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background-color: var(--blue);
+            color: var(--white);
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .tile-action:hover {
+            background-color: var(--dark-blue);
+            transform: scale(1.05);
+        }
+
+        /* Bottom Navigation for Mobile */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(238, 179, 17, 0.85);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgb(89, 6, 102);
+            text-decoration: none;
+            font-size: 0.75rem;
+            position: relative;
+            padding: 0.5rem;
+            min-width: 60px;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: rgb(112, 4, 101);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.2);
+            color: #f57c00;
+        }
+
+        .nav-tooltip {
+            position: absolute;
+            top: -40px;
+            background-color: var(--dark-blue);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover .nav-tooltip {
+            opacity: 1;
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--bright-yellow);
+            opacity: 0;
+            z-index: 999;
+            animation: confetti-fall 3s ease-in-out;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Stats section */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            background-image: linear-gradient(#f3ebdb, #f5ece0, rgb(234, 253, 254)), url("./images/wallpaper1.jpg");
+            border-radius: 15px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 769px) {
+            body {
+                flex-direction: row;
+            }
+            
+            .main-content {
+                width: calc(100% - var(--sidebar-width));
+                padding: 2rem;
+            }
+            
+            .container {
+                padding-bottom: 0;
+                width: 100%;
+            }
+            
+            .tiles-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+            
+            .header-dashboard {
+                height: 180px;
+            }
+            
+            .sidebar:hover + .main-content {
+                margin-left: var(--sidebar-expanded);
+            }
+        }
+
+        /* Larger screens */
+        @media (min-width: 1024px) {
+            .tiles-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .tile {
+                min-height: 260px;
+            }
+            
+            .tile-icon {
+                font-size: 3rem;
+            }
+            
+            .tile-title {
+                font-size: 1.5rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Mobile specific */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Desktop Sidebar with fixed side-by-side layout -->
+    <div class="sidebar">
+        <a href="./Index.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span class="nav-text">Dashboard</span>
+        </a>
+        <a href="./Classes.html" class="nav-item">
+            <i class="fas fa-tv"></i>
+            <span class="nav-text">Classes</span>
+        </a>
+        <a href="./Forum.html" class="nav-item">
+            <i class="fa-solid fa-message"></i>
+            <span class="nav-text">Forum</span>
+        </a>
+        <a href="./Profiles.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span class="nav-text">Profile</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span class="nav-text">Resources</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-cog"></i>
+            <span class="nav-text">Settings</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header-dashboard">
+                <h1 class="welcome-message" id="welcomeMessage">Hi, Musa! Ready to Learn Today?</h1>
+                <p>Learn new skills, earn badges, and unlock your potential</p>
+            </div>
+
+            <!-- Stats Section -->
+            <!-- <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Active Courses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Upcoming Classes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">150</div>
+                    <div class="stat-label">Learning Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">New Messages</div>
+                </div>
+            </div> -->
+
+            <div class="tiles-container">
+                <a href="./Classes.html" class="tile" id="upcomingClassesTile">
+                    <div class="tile-icon">📅</div>
+                    <h3 class="tile-title">Classes</h3>
+                    <p class="tile-description">View and join upcoming learning sessions</p>
+                    <span class="tile-action">Book/Join</span>
+                </a>
+
+                <a href="./Classes.html" class="tile" id="tutorSlotsTile">
+                    <div class="tile-icon">👩‍🏫</div>
+                    <h3 class="tile-title">Tutors</h3>
+                    <p class="tile-description">Connect with expert tutors for personalized learning</p>
+                    <span class="tile-action">See Tutors</span>
+                </a>
+
+                <a href="./Courses.html" class="tile" id="coursesTile">
+                    <div class="tile-icon">📚</div>
+                    <h3 class="tile-title">Courses</h3>
+                    <p class="tile-description">Explore our curated learning modules</p>
+                    <span class="tile-action">Explore</span>
+                </a>
+
+                <a href="./Games.html" class="tile" id="achievementsTile">
+                    <div class="tile-icon">🏆</div>
+                    <h3 class="tile-title">Achievements</h3>
+                    <p class="tile-description">Track your progress and unlock rewards</p>
+                    <span class="tile-action">View</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="./Index.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+            <div class="nav-tooltip">Dashboard</div>
+        </a>
+        <a href="./Classes.html" class="nav-item">
+            <i class="fas fa-tv"></i>
+            <span>Classes</span>
+            <div class="nav-tooltip">Classes</div>
+        </a>
+        <a href="./Forum.html" class="nav-item">
+            <i class="fa-solid fa-message"></i>
+            <span>Forum</span>
+            <div class="nav-tooltip">Forum</div>
+        </a>
+        <a href="./Profiles.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+            <div class="nav-tooltip">Profile</div>
+        </a>
+    </div>
+
+    <script>
+        // Simple greeting based on time of day
+        document.addEventListener('DOMContentLoaded', function () {
+            const hour = new Date().getHours();
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            let greeting;
+
+            if (hour < 12) {
+                greeting = "Good morning";
+            } else if (hour < 18) {
+                greeting = "Good afternoon";
+            } else {
+                greeting = "Good evening";
+            }
+
+            welcomeMessage.textContent = `${greeting}, Musa! Ready to Learn Today?`;
+
+            // Add click handlers for tiles
+            document.querySelectorAll('.tile').forEach(tile => {
+                tile.addEventListener('click', function () {
+                    // Animation on click
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 100);
+                    
+                    // Create confetti effect
+                    createConfetti();
+                });
+            });
+            
+            // Handle active navigation items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Confetti effect
+            function createConfetti() {
+                const colors = ['#ff7f50', '#ffd700', '#50c878', '#6495ed', '#da70d6'];
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

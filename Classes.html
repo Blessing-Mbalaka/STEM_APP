@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Booking System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-orange: rgb(184, 67, 0);
+            --secondary-orange: rgb(128, 49, 3);
+            --accent-yellow: #FBBC05;
+            --accent-red: #EA4335;
+            --accent-green: #34A853;
+            --accent-blue: #4285F4;
+            --light-gray: #F5F5F5;
+            --medium-gray: #E0E0E0;
+            --dark-gray: #333333;
+            --text-light: #666666;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            background-image: linear-gradient(180deg, #fcfcfcf0, #f6f6f6);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            background-image: linear-gradient(180deg, #f4e2ce9d, #f6f6f6), url("images/wallpaer7.jpg");
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: rgb(128, 49, 3);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+
+        .back-to-dashboard {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            padding: 8px 15px;
+            background-color: white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-orange);
+        }
+
+        .back-to-dashboard:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-tab {
+            padding: 10px 15px;
+            border-radius: 30px;
+            background-color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .nav-tab.active {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background-color: var(--light-gray);
+        }
+
+        /* Main Content Sections */
+        .section {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: var(--primary-orange);
+        }
+
+        /* Tutor Cards */
+        .tutors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .tutor-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--medium-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tutor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .tutor-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tutor-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary-orange);
+            margin-right: 15px;
+            overflow: hidden;
+        }
+
+        .tutor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tutor-info {
+            flex-grow: 1;
+        }
+
+        .tutor-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .tutor-subject {
+            font-size: 14px;
+            color: var(--text-light);
+            background-color: rgba(255, 166, 0, 0.1);
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .tutor-rating {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .tutor-rating i {
+            color: var(--accent-yellow);
+            font-size: 14px;
+            margin-right: 3px;
+        }
+
+        .tutor-rating span {
+            font-size: 14px;
+            margin-left: 5px;
+            color: var(--text-light);
+        }
+
+        .tutor-bio {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .tutor-availability {
+            margin-bottom: 20px;
+        }
+
+        .availability-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slots-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .time-slot {
+            padding: 8px 15px;
+            background-color: var(--light-gray);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .time-slot:hover {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .time-slot.booked {
+            background-color: var(--accent-green);
+            color: white;
+        }
+
+        .time-slot.unavailable {
+            background-color: var(--accent-red);
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .tutor-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-orange);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--medium-gray);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Bookings Section */
+        .bookings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .booking-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--medium-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .booking-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-orange);
+        }
+
+        .booking-status {
+            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .status-upcoming {
+            background-color: rgba(66, 133, 244, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .status-completed {
+            background-color: rgba(52, 168, 83, 0.1);
+            color: var(--accent-green);
+        }
+
+        .status-cancelled {
+            background-color: rgba(234, 67, 53, 0.1);
+            color: var(--accent-red);
+        }
+
+        .booking-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            width: 120px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .detail-value {
+            flex-grow: 1;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-join {
+            background-color: var(--accent-green);
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        /* Calendar Section */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-navigation {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .calendar-day {
+            height: 100px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            padding: 8px;
+            background-color: white;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .calendar-day.empty {
+            background-color: #f9f9f9;
+            border: none;
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .calendar-event {
+            background-color: rgba(255, 166, 0, 0.2);
+            border-left: 3px solid var(--primary-orange);
+            padding: 3px 5px;
+            font-size: 12px;
+            margin-bottom: 3px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .calendar-event:hover {
+            background-color: rgba(255, 166, 0, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-orange);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .back-to-dashboard {
+                position: static;
+                margin-bottom: 15px;
+                display: inline-flex;
+                justify-content: center;
+            }
+
+            .nav-tabs {
+                gap: 8px;
+            }
+
+            .nav-tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .tutors-grid,
+            .bookings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5px;
+            }
+
+            .calendar-day {
+                height: 80px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .search-box input {
+                width: 100% !important;
+                border-radius: 20px;
+                border-color: #EA4335;
+            }
+
+            .detail-row {
+                flex-direction: column;
+            }
+
+            .detail-label {
+                width: 100%;
+                margin-bottom: 3px;
+            }
+
+            .booking-actions {
+                flex-direction: column;
+            }
+
+            .booking-actions .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-tabs {
+                display: flex;
+                flex-direction: row;
+                /* Items go left to right */
+                align-items: center;
+                /* Align items vertically (center of the row) */
+                justify-content: center;
+                
+            }
+
+            .nav-tab {
+                /* width: 100%; */
+                justify-content: center;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .calendar-day {
+                height: 60px;
+                padding: 3px;
+            }
+
+            .day-number {
+                font-size: 12px;
+            }
+
+            .calendar-event {
+                font-size: 10px;
+                padding: 2px;
+                display: none;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <a href="./Index.html" class="back-to-dashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1>Tutor Booking System</h1>
+            <p class="subtitle">Book sessions with volunteer tutors and manage your classes</p>
+
+            <!-- <div class="nav-tabs" id="navTabs">
+                <div class="nav-tab active" data-tab="tutors">
+                    <i class="fas fa-chalkboard-teacher"></i> Available Tutors
+                </div>
+                <div class="nav-tab" data-tab="bookings">
+                    <i class="fas fa-calendar-check"></i> My Bookings
+                </div>
+                <div class="nav-tab" data-tab="calendar">
+                    <i class="fas fa-calendar-alt"></i> Calendar
+                </div>
+            </div> -->
+        </header>
+         <div class="nav-tabs" id="navTabs">
+                <div class="nav-tab active" data-tab="tutors">
+                    <i class="fas fa-chalkboard-teacher"></i> Available Tutors
+                </div>
+                <div class="nav-tab" data-tab="bookings">
+                    <i class="fas fa-calendar-check"></i> My Bookings
+                </div>
+                <div class="nav-tab" data-tab="calendar">
+                    <i class="fas fa-calendar-alt"></i> Calendar
+                </div>
+            </div>
+
+        <!-- Available Tutors Section -->
+        <div id="tutors-section" class="section active">
+            <div class="section-header">
+                <h2 class="section-title">Available Tutors</h2>
+                <div class="search-box">
+                    <input type="text" placeholder="Search tutors or subjects..." class="btn-secondary"
+                        style="padding: 10px 15px; width: 250px;">
+                </div>
+            </div>
+
+            <div class="tutors-grid" id="tutorsGrid">
+                <!-- Tutor cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- My Bookings Section -->
+        <div id="bookings-section" class="section">
+            <div class="section-header">
+                <h2 class="section-title">My Booked Sessions</h2>
+                <div class="filter-options">
+                    <select class="btn-secondary" style="padding: 10px 15px;" id="bookingFilter">
+                        <option value="all">All Bookings</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bookings-container" id="bookingsContainer">
+                <!-- Bookings will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div id="calendar-section" class="section">
+            <div class="section-header">
+                <h2 class="section-title">My Tutoring Schedule</h2>
+                <div class="calendar-header">
+                    <div class="calendar-month" id="calendarMonth">August 2023</div>
+                    <div class="calendar-navigation">
+                        <button class="btn btn-secondary" id="prevMonth">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-secondary" id="todayBtn">Today</button>
+                        <button class="btn btn-secondary" id="nextMonth">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendar will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeMessageModal">&times;</span>
+            <h3 class="modal-title">Send Message</h3>
+            <form id="messageForm">
+                <div class="form-group">
+                    <label for="messageRecipient">To:</label>
+                    <input type="text" id="messageRecipient" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="messageSubject">Subject:</label>
+                    <input type="text" id="messageSubject" placeholder="Subject of your message">
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">Message:</label>
+                    <textarea id="messageContent" placeholder="Type your message here..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelMessage">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeBookingModal">&times;</span>
+            <h3 class="modal-title">Book Session</h3>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="bookingTutor">Tutor:</label>
+                    <input type="text" id="bookingTutor" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="bookingSubject">Subject:</label>
+                    <input type="text" id="bookingSubject" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="bookingSlot">Time Slot:</label>
+                    <input type="text" id="bookingSlot" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="bookingNotes">Notes (Optional):</label>
+                    <textarea id="bookingNotes" placeholder="Any specific topics you want to cover?"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBooking">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for tutors
+        const tutorsData = [
+            {
+                id: 1,
+                name: "Dr. Sarah Johnson",
+                subject: "Mathematics",
+                rating: 4.5,
+                reviews: 42,
+                bio: "PhD in Mathematics with 10+ years teaching experience. Specializes in Calculus, Algebra, and Geometry.",
+                slots: [
+                    { id: 1, time: "Mon 10:00 AM", booked: false },
+                    { id: 2, time: "Mon 2:00 PM", booked: false },
+                    { id: 3, time: "Tue 9:00 AM", booked: false },
+                    { id: 4, time: "Wed 3:00 PM", booked: false },
+                    { id: 5, time: "Thu 11:00 AM", booked: true },
+                    { id: 6, time: "Fri 4:00 PM", booked: false }
+                ]
+            },
+            {
+                id: 2,
+                name: "Prof. Michael Chen",
+                subject: "Physics",
+                rating: 4,
+                reviews: 28,
+                bio: "University professor specializing in Quantum Mechanics and Electrodynamics. Passionate about making physics accessible.",
+                slots: [
+                    { id: 7, time: "Tue 11:00 AM", booked: false },
+                    { id: 8, time: "Wed 10:00 AM", booked: false },
+                    { id: 9, time: "Wed 2:00 PM", booked: true },
+                    { id: 10, time: "Thu 9:00 AM", booked: false },
+                    { id: 11, time: "Fri 1:00 PM", booked: false },
+                    { id: 12, time: "Sat 10:00 AM", booked: false }
+                ]
+            },
+            {
+                id: 3,
+                name: "Dr. Emma Wilson",
+                subject: "Chemistry",
+                rating: 5,
+                reviews: 56,
+                bio: "Research chemist with expertise in Organic Chemistry and Biochemistry. Focuses on conceptual understanding.",
+                slots: [
+                    { id: 13, time: "Mon 1:00 PM", booked: false },
+                    { id: 14, time: "Tue 3:00 PM", booked: true },
+                    { id: 15, time: "Wed 11:00 AM", booked: false },
+                    { id: 16, time: "Thu 2:00 PM", booked: false },
+                    { id: 17, time: "Fri 10:00 AM", booked: false },
+                    { id: 18, time: "Sat 9:00 AM", booked: false }
+                ]
+            }
+        ];
+
+        // Data structure for bookings
+        let bookingsData = [
+            {
+                id: 1,
+                tutorId: 1,
+                title: "Calculus Session",
+                tutor: "Dr. Sarah Johnson",
+                date: "Mon, Aug 20, 2023 at 10:00 AM",
+                duration: "1 hour",
+                subject: "Mathematics - Calculus",
+                status: "upcoming",
+                meetingLink: "#",
+                slotId: 1
+            },
+            {
+                id: 2,
+                tutorId: 2,
+                title: "Quantum Physics",
+                tutor: "Prof. Michael Chen",
+                date: "Wed, Aug 22, 2023 at 2:00 PM",
+                duration: "1 hour",
+                subject: "Physics - Quantum Mechanics",
+                status: "upcoming",
+                meetingLink: "#",
+                slotId: 9
+            },
+            {
+                id: 3,
+                tutorId: 3,
+                title: "Organic Chemistry",
+                tutor: "Dr. Emma Wilson",
+                date: "Fri, Aug 18, 2023 at 2:00 PM",
+                duration: "1 hour",
+                subject: "Chemistry - Organic",
+                status: "completed",
+                recordingLink: "#",
+                slotId: 14
+            }
+        ];
+
+        // Calendar data
+        const calendarEvents = [
+            { date: new Date(2023, 7, 14), title: "Chemistry Session", time: "2:00 PM", tutor: "Dr. Wilson" },
+            { date: new Date(2023, 7, 17), title: "Physics Session", time: "4:00 PM", tutor: "Prof. Chen" },
+            { date: new Date(2023, 7, 18), title: "Organic Chemistry", time: "2:00 PM", tutor: "Dr. Wilson" },
+            { date: new Date(2023, 7, 20), title: "Calculus Session", time: "10:00 AM", tutor: "Dr. Johnson" },
+            { date: new Date(2023, 7, 22), title: "Quantum Physics", time: "2:00 PM", tutor: "Prof. Chen" },
+            { date: new Date(2023, 7, 25), title: "Algebra Review", time: "11:00 AM", tutor: "Dr. Johnson" }
+        ];
+
+        // Current date for calendar
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        // DOM Elements
+        const tutorsGrid = document.getElementById('tutorsGrid');
+        const bookingsContainer = document.getElementById('bookingsContainer');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const calendarMonth = document.getElementById('calendarMonth');
+        const bookingFilter = document.getElementById('bookingFilter');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const todayBtn = document.getElementById('todayBtn');
+        const navTabs = document.getElementById('navTabs');
+
+        // Modal elements
+        const messageModal = document.getElementById('messageModal');
+        const bookingModal = document.getElementById('bookingModal');
+        const closeMessageModal = document.getElementById('closeMessageModal');
+        const closeBookingModal = document.getElementById('closeBookingModal');
+        const cancelMessage = document.getElementById('cancelMessage');
+        const cancelBooking = document.getElementById('cancelBooking');
+        const messageForm = document.getElementById('messageForm');
+        const bookingForm = document.getElementById('bookingForm');
+        const messageRecipient = document.getElementById('messageRecipient');
+        const bookingTutor = document.getElementById('bookingTutor');
+        const bookingSubject = document.getElementById('bookingSubject');
+        const bookingSlot = document.getElementById('bookingSlot');
+
+        // State variables
+        let selectedTutor = null;
+        let selectedSlot = null;
+
+        // Initialize the app
+        function init() {
+            renderTutors();
+            renderBookings();
+            renderCalendar();
+            setupEventListeners();
+        }
+
+        // Render tutors
+        function renderTutors() {
+            tutorsGrid.innerHTML = '';
+
+            tutorsData.forEach(tutor => {
+                const tutorCard = document.createElement('div');
+                tutorCard.className = 'tutor-card';
+                tutorCard.dataset.tutorId = tutor.id;
+
+                // Generate stars for rating
+                const stars = [];
+                const fullStars = Math.floor(tutor.rating);
+                const hasHalfStar = tutor.rating % 1 !== 0;
+
+                for (let i = 0; i < 5; i++) {
+                    if (i < fullStars) {
+                        stars.push('<i class="fas fa-star"></i>');
+                    } else if (i === fullStars && hasHalfStar) {
+                        stars.push('<i class="fas fa-star-half-alt"></i>');
+                    } else {
+                        stars.push('<i class="far fa-star"></i>');
+                    }
+                }
+
+                // Generate slots HTML
+                const slotsHTML = tutor.slots.map(slot => {
+                    const bookedClass = slot.booked ? 'booked' : '';
+                    return `<div class="time-slot ${bookedClass}" data-slot-id="${slot.id}">${slot.booked ? '<i class="fas fa-check"></i> ' : ''}${slot.time}</div>`;
+                }).join('');
+
+                tutorCard.innerHTML = `
+                    <div class="tutor-header">
+                        <div class="tutor-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="tutor-info">
+                            <div class="tutor-name">${tutor.name}</div>
+                            <div class="tutor-subject">${tutor.subject}</div>
+                            <div class="tutor-rating">
+                                ${stars.join('')}
+                                <span>(${tutor.reviews} reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tutor-bio">
+                        ${tutor.bio}
+                    </div>
+                    
+                    <div class="tutor-availability">
+                        <div class="availability-title">
+                            <i class="far fa-clock"></i> Available Slots (Next 7 days)
+                        </div>
+                        <div class="slots-container">
+                            ${slotsHTML}
+                        </div>
+                    </div>
+                    
+                    <div class="tutor-actions">
+                        <button class="btn btn-secondary btn-small message-btn">
+                            <i class="far fa-envelope"></i> Message
+                        </button>
+                        <button class="btn btn-primary book-btn">
+                            <i class="fas fa-calendar-plus"></i> Book Session
+                        </button>
+                    </div>
+                `;
+
+                tutorsGrid.appendChild(tutorCard);
+            });
+        }
+
+        // Render bookings
+        function renderBookings(filter = 'all') {
+            bookingsContainer.innerHTML = '';
+
+            const filteredBookings = bookingsData.filter(booking => {
+                if (filter === 'all') return true;
+                return booking.status === filter;
+            });
+
+            if (filteredBookings.length === 0) {
+                bookingsContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No bookings found</p>';
+                return;
+            }
+
+            filteredBookings.forEach(booking => {
+                const bookingCard = document.createElement('div');
+                bookingCard.className = 'booking-card';
+                bookingCard.dataset.bookingId = booking.id;
+
+                // Determine status class and text
+                let statusClass, statusText;
+                switch (booking.status) {
+                    case 'upcoming':
+                        statusClass = 'status-upcoming';
+                        statusText = 'Upcoming';
+                        break;
+                    case 'completed':
+                        statusClass = 'status-completed';
+                        statusText = 'Completed';
+                        break;
+                    case 'cancelled':
+                        statusClass = 'status-cancelled';
+                        statusText = 'Cancelled';
+                        break;
+                }
+
+                // Generate actions based on status
+                let actionsHTML = '';
+                if (booking.status === 'upcoming') {
+                    const canJoin = booking.title === "Calculus Session"; // Just for demo
+                    actionsHTML = `
+                        <button class="btn ${canJoin ? 'btn-join' : 'btn-secondary'}" ${canJoin ? '' : 'disabled'}>
+                            <i class="fas fa-video"></i> ${canJoin ? 'Join Class' : 'Join (available 10 min before)'}
+                        </button>
+                        <button class="btn btn-cancel">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    `;
+                } else if (booking.status === 'completed') {
+                    actionsHTML = `
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Download Materials
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Rebook
+                        </button>
+                    `;
+                } else if (booking.status === 'cancelled') {
+                    actionsHTML = `
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-info-circle"></i> Cancelled
+                        </button>
+                    `;
+                }
+
+                // Generate details based on status
+                let detailsHTML = '';
+                if (booking.status === 'completed' || booking.status === 'cancelled') {
+                    detailsHTML = `
+                        <div class="detail-row">
+                            <div class="detail-label">Recording:</div>
+                            <div class="detail-value">
+                                <a href="${booking.recordingLink || '#'}" style="color: var(--accent-blue);">View Session Recording</a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    detailsHTML = `
+                        <div class="detail-row">
+                            <div class="detail-label">Meeting Link:</div>
+                            <div class="detail-value">
+                                <a href="${booking.meetingLink}" style="color: var(--accent-blue);">Join Microsoft Teams Meeting</a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                bookingCard.innerHTML = `
+                    <div class="booking-header">
+                        <div class="booking-title">${booking.title}</div>
+                        <div class="booking-status ${statusClass}">${statusText}</div>
+                    </div>
+                    
+                    <div class="booking-details">
+                        <div class="detail-row">
+                            <div class="detail-label">Tutor:</div>
+                            <div class="detail-value">${booking.tutor}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Date & Time:</div>
+                            <div class="detail-value">${booking.date} (${booking.duration})</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Subject:</div>
+                            <div class="detail-value">${booking.subject}</div>
+                        </div>
+                        ${detailsHTML}
+                    </div>
+                    
+                    <div class="booking-actions">
+                        ${actionsHTML}
+                    </div>
+                `;
+
+                bookingsContainer.appendChild(bookingCard);
+            });
+        }
+
+        // Render calendar
+        function renderCalendar() {
+            calendarGrid.innerHTML = '';
+
+            // Set month and year in header
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            calendarMonth.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            // Create day headers
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+
+            // Get first day of month and total days in month
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                dayCell.appendChild(dayNumber);
+
+                // Add events for this day
+                const currentDate = new Date(currentYear, currentMonth, day);
+                const eventsForDay = calendarEvents.filter(event =>
+                    event.date.getDate() === currentDate.getDate() &&
+                    event.date.getMonth() === currentDate.getMonth() &&
+                    event.date.getFullYear() === currentDate.getFullYear()
+                );
+
+                eventsForDay.forEach(event => {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'calendar-event';
+                    eventElement.textContent = `${event.title}\n${event.time} - ${event.tutor}`;
+                    dayCell.appendChild(eventElement);
+                });
+
+                calendarGrid.appendChild(dayCell);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                    document.getElementById(`${this.dataset.tab}-section`).classList.add('active');
+                });
+            });
+
+            // Booking filter
+            bookingFilter.addEventListener('change', function () {
+                renderBookings(this.value);
+            });
+
+            // Calendar navigation
+            prevMonthBtn.addEventListener('click', function () {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+            });
+
+            nextMonthBtn.addEventListener('click', function () {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+            });
+
+            todayBtn.addEventListener('click', function () {
+                currentDate = new Date();
+                currentMonth = currentDate.getMonth();
+                currentYear = currentDate.getFullYear();
+                renderCalendar();
+            });
+
+            // Modal close buttons
+            closeMessageModal.addEventListener('click', () => messageModal.style.display = 'none');
+            closeBookingModal.addEventListener('click', () => bookingModal.style.display = 'none');
+            cancelMessage.addEventListener('click', () => messageModal.style.display = 'none');
+            cancelBooking.addEventListener('click', () => bookingModal.style.display = 'none');
+
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === messageModal) messageModal.style.display = 'none';
+                if (e.target === bookingModal) bookingModal.style.display = 'none';
+            });
+
+            // Message form submission
+            messageForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const subject = document.getElementById('messageSubject').value;
+                const content = document.getElementById('messageContent').value;
+
+                // In a real app, this would send the message
+                alert(`Message sent to ${messageRecipient.value}!\nSubject: ${subject}\nMessage: ${content}`);
+                messageModal.style.display = 'none';
+                this.reset();
+            });
+
+            // Booking form submission
+            bookingForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const notes = document.getElementById('bookingNotes').value;
+
+                // Create new booking
+                const tutor = tutorsData.find(t => t.id === selectedTutor.id);
+                const newBooking = {
+                    id: bookingsData.length + 1,
+                    tutorId: tutor.id,
+                    title: `${tutor.subject} Session`,
+                    tutor: tutor.name,
+                    date: selectedSlot.time,
+                    duration: "1 hour",
+                    subject: tutor.subject,
+                    status: "upcoming",
+                    meetingLink: "#",
+                    slotId: selectedSlot.id
+                };
+
+                bookingsData.unshift(newBooking);
+
+                // Mark slot as booked
+                tutor.slots.find(s => s.id === selectedSlot.id).booked = true;
+
+                // Update UI
+                renderTutors();
+                renderBookings(bookingFilter.value);
+
+                alert(`Session booked with ${tutor.name} for ${selectedSlot.time}! You'll receive a confirmation email with your Microsoft Teams link.`);
+                bookingModal.style.display = 'none';
+                this.reset();
+            });
+
+            // Delegate events for tutor cards (since they're dynamically rendered)
+            tutorsGrid.addEventListener('click', function (e) {
+                const tutorCard = e.target.closest('.tutor-card');
+                if (!tutorCard) return;
+
+                const tutorId = parseInt(tutorCard.dataset.tutorId);
+                const tutor = tutorsData.find(t => t.id === tutorId);
+
+                // Message button
+                if (e.target.closest('.message-btn')) {
+                    messageRecipient.value = tutor.name;
+                    messageModal.style.display = 'flex';
+                }
+
+                // Book button
+                if (e.target.closest('.book-btn')) {
+                    selectedTutor = tutor;
+
+                    // Check if any slots are selected
+                    const selectedSlotElement = tutorCard.querySelector('.time-slot.booked:not(.unavailable)');
+                    if (!selectedSlotElement) {
+                        alert('Please select an available time slot first.');
+                        return;
+                    }
+
+                    const slotId = parseInt(selectedSlotElement.dataset.slotId);
+                    selectedSlot = tutor.slots.find(s => s.id === slotId);
+
+                    // Set modal values
+                    bookingTutor.value = tutor.name;
+                    bookingSubject.value = tutor.subject;
+                    bookingSlot.value = selectedSlot.time;
+
+                    bookingModal.style.display = 'flex';
+                }
+
+                // Time slot selection
+                if (e.target.classList.contains('time-slot') && !e.target.classList.contains('unavailable')) {
+                    e.preventDefault();
+
+                    const slotId = parseInt(e.target.dataset.slotId);
+                    const slot = tutor.slots.find(s => s.id === slotId);
+
+                    if (!slot.booked) {
+                        // Toggle selection
+                        e.target.classList.toggle('booked');
+
+                        // Clear other selections
+                        tutorCard.querySelectorAll('.time-slot').forEach(slotEl => {
+                            if (parseInt(slotEl.dataset.slotId) !== slotId) {
+                                slotEl.classList.remove('booked');
+                            }
+                        });
+
+                        if (e.target.classList.contains('booked')) {
+                            e.target.innerHTML = '<i class="fas fa-check"></i> ' + slot.time;
+                        } else {
+                            e.target.innerHTML = slot.time;
+                        }
+                    }
+                }
+            });
+
+            // Delegate events for booking cards
+            bookingsContainer.addEventListener('click', function (e) {
+                const bookingCard = e.target.closest('.booking-card');
+                if (!bookingCard) return;
+
+                const bookingId = parseInt(bookingCard.dataset.bookingId);
+                const booking = bookingsData.find(b => b.id === bookingId);
+
+                // Cancel button
+                if (e.target.closest('.btn-cancel')) {
+                    if (confirm('Are you sure you want to cancel this session?')) {
+                        // Update booking status
+                        booking.status = 'cancelled';
+
+                        // Mark slot as available again
+                        const tutor = tutorsData.find(t => t.id === booking.tutorId);
+                        if (tutor) {
+                            const slot = tutor.slots.find(s => s.id === booking.slotId);
+                            if (slot) slot.booked = false;
+                        }
+
+                        // Update UI
+                        renderTutors();
+                        renderBookings(bookingFilter.value);
+
+                        alert('Session cancelled successfully.');
+                    }
+                }
+
+                // Join button
+                if (e.target.closest('.btn-join')) {
+                    alert('Opening Microsoft Teams meeting...');
+                }
+
+                // Rebook button
+                if (e.target.closest('.btn-primary') && booking.status === 'completed') {
+                    alert('This would open the booking modal to rebook with the same tutor.');
+                }
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
