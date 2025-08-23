@@ -1,3 +1,4 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +44,7 @@
             text-align: center;
             margin-bottom: 25px;
             padding: 20px 0;
-            background-image: linear-gradient(135deg, #cd42f400,#fdb4f7a1, #a533d6eb, #530475), url("images/wallpaper12.jpg");
+            background-image: linear-gradient(135deg, #cd42f400,#fdb4f7a1, #a533d6eb, #530475), url("{% static 'images/wallpaper12.jpg' %}");
             background-size: cover;
             background-position: center;
             /* background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); */
@@ -695,7 +696,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="./Index.html" class="back-to-dashboard">
+            <a href="{% url 'index' %}" class="back-to-dashboard">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
             <h1>Student Forum with AI Tutor</h1>

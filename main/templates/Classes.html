@@ -1,3 +1,4 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,7 +46,7 @@
             text-align: center;
             margin-bottom: 25px;
             padding: 20px 0;
-            background-image: linear-gradient(180deg, #f4e2ce9d, #f6f6f6), url("images/wallpaer7.jpg");
+            background-image: linear-gradient(180deg, #f4e2ce9d, #f6f6f6), url("{% static 'images/wallpaper7.jpg' %}");
             background-size: cover;
             background-position: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -677,7 +678,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="./Index.html" class="back-to-dashboard">
+            <a href="{% url 'index' %}" class="back-to-dashboard">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
             <h1>Tutor Booking System</h1>
@@ -1421,6 +1422,8 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', init);
+
+        
     </script>
 </body>
 

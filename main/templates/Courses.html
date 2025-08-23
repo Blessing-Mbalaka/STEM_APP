@@ -1,3 +1,4 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,14 +41,14 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 15px;
-            background-image: linear-gradient(180deg, #fcfcfcf0, #f6f6f6), url("images/Frame 427319191.png");
+            background-image: linear-gradient(180deg, #fcfcfcf0, #f6f6f6), url("{% static 'images/Frame 427319191.png' %}");
         }
 
         header {
             text-align: center;
             margin-bottom: 25px;
             padding: 20px 0;
-            background-image: linear-gradient(#f4bc4238, #f3af55e0, rgb(255, 166, 0)), url("images/wallpaper8.jpg");
+            background-image: linear-gradient(#f4bc4238, #f3af55e0, rgb(255, 166, 0)), url("{% static 'images/wallpaper8.jpg' %}");
             background-size: cover;
             background-position: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -629,7 +630,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="./Index.html" class="back-to-dashboard">
+            <a href="{% url 'index' %}" class="back-to-dashboard">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
             <h1>Interactive Learning Portal</h1>

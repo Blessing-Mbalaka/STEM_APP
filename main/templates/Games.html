@@ -1,0 +1,1586 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 12 Quiz System with Points & Avatars</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --power-blue: #24adb7;
+            --bright-yellow: #ffcc00;
+            --warm-orange: #ff9933;
+            --light-blue: #e6f2ff;
+            --light-yellow: #fff9e6;
+            --correct-color: #4CAF50;
+            --incorrect-color: #F44336;
+            --warning-color: #FF9800;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #333333;
+            --text-light: #666666;
+            --avatar-unlocked: #4CAF50;
+            --avatar-locked: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            background-image: linear-gradient(135deg, #4286f400, #c4f4f8e3, #c4f4f8f7, #24adb7), url("images/wallpaper10.jpg");
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: #24adb7;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .user-profile {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-right: 10px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--light-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 3px solid var(--power-blue);
+            transition: transform 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .points-display {
+            background-color: var(--power-blue);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .dashboard-title {
+            font-size: 28px;
+            color: #24adb7;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .dashboard-subtitle {
+            color: rgb(168, 171, 25);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #24adb7;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+            background-color: white;
+        }
+
+        .search-bar:focus {
+            border-color: rgb(168, 171, 25);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--power-blue);
+        }
+
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 20px;
+            background-color: white;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .category-tab.active {
+            background-color: #24adb7;
+            color: white;
+            border-color: #24adb7;
+        }
+
+        .quiz-card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .quiz-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .quiz-points-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--bright-yellow);
+            color: #664d00;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        /* .quiz-card.stem {
+            border-top: 4px solid var(--power-blue);
+        } */
+
+        /* .quiz-card.steam {
+            border-top: 4px solid var(--bright-yellow);
+        }
+
+        .quiz-card.general {
+            border-top: 4px solid var(--warm-orange);
+        } */
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .quiz-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .quiz-card-category {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .quiz-card-category.stem {
+            background-color: rgba(0, 102, 204, 0.2);
+            color: var(--power-blue);
+        }
+
+        .quiz-card-category.steam {
+            background-color: rgba(255, 204, 0, 0.2);
+            color: #b38f00;
+        }
+
+        .quiz-card-category.general {
+            background-color: rgba(255, 153, 51, 0.2);
+            color: #cc6600;
+        }
+
+        .quiz-card-body {
+            margin-bottom: 15px;
+        }
+
+        .quiz-card-description {
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .quiz-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .quiz-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .quiz-card-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            font-size: 14px;
+        }
+
+        .quiz-card-btn.stem {
+            background-color: var(--power-blue);
+            color: white;
+        }
+
+        .quiz-card-btn.steam {
+            background-color: var(--bright-yellow);
+            color: #664d00;
+        }
+
+        .quiz-card-btn.general {
+            background-color: var(--warm-orange);
+            color: white;
+        }
+
+        .quiz-card-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Quiz Container Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .quiz-title {
+            font-size: 20px;
+            color: var(--power-blue);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            background-color: var(--light-blue);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: 600;
+            align-self: flex-end;
+        }
+
+        .timer-icon {
+            margin-right: 8px;
+            color: var(--warning-color);
+        }
+
+        .timer {
+            color: var(--power-blue);
+        }
+
+        .warning {
+            color: var(--warning-color);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .quiz-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .question-navigation {
+            width: 100%;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            order: 2;
+        }
+
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--power-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .question-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--light-gray);
+            border: 1px solid var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .question-btn:hover {
+            background-color: var(--medium-gray);
+        }
+
+        .question-btn.active {
+            background-color: var(--power-blue);
+            color: white;
+            border-color: var(--power-blue);
+        }
+
+        .question-btn.answered {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+        }
+
+        .question-btn.marked {
+            position: relative;
+        }
+
+        .question-btn.marked::after {
+            content: "!";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--warning-color);
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-content {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--power-blue);
+        }
+
+        .question-type {
+            background-color: var(--light-blue);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* Multiple Choice Options */
+        .options-list {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .option-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+            border: 1px solid var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-item:hover {
+            background-color: #e9e9e9;
+        }
+
+        .option-item.selected {
+            border-color: var(--power-blue);
+            background-color: rgba(0, 102, 204, 0.1);
+        }
+
+        /* True/False Options */
+        .true-false-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .true-false-btn {
+            padding: 12px;
+            text-align: center;
+            border: 2px solid var(--medium-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .true-false-btn:hover {
+            background-color: #e9e9e9;
+        }
+
+        .true-false-btn.selected {
+            border-color: var(--power-blue);
+            background-color: rgba(0, 102, 204, 0.1);
+        }
+
+        /* Matching Questions */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .matching-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .matching-item {
+            padding: 10px;
+            background-color: var(--light-gray);
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            cursor: move;
+            text-align: center;
+        }
+
+        .matched-pair {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .matched-item {
+            padding: 8px;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .match-controls {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .match-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--power-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Fill in the Blank */
+        .fill-blank-container {
+            margin-bottom: 15px;
+        }
+
+        .fill-blank-input {
+            padding: 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        /* Essay Questions */
+        .essay-container {
+            margin-bottom: 15px;
+        }
+
+        .essay-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        .word-count {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        /* Case Study */
+        .case-study-container {
+            background-color: var(--light-blue);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--power-blue);
+        }
+
+        .case-study-text {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* Chart Questions */
+        .chart-container {
+            margin: 15px 0;
+            width: 100%;
+            height: 200px;
+        }
+
+        .chart-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chart-box {
+            width: 100%;
+            height: 200px;
+        }
+
+        /* Matched pairs container */
+        .matched-pairs-container {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 8px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            padding: 5px;
+        }
+
+        /* Question Navigation */
+        .question-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--power-blue);
+            color: var(--power-blue);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 102, 204, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--power-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+
+        .mark-btn {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .mark-btn:hover {
+            background-color: #e68a00;
+        }
+
+        .submit-btn {
+            background-color: var(--correct-color);
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background-color: #3d8b40;
+        }
+
+        /* Quiz Rules Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-container {
+            background-color: white;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--power-blue);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+
+        .rules-list {
+            list-style-type: none;
+            margin-bottom: 15px;
+        }
+
+        .rules-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .rules-list li i {
+            margin-right: 10px;
+            color: var(--power-blue);
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid var(--medium-gray);
+            text-align: right;
+        }
+
+        /* Result chart container */
+        .result-chart-container {
+            max-width: 250px;
+            max-height: 180px;
+            margin: 0 auto 15px;
+        }
+
+        /* No quizzes found message */
+        .no-quizzes {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            grid-column: 1 / -1;
+        }
+
+        /* Avatar selection modal */
+        .avatar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .avatar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .avatar-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+
+        .avatar-icon.unlocked {
+            background-color: var(--light-blue);
+            border: 2px solid var(--avatar-unlocked);
+            color: var(--avatar-unlocked);
+        }
+
+        .avatar-icon.locked {
+            background-color: var(--light-gray);
+            border: 2px solid var(--avatar-locked);
+            color: var(--avatar-locked);
+            filter: grayscale(100%);
+        }
+
+        .avatar-item:hover .avatar-icon.unlocked {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .avatar-name {
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .avatar-points {
+            font-size: 10px;
+            color: var(--text-light);
+        }
+
+        .points-earned {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--bright-yellow);
+            color: #664d00;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.5s, fadeOut 1s 2s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .dashboard-title {
+                font-size: 32px;
+            }
+
+            .dashboard-subtitle {
+                font-size: 18px;
+            }
+
+            .quiz-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .timer-container {
+                align-self: center;
+            }
+
+            .quiz-body {
+                flex-direction: row;
+            }
+
+            .question-navigation {
+                width: 250px;
+                order: 0;
+            }
+
+            .question-actions {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .matching-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .matched-pair {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .quiz-card-container {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+         .back-to-dashboard {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            padding: 8px 15px;
+            background-color: white;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary-orange);
+        }
+
+        .back-to-dashboard:hover {
+            background-color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            .back-to-dashboard {
+                position: static;
+                margin-bottom: 15px;
+                display: inline-flex;
+                justify-content: center;
+            }
+            .user-profile {
+                position: static;
+                margin-top:10px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard View -->
+    <div class="dashboard-container" id="dashboard-view">
+        <div class="dashboard-header">
+            <a href="{% url 'index' %}" class="back-to-dashboard">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <div class="user-profile">
+                <div class="avatar-container">
+                    <div class="avatar" id="current-avatar" onclick="showAvatarModal()">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                </div>
+                <div class="points-display" id="user-points">0 pts</div>
+            </div>
+            
+            <h1 class="dashboard-title">Assessments</h1>
+            <!-- <p class="dashboard-subtitle">Test your knowledge across Science, Engineering, Mathematics
+                , Skill Development, and Hummanities</p> -->
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-bar" id="search-input" placeholder="Search for quizzes...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <div class="category-tabs">
+            <div class="category-tab stem active" onclick="filterQuizzes('all')">All Quizzes</div>
+            <div class="category-tab stem" onclick="filterQuizzes('stem')">STEM</div>
+            <div class="category-tab steam" onclick="filterQuizzes('steam')">HASS</div>
+            <div class="category-tab general" onclick="filterQuizzes('general')">SDP</div>
+        </div>
+
+        <div class="quiz-card-container" id="quiz-card-container">
+            <!-- STEM Quizzes -->
+            <div class="quiz-card stem" data-category="stem"
+                data-search="mathematics calculus algebra physics chemistry biology engineering">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Calculus Fundamentals</h2>
+                    <span class="quiz-card-category stem">STEM</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Test your understanding of limits, derivatives, and integrals with this comprehensive calculus
+                        quiz.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-square-root-alt"></i> Mathematics</span>
+                    <button class="quiz-card-btn stem" onclick="showQuiz('calculus')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-card stem" data-category="stem" data-search="physics newton motion forces energy">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Newtonian Physics</h2>
+                    <span class="quiz-card-category stem">STEM</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Challenge yourself with questions about Newton's laws, motion, forces, and energy.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-atom"></i> Physics</span>
+                    <button class="quiz-card-btn stem" onclick="showQuiz('physics')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-card stem" data-category="stem" data-search="chemistry periodic table reactions elements">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Advanced Chemistry</h2>
+                    <span class="quiz-card-category stem">STEM</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Quiz covering chemical reactions, periodic table trends, and molecular structures.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-flask"></i> Chemistry</span>
+                    <button class="quiz-card-btn stem" onclick="showQuiz('chemistry')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEAM Quizzes -->
+            <div class="quiz-card steam" data-category="steam" data-search="art design creativity history">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Art History</h2>
+                    <span class="quiz-card-category steam">STEAM</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Explore major art movements, famous artists, and their masterpieces through this quiz.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-palette"></i> Art</span>
+                    <button class="quiz-card-btn steam" onclick="showQuiz('art-history')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-card steam" data-category="steam" data-search="music theory composers instruments">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Music Theory</h2>
+                    <span class="quiz-card-category steam">STEAM</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Test your knowledge of musical notation, scales, chords, and famous composers.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-music"></i> Music</span>
+                    <button class="quiz-card-btn steam" onclick="showQuiz('music-theory')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-card steam" data-category="steam" data-search="literature books authors novels">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">World Literature</h2>
+                    <span class="quiz-card-category steam">STEAM</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Quiz covering classic and contemporary literature from around the world.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-book"></i> Literature</span>
+                    <button class="quiz-card-btn steam" onclick="showQuiz('literature')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- General Quizzes -->
+            <div class="quiz-card general" data-category="general"
+                data-search="business entrepreneurship startup finance">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Entrepreneurship Basics</h2>
+                    <span class="quiz-card-category general">General</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Test your knowledge of business concepts, startup strategies, and financial literacy.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-business-time"></i> Business</span>
+                    <button class="quiz-card-btn general" onclick="showQuiz('entrepreneurship')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-card general" data-category="general"
+                data-search="leadership management team communication">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Leadership Skills</h2>
+                    <span class="quiz-card-category general">General</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Assess your understanding of leadership principles, team management, and communication.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-users"></i> Leadership</span>
+                    <button class="quiz-card-btn general" onclick="showQuiz('leadership')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-card general" data-category="general"
+                data-search="public speaking presentation communication">
+                <div class="quiz-points-badge">10</div>
+                <div class="quiz-card-header">
+                    <h2 class="quiz-card-title">Public Speaking</h2>
+                    <span class="quiz-card-category general">General</span>
+                </div>
+                <div class="quiz-card-body">
+                    <p class="quiz-card-description">
+                        Quiz covering techniques for effective public speaking and presentation skills.
+                    </p>
+                    <div class="quiz-card-meta">
+                        <span><i class="far fa-clock"></i> 15 minutes</span>
+                        <span><i class="far fa-question-circle"></i> 10 questions</span>
+                    </div>
+                </div>
+                <div class="quiz-card-footer">
+                    <span><i class="fas fa-comments"></i> Communication</span>
+                    <button class="quiz-card-btn general" onclick="showQuiz('public-speaking')">
+                        Take Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz View -->
+    <div class="quiz-container" id="quiz-view">
+        <!-- Quiz Header with Timer -->
+        <div class="quiz-header">
+            <div class="quiz-title" id="quiz-title">Grade 12 Quiz</div>
+            <div class="timer-container">
+                <i class="fas fa-clock timer-icon"></i>
+                <div class="timer" id="quiz-timer">15:00</div>
+            </div>
+        </div>
+
+        <!-- Quiz Body -->
+        <div class="quiz-body">
+            <!-- Question Content -->
+            <div class="question-content" id="question-content">
+                <!-- Question will be loaded here -->
+            </div>
+
+            <!-- Question Navigation Panel -->
+            <div class="question-navigation">
+                <div class="nav-title">
+                    <span>Questions</span>
+                    <span id="answered-count">0/10</span>
+                </div>
+                <div class="question-grid" id="question-grid">
+                    <!-- Questions will be added dynamically -->
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 15px;" onclick="returnToDashboard()">
+                    <i class="fas fa-arrow-left"></i> Return to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Rules Modal -->
+    <div class="modal-overlay" id="rules-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title">Quiz Instructions</div>
+                <button class="modal-close" onclick="startQuiz()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3 style="margin-bottom: 15px; color: var(--power-blue);">Please read the following instructions
+                    carefully:</h3>
+
+                <ul class="rules-list">
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Time Limit:</strong> You have 15 minutes to complete this quiz.
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-question-circle"></i>
+                        <div>
+                            <strong>Question Navigation:</strong> You can attempt questions in any order. Use the
+                            question navigation panel to jump between questions.
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-flag"></i>
+                        <div>
+                            <strong>Marking Questions:</strong> You can mark questions for review and come back to them
+                            later.
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Answering Questions:</strong> For multiple choice questions, select one answer. For
+                            matching questions, drag and drop items to match them.
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Auto-Submission:</strong> The quiz will automatically submit when time expires.
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-star"></i>
+                        <div>
+                            <strong>Points System:</strong> You'll earn points based on your quiz performance. Complete quizzes to unlock new avatars!
+                        </div>
+                    </li>
+                </ul>
+
+                <div
+                    style="background-color: rgba(255, 204, 0, 0.1); padding: 15px; border-radius: 6px; border-left: 4px solid var(--bright-yellow);">
+                    <h4 style="color: #b38f00; margin-bottom: 10px;">Important Note:</h4>
+                    <p>Once you start the quiz, you cannot pause the timer. All answers are final after submission. Good
+                        luck!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="startQuiz()">I Understand - Start Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Selection Modal -->
+    <div class="avatar-modal" id="avatar-modal">
+        <div class="avatar-modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Select Your Avatar</div>
+                <button class="modal-close" onclick="closeAvatarModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Earn points by completing quizzes to unlock more avatars!</p>
+                <p><strong>Your Points: <span id="modal-points">0</span></strong></p>
+                
+                <div class="avatar-grid" id="avatar-grid">
+                    <!-- Avatars will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+// ---- CSRF helper ----
+function getCookie(name){
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";").map(c => c.trim());
+        for (const cookie of cookies) {
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie("csrftoken");
+
+// ---- State ----
+let quizzes = {};     // will be filled from backend
+let currentQuiz = null;
+let currentQuestionIndex = 0;
+let userAnswers = [];
+let markedQuestions = [];
+let quizStarted = false;
+let timeLeft = 0;
+let timerInterval;
+
+// Elements
+const dashboardView = document.getElementById('dashboard-view');
+const quizView = document.getElementById('quiz-view');
+const questionContent = document.getElementById('question-content');
+const quizTitleEl = document.getElementById('quiz-title');
+const quizTimer = document.getElementById('quiz-timer');
+
+// ---- API wrapper ----
+async function api(path, { method="GET", data } = {}){
+    const opts = { method, headers: { "X-CSRFToken": csrftoken } };
+    if (data !== undefined){
+        opts.headers["Content-Type"] = "application/json";
+        opts.body = JSON.stringify(data);
+    }
+    const res = await fetch(path, opts);
+    const json = await res.json().catch(()=> ({}));
+    if(!res.ok) throw new Error(json.error || res.statusText);
+    return json;
+}
+
+// ---- Load quizzes from backend ----
+async function loadQuizzes(){
+    try {
+        const data = await api("/api/games/");
+        const container = document.getElementById("quiz-card-container");
+        container.innerHTML = "";
+        data.results.forEach(q => {
+            const card = document.createElement("div");
+            card.className = "quiz-card";
+            card.dataset.id = q.id;
+            card.innerHTML = `
+                <h3>${q.title}</h3>
+                <p>${q.category}</p>
+                <button onclick="startQuiz(${q.id})">Start</button>
+            `;
+            container.appendChild(card);
+        });
+    } catch(e){
+        console.error(e);
+        alert("Failed to load quizzes");
+    }
+}
+
+// ---- Start quiz ----
+async function startQuiz(id){
+    try {
+        const q = await api(`/api/games/${id}/`);
+        quizzes[id] = q;
+        currentQuiz = id;
+        currentQuestionIndex = 0;
+        userAnswers = Array(q.questions.length).fill(null);
+        markedQuestions = Array(q.questions.length).fill(false);
+
+        // Switch UI
+        dashboardView.style.display = "none";
+        quizView.style.display = "block";
+        quizTitleEl.textContent = q.title;
+
+        // Timer
+        timeLeft = q.duration * 60;
+        timerInterval = setInterval(updateTimer, 1000);
+
+        loadQuestion(0);
+    } catch(e){
+        alert("Failed to start quiz");
+    }
+}
+
+// ---- Load a question ----
+function loadQuestion(index){
+    const q = quizzes[currentQuiz].questions[index];
+    currentQuestionIndex = index;
+
+    let html = `<div class="question-text">${q.question}</div>`;
+    if(q.type === "multiple-choice"){
+        html += `<ul>` + q.options.map((o,i)=>`
+            <li onclick="selectAnswer(${i})"
+                class="${userAnswers[index]===i ? 'selected':''}">
+                ${o}
+            </li>`).join("") + `</ul>`;
+    }
+    if(q.type === "true-false"){
+        html += `
+          <button onclick="selectAnswer(true)" class="${userAnswers[index]===true?'selected':''}">True</button>
+          <button onclick="selectAnswer(false)" class="${userAnswers[index]===false?'selected':''}">False</button>
+        `;
+    }
+    questionContent.innerHTML = html;
+}
+
+// ---- Select answer ----
+function selectAnswer(answer){
+    userAnswers[currentQuestionIndex] = answer;
+    loadQuestion(currentQuestionIndex);
+}
+
+// ---- Timer ----
+function updateTimer(){
+    timeLeft--;
+    if(timeLeft <= 0){
+        clearInterval(timerInterval);
+        submitQuiz();
+        return;
+    }
+    quizTimer.textContent = Math.floor(timeLeft/60)+":"+String(timeLeft%60).padStart(2,"0");
+}
+
+// ---- Submit quiz ----
+async function submitQuiz(){
+    clearInterval(timerInterval);
+    try {
+        const res = await api(`/api/games/${currentQuiz}/submit`, {
+            method:"POST",
+            data:{ answers: userAnswers }
+        });
+        alert(`You scored ${res.score}% and earned ${res.points} points!`);
+        dashboardView.style.display = "block";
+        quizView.style.display = "none";
+        loadQuizzes();
+    } catch(e){
+        alert("Failed to submit quiz");
+    }
+}
+
+// ---- Init ----
+document.addEventListener("DOMContentLoaded", loadQuizzes);
+</script>
+
+</body>
+</html>

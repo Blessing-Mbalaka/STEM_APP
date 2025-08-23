@@ -1,3 +1,4 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +46,7 @@
             margin-bottom: 25px;
             padding: 20px 0;
             background-image: linear-gradient(#f4bc4238, #f3af55e0, rgb(255, 166, 0));
-            background-image: linear-gradient(180deg, #fdc2c2a0, #a1030386), url("images/wallpaper8.jpg");
+            background-image: linear-gradient(180deg, #fdc2c2a0, #a1030386), url("{% static 'images/wallpaper8.jpg' %}");
 
             background-size: cover;
             background-position: center;
@@ -559,7 +560,7 @@
 <body>
     <div class="container">
         <header>
-              <a href="./Index.html" class="back-to-dashboard">
+              <a href="{% url 'index' %}" class="back-to-dashboard">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
             <h1>Profile</h1>
@@ -778,206 +779,169 @@
     </div>
 
     <script>
-        // Profile data
-        const profileData = {
-            firstName: "Thando",
-            lastName: "Mkhize",
-            email: "thando.mkhize@example.com",
-            phone: "0712345678",
-            dob: "2005-05-15",
-            gender: "female",
-            bio: "I'm a matric learner passionate about STEM subjects, especially Mathematics and Physical Sciences. My goal is to study Engineering at university.",
-            school: "Durban High School",
-            grade: "12",
-            stream: "stem",
-            academicGoals: "1. Achieve 80%+ in Mathematics and Physical Sciences\n2. Improve my problem-solving skills\n3. Prepare thoroughly for final exams",
-            languagePref: "english",
-            notificationPref: "all",
-            learningStyles: ["visual", "auditory", "kinesthetic"],
-            studyTimes: "Weekdays: 4pm-7pm\nWeekends: 9am-12pm",
-            stats: {
-                completedSessions: 12,
-                quizScore: "85%",
-                streakDays: 7,
-                pointsEarned: "1,250"
+// ---- CSRF helper ----
+function getCookie(name){
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";").map(c => c.trim());
+        for (const cookie of cookies) {
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                break;
             }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie("csrftoken");
+
+// ---- Profile data state ----
+let profileData = {};   // will be filled from API
+
+// Elements
+const profileName = document.getElementById('profileName');
+const completedSessions = document.getElementById('completedSessions');
+const quizScore = document.getElementById('quizScore');
+const streakDays = document.getElementById('streakDays');
+const pointsEarned = document.getElementById('pointsEarned');
+const languageToggleBtns = document.querySelectorAll('.language-toggle-btn');
+const profileTabs = document.querySelectorAll('.profile-tab');
+const profileTabContents = document.querySelectorAll('.profile-tab-content');
+const saveProfileBtn = document.getElementById('saveProfileBtn');
+const backToDashboard = document.getElementById('backToDashboard');
+const avatarEdit = document.querySelector('.profile-avatar-edit');
+const avatarModal = document.getElementById('avatarModal');
+const closeAvatarModal = document.getElementById('closeAvatarModal');
+const cancelAvatar = document.getElementById('cancelAvatar');
+const saveAvatar = document.getElementById('saveAvatar');
+const uploadBtn = document.getElementById('uploadBtn');
+const avatarUpload = document.getElementById('avatarUpload');
+const streamOptions = document.querySelectorAll('.stream-option');
+
+// ---- API helpers ----
+async function api(path, { method="GET", data } = {}){
+    const opts = { method, headers: { "X-CSRFToken": csrftoken } };
+    if (data !== undefined){
+        opts.headers["Content-Type"] = "application/json";
+        opts.body = JSON.stringify(data);
+    }
+    const res = await fetch(path, opts);
+    const json = await res.json().catch(()=> ({}));
+    if(!res.ok) throw new Error(json.error || res.statusText);
+    return json;
+}
+
+// ---- Load profile from server ----
+async function loadProfile(){
+    try {
+        const me = await api("/api/me");
+        if(!me.authenticated){
+            location.href = "/login/";
+            return;
+        }
+        // Merge server data into local state
+        profileData = me;
+        renderProfile();
+    } catch(e){
+        alert("Failed to load profile");
+    }
+}
+
+// ---- Render profile data into UI ----
+function renderProfile(){
+    profileName.textContent = profileData.display_name || profileData.username;
+    completedSessions.textContent = profileData.completedSessions || 0;
+    quizScore.textContent = profileData.quizScore || "N/A";
+    streakDays.textContent = profileData.streakDays || 0;
+    pointsEarned.textContent = profileData.pointsEarned || 0;
+
+    // Fill form fields if they exist
+    document.getElementById('firstName').value = profileData.firstName || "";
+    document.getElementById('lastName').value = profileData.lastName || "";
+    document.getElementById('email').value = profileData.email || "";
+    document.getElementById('phone').value = profileData.phone || "";
+    document.getElementById('dob').value = profileData.dob || "";
+    document.getElementById('gender').value = profileData.gender || "";
+    document.getElementById('bio').value = profileData.bio || "";
+    document.getElementById('school').value = profileData.school || "";
+    document.getElementById('grade').value = profileData.grade || "";
+    document.getElementById('academicGoals').value = profileData.academicGoals || "";
+    document.getElementById('languagePref').value = profileData.languagePref || "english";
+    document.getElementById('notificationPref').value = profileData.notificationPref || "all";
+    document.getElementById('studyTimes').value = profileData.studyTimes || "";
+}
+
+// ---- Event listeners ----
+function setupEventListeners(){
+    backToDashboard.addEventListener('click', e => {
+        e.preventDefault();
+        location.href = "/"; // go back to index/dashboard
+    });
+
+    // Tabs
+    profileTabs.forEach(tab => {
+        tab.addEventListener('click', function(){
+            const tabId = this.dataset.tab;
+            profileTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            profileTabContents.forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+
+    // Save profile to server
+    saveProfileBtn.addEventListener('click', async () => {
+        const payload = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            dob: document.getElementById('dob').value,
+            gender: document.getElementById('gender').value,
+            bio: document.getElementById('bio').value,
+            school: document.getElementById('school').value,
+            grade: document.getElementById('grade').value,
+            academicGoals: document.getElementById('academicGoals').value,
+            languagePref: document.getElementById('languagePref').value,
+            notificationPref: document.getElementById('notificationPref').value,
+            studyTimes: document.getElementById('studyTimes').value
         };
-
-        // Profile elements
-        const profileName = document.getElementById('profileName');
-        const completedSessions = document.getElementById('completedSessions');
-        const quizScore = document.getElementById('quizScore');
-        const streakDays = document.getElementById('streakDays');
-        const pointsEarned = document.getElementById('pointsEarned');
-        const languageToggleBtns = document.querySelectorAll('.language-toggle-btn');
-        const profileTabs = document.querySelectorAll('.profile-tab');
-        const profileTabContents = document.querySelectorAll('.profile-tab-content');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const backToDashboard = document.getElementById('backToDashboard');
-        const avatarEdit = document.querySelector('.profile-avatar-edit');
-        const avatarModal = document.getElementById('avatarModal');
-        const closeAvatarModal = document.getElementById('closeAvatarModal');
-        const cancelAvatar = document.getElementById('cancelAvatar');
-        const saveAvatar = document.getElementById('saveAvatar');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const avatarUpload = document.getElementById('avatarUpload');
-        const streamOptions = document.querySelectorAll('.stream-option');
-
-        // Initialize the app
-        function init() {
-            renderProfile();
-            setupEventListeners();
+        try {
+            await api("/api/me", { method:"PATCH", data: payload });
+            alert("Profile saved successfully");
+        } catch(e){
+            alert("Failed to save profile");
         }
+    });
 
-        // Render profile data
-        function renderProfile() {
-            profileName.textContent = `${profileData.firstName} ${profileData.lastName}`;
-            completedSessions.textContent = profileData.stats.completedSessions;
-            quizScore.textContent = profileData.stats.quizScore;
-            streakDays.textContent = profileData.stats.streakDays;
-            pointsEarned.textContent = profileData.stats.pointsEarned;
-            
-            // Update form fields
-            document.getElementById('firstName').value = profileData.firstName;
-            document.getElementById('lastName').value = profileData.lastName;
-            document.getElementById('email').value = profileData.email;
-            document.getElementById('phone').value = profileData.phone;
-            document.getElementById('dob').value = profileData.dob;
-            document.getElementById('gender').value = profileData.gender;
-            document.getElementById('bio').value = profileData.bio;
-            document.getElementById('school').value = profileData.school;
-            document.getElementById('grade').value = profileData.grade;
-            document.getElementById('academicGoals').value = profileData.academicGoals;
-            document.getElementById('languagePref').value = profileData.languagePref;
-            document.getElementById('notificationPref').value = profileData.notificationPref;
-            document.getElementById('studyTimes').value = profileData.studyTimes;
-            
-            // Update stream selection
-            document.querySelector(`input[name="stream"][value="${profileData.stream}"]`).checked = true;
-            document.getElementById(`${profileData.stream}Option`).classList.add('selected');
-            
-            // Update learning styles checkboxes
-            document.querySelectorAll('input[name="learning-style"]').forEach(checkbox => {
-                checkbox.checked = profileData.learningStyles.includes(checkbox.value);
-            });
+    // Avatar modal
+    avatarEdit.addEventListener('click', () => avatarModal.style.display = 'flex');
+    closeAvatarModal.addEventListener('click', () => avatarModal.style.display = 'none');
+    cancelAvatar.addEventListener('click', () => avatarModal.style.display = 'none');
+    saveAvatar.addEventListener('click', () => {
+        alert("Avatar upload not yet wired to backend");
+        avatarModal.style.display = 'none';
+    });
+    uploadBtn.addEventListener('click', () => avatarUpload.click());
+    avatarUpload.addEventListener('change', function(){
+        if(this.files && this.files[0]){
+            const reader = new FileReader();
+            reader.onload = e => {
+                const avatar = document.querySelector('.profile-avatar');
+                avatar.innerHTML = `<img src="${e.target.result}" alt="Profile Avatar">`;
+                avatar.querySelector('img').style.objectFit = 'cover';
+            };
+            reader.readAsDataURL(this.files[0]);
         }
+    });
+}
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Back to dashboard button
-            backToDashboard.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Navigating back to dashboard...');
-                // In a real app, this would navigate to the dashboard
-            });
-            
-            // Language toggle
-            languageToggleBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    languageToggleBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const lang = this.dataset.lang;
-                    alert(`Language preference changed to ${lang === 'en' ? 'English' : 'Zulu'}`);
-                });
-            });
-            
-            // Profile tabs
-            profileTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    profileTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    profileTabContents.forEach(content => content.classList.remove('active'));
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-                });
-            });
-            
-            // Stream selection
-            streamOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    streamOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    const streamValue = this.querySelector('input').value;
-                    profileData.stream = streamValue;
-                });
-            });
-            
-            // Save profile
-            saveProfileBtn.addEventListener('click', function() {
-                // Update profile data from form fields
-                profileData.firstName = document.getElementById('firstName').value;
-                profileData.lastName = document.getElementById('lastName').value;
-                profileData.email = document.getElementById('email').value;
-                profileData.phone = document.getElementById('phone').value;
-                profileData.dob = document.getElementById('dob').value;
-                profileData.gender = document.getElementById('gender').value;
-                profileData.bio = document.getElementById('bio').value;
-                profileData.school = document.getElementById('school').value;
-                profileData.grade = document.getElementById('grade').value;
-                profileData.academicGoals = document.getElementById('academicGoals').value;
-                profileData.languagePref = document.getElementById('languagePref').value;
-                profileData.notificationPref = document.getElementById('notificationPref').value;
-                profileData.studyTimes = document.getElementById('studyTimes').value;
-                
-                // Update stream
-                profileData.stream = document.querySelector('input[name="stream"]:checked').value;
-                
-                // Update learning styles
-                profileData.learningStyles = [];
-                document.querySelectorAll('#preferencesForm input[name="learning-style"]:checked').forEach(checkbox => {
-                    profileData.learningStyles.push(checkbox.value);
-                });
-                
-                // Update profile name
-                profileName.textContent = `${profileData.firstName} ${profileData.lastName}`;
-                
-                alert('Profile saved successfully!');
-            });
-            
-            // Avatar edit
-            avatarEdit.addEventListener('click', function() {
-                avatarModal.style.display = 'flex';
-            });
-            
-            // Close avatar modal
-            closeAvatarModal.addEventListener('click', () => avatarModal.style.display = 'none');
-            cancelAvatar.addEventListener('click', () => avatarModal.style.display = 'none');
-            
-            // Save avatar
-            saveAvatar.addEventListener('click', function() {
-                alert('Profile picture updated!');
-                avatarModal.style.display = 'none';
-            });
-            
-            // Upload avatar
-            uploadBtn.addEventListener('click', function() {
-                avatarUpload.click();
-            });
-            
-            avatarUpload.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const avatar = document.querySelector('.profile-avatar');
-                        avatar.innerHTML = `<img src="${e.target.result}" alt="Profile Avatar">`;
-                        avatar.querySelector('img').style.objectFit = 'cover';
-                        
-                        // Also update the avatar in the modal
-                        const modalAvatar = avatarModal.querySelector('.profile-avatar');
-                        modalAvatar.innerHTML = `<img src="${e.target.result}" alt="Profile Avatar">`;
-                        modalAvatar.querySelector('img').style.objectFit = 'cover';
-                    }
-                    
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-        }
+// ---- Init ----
+document.addEventListener("DOMContentLoaded", () => {
+    setupEventListeners();
+    loadProfile();
+});
+</script>
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
 </body>
 </html>

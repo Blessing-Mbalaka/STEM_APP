@@ -1,3 +1,4 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -395,19 +396,19 @@
 <body>
     <!-- Desktop Sidebar with fixed side-by-side layout -->
     <div class="sidebar">
-        <a href="./Index.html" class="nav-item active">
+        <a href="{% url 'index' %}" class="nav-item active">
             <i class="fas fa-home"></i>
             <span class="nav-text">Dashboard</span>
         </a>
-        <a href="./Classes.html" class="nav-item">
+        <a href="{% url 'classes' %}" class="nav-item">
             <i class="fas fa-tv"></i>
             <span class="nav-text">Classes</span>
         </a>
-        <a href="./Forum.html" class="nav-item">
+        <a href="{% url 'forum' %}" class="nav-item">
             <i class="fa-solid fa-message"></i>
             <span class="nav-text">Forum</span>
         </a>
-        <a href="./Profiles.html" class="nav-item">
+        <a href="{% url 'profiles' %}" class="nav-item">
             <i class="fas fa-user"></i>
             <span class="nav-text">Profile</span>
         </a>
@@ -450,28 +451,28 @@
             </div> -->
 
             <div class="tiles-container">
-                <a href="./Classes.html" class="tile" id="upcomingClassesTile">
+                <a href="{% url 'classes' %}" class="tile" id="upcomingClassesTile">
                     <div class="tile-icon">📅</div>
                     <h3 class="tile-title">Classes</h3>
                     <p class="tile-description">View and join upcoming learning sessions</p>
                     <span class="tile-action">Book/Join</span>
                 </a>
 
-                <a href="./Classes.html" class="tile" id="tutorSlotsTile">
+                <a href="{% url 'classes' %}" class="tile" id="tutorSlotsTile">
                     <div class="tile-icon">👩‍🏫</div>
                     <h3 class="tile-title">Tutors</h3>
                     <p class="tile-description">Connect with expert tutors for personalized learning</p>
                     <span class="tile-action">See Tutors</span>
                 </a>
 
-                <a href="./Courses.html" class="tile" id="coursesTile">
+                <a href="{% url 'courses' %}" class="tile" id="coursesTile">
                     <div class="tile-icon">📚</div>
                     <h3 class="tile-title">Courses</h3>
                     <p class="tile-description">Explore our curated learning modules</p>
                     <span class="tile-action">Explore</span>
                 </a>
 
-                <a href="./Games.html" class="tile" id="achievementsTile">
+                <a href="{% url 'games' %}" class="tile" id="achievementsTile">
                     <div class="tile-icon">🏆</div>
                     <h3 class="tile-title">Achievements</h3>
                     <p class="tile-description">Track your progress and unlock rewards</p>
@@ -483,22 +484,22 @@
 
     <!-- Mobile Bottom Navigation -->
     <div class="bottom-nav">
-        <a href="./Index.html" class="nav-item active">
+        <a href="{% url 'index' %}" class="nav-item active">
             <i class="fas fa-home"></i>
             <span>Home</span>
             <div class="nav-tooltip">Dashboard</div>
         </a>
-        <a href="./Classes.html" class="nav-item">
+        <a href="{% url 'classes' %}" class="nav-item">
             <i class="fas fa-tv"></i>
             <span>Classes</span>
             <div class="nav-tooltip">Classes</div>
         </a>
-        <a href="./Forum.html" class="nav-item">
+        <a href="{% url 'forum' %}" class="nav-item">
             <i class="fa-solid fa-message"></i>
             <span>Forum</span>
             <div class="nav-tooltip">Forum</div>
         </a>
-        <a href="./Profiles.html" class="nav-item">
+        <a href="{% url 'profiles' %}" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Profile</span>
             <div class="nav-tooltip">Profile</div>

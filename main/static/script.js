@@ -1,3 +1,4 @@
+
      // Quiz data with 10 questions for each subject
         const quizzes = {
             // STEM Quizzes
