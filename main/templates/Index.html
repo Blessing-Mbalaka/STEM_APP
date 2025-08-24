@@ -507,63 +507,66 @@
     </div>
 
     <script>
-        // Simple greeting based on time of day
-        document.addEventListener('DOMContentLoaded', function () {
-            const hour = new Date().getHours();
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            let greeting;
+document.addEventListener('DOMContentLoaded', async function () {
+    // Time of day greeting
+    const hour = new Date().getHours();
+    let greeting;
+    if (hour < 12) greeting = "Good morning";
+    else if (hour < 18) greeting = "Good afternoon";
+    else greeting = "Good evening";
 
-            if (hour < 12) {
-                greeting = "Good morning";
-            } else if (hour < 18) {
-                greeting = "Good afternoon";
-            } else {
-                greeting = "Good evening";
-            }
+    const welcomeMessage = document.getElementById('welcomeMessage');
 
-            welcomeMessage.textContent = `${greeting}, Musa! Ready to Learn Today?`;
+    try {
+        // fetch /api/me to get logged-in user
+        const res = await fetch("/api/me");
+        if (res.ok) {
+            const user = await res.json();
+            const name = user.first_name || user.username || "Learner";
+            welcomeMessage.textContent = `${greeting}, ${name}! Ready to Learn Today?`;
+        } else {
+            welcomeMessage.textContent = `${greeting}! Ready to Learn Today?`;
+        }
+    } catch (err) {
+        console.warn("Failed to load user:", err);
+        welcomeMessage.textContent = `${greeting}! Ready to Learn Today?`;
+    }
 
-            // Add click handlers for tiles
-            document.querySelectorAll('.tile').forEach(tile => {
-                tile.addEventListener('click', function () {
-                    // Animation on click
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 100);
-                    
-                    // Create confetti effect
-                    createConfetti();
-                });
-            });
-            
-            // Handle active navigation items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Confetti effect
-            function createConfetti() {
-                const colors = ['#ff7f50', '#ffd700', '#50c878', '#6495ed', '#da70d6'];
-                for (let i = 0; i < 50; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = Math.random() * 10 + 5 + 'px';
-                    confetti.style.height = Math.random() * 10 + 5 + 'px';
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 3000);
-                }
-            }
+    // Tile click animations + confetti
+    document.querySelectorAll('.tile').forEach(tile => {
+        tile.addEventListener('click', function () {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => { this.style.transform = ''; }, 100);
+            createConfetti();
         });
-    </script>
+    });
+
+    // Active nav item toggle
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Confetti effect
+    function createConfetti() {
+        const colors = ['#ff7f50', '#ffd700', '#50c878', '#6495ed', '#da70d6'];
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = Math.random() * 10 + 5 + 'px';
+            confetti.style.height = Math.random() * 10 + 5 + 'px';
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 3000);
+        }
+    }
+});
+</script>
+
 </body>
 
 </html>

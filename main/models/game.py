@@ -61,6 +61,9 @@ class GameQuestion(TimeStamped):
 
     class Meta:
         ordering = ["order","id"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "order"], name="uq_game_order")
+        ]
 
     def __str__(self):
         return f"{self.game.title} · Q{self.order}"

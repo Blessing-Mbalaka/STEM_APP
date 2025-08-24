@@ -1,13 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from django.db.models import Q
-from main.models import game
+from django.contrib.auth.decorators import login_required
+from ..models import Game, GameQuestion, GameScore
+import json
 
 def games(request):
-    # Render your existing Games.html (front-end will call /api/games)
     return render(request, "Games.html")
 
-# ---- API ----
 # ---------- API: LIST ----------
 def api_games_list(request):
     """

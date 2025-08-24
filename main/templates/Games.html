@@ -1426,21 +1426,20 @@
             </div>
         </div>
     </div>
-
-   <script>
+<script>
 // ---- CSRF helper ----
 function getCookie(name){
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";").map(c => c.trim());
-        for (const cookie of cookies) {
-            if (cookie.startsWith(name + "=")) {
-                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
-                break;
-            }
-        }
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";").map(c => c.trim());
+    for (const cookie of cookies) {
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 const csrftoken = getCookie("csrftoken");
 
@@ -1455,132 +1454,193 @@ let timeLeft = 0;
 let timerInterval;
 
 // Elements
-const dashboardView = document.getElementById('dashboard-view');
-const quizView = document.getElementById('quiz-view');
+const dashboardView   = document.getElementById('dashboard-view');
+const quizView        = document.getElementById('quiz-view');
 const questionContent = document.getElementById('question-content');
-const quizTitleEl = document.getElementById('quiz-title');
-const quizTimer = document.getElementById('quiz-timer');
+const quizTitleEl     = document.getElementById('quiz-title');
+const quizTimer       = document.getElementById('quiz-timer');
 
 // ---- API wrapper ----
 async function api(path, { method="GET", data } = {}){
-    const opts = { method, headers: { "X-CSRFToken": csrftoken } };
-    if (data !== undefined){
-        opts.headers["Content-Type"] = "application/json";
-        opts.body = JSON.stringify(data);
-    }
-    const res = await fetch(path, opts);
-    const json = await res.json().catch(()=> ({}));
-    if(!res.ok) throw new Error(json.error || res.statusText);
-    return json;
+  const opts = { method, headers: { "X-CSRFToken": csrftoken } };
+  if (data !== undefined){
+    opts.headers["Content-Type"] = "application/json";
+    opts.body = JSON.stringify(data);
+  }
+  const res = await fetch(path, opts);
+  const json = await res.json().catch(()=> ({}));
+  if(!res.ok) throw new Error(json.error || res.statusText);
+  return json;
 }
 
 // ---- Load quizzes from backend ----
 async function loadQuizzes(){
-    try {
-        const data = await api("/api/games/");
-        const container = document.getElementById("quiz-card-container");
-        container.innerHTML = "";
-        data.results.forEach(q => {
-            const card = document.createElement("div");
-            card.className = "quiz-card";
-            card.dataset.id = q.id;
-            card.innerHTML = `
-                <h3>${q.title}</h3>
-                <p>${q.category}</p>
-                <button onclick="startQuiz(${q.id})">Start</button>
-            `;
-            container.appendChild(card);
-        });
-    } catch(e){
-        console.error(e);
-        alert("Failed to load quizzes");
+  try {
+    const data = await api("/api/games/");
+    const container = document.getElementById("quiz-card-container");
+    container.innerHTML = "";
+
+    (data.results || []).forEach(q => {
+      const card = document.createElement("div");
+      card.className = "quiz-card";
+      card.dataset.id = q.id; // store id here
+      card.innerHTML = `
+        <h3>${q.title}</h3>
+        <p>${q.category || ""}</p>
+        <button type="button" class="start-btn">Start</button>
+      `;
+      container.appendChild(card);
+    });
+
+    // Attach (or re-attach) one delegated listener
+    if (!container.dataset.bound) {
+      container.addEventListener("click", (e) => {
+        const btn = e.target.closest(".start-btn");
+        if (!btn) return;
+        const card = btn.closest(".quiz-card");
+        const id = card?.dataset?.id;
+        if (!id) {
+          alert("This quiz is missing its id.");
+          return;
+        }
+        startQuiz(id);
+      });
+      container.dataset.bound = "1";
     }
+  } catch(e){
+    console.error(e);
+    alert("Failed to load quizzes");
+  }
 }
 
 // ---- Start quiz ----
 async function startQuiz(id){
-    try {
-        const q = await api(`/api/games/${id}/`);
-        quizzes[id] = q;
-        currentQuiz = id;
-        currentQuestionIndex = 0;
-        userAnswers = Array(q.questions.length).fill(null);
-        markedQuestions = Array(q.questions.length).fill(false);
+  if (!id || id === "undefined") {
+    alert("Invalid quiz id.");
+    return;
+  }
+  try {
+    const q = await api(`/api/games/${id}/`);
+    quizzes[id] = q;
+    currentQuiz = id;
+    currentQuestionIndex = 0;
+    userAnswers = Array(q.questions.length).fill(null);
+    markedQuestions = Array(q.questions.length).fill(false);
 
-        // Switch UI
-        dashboardView.style.display = "none";
-        quizView.style.display = "block";
-        quizTitleEl.textContent = q.title;
+    // Switch UI
+    dashboardView.style.display = "none";
+    quizView.style.display = "block";
+    quizTitleEl.textContent = q.title;
 
-        // Timer
-        timeLeft = q.duration * 60;
-        timerInterval = setInterval(updateTimer, 1000);
+    // Timer
+    timeLeft = (q.duration || 10) * 60; // fallback 10 min
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
 
-        loadQuestion(0);
-    } catch(e){
-        alert("Failed to start quiz");
-    }
+    loadQuestion(0);
+  } catch(e){
+    console.error(e);
+    alert("Failed to start quiz");
+  }
 }
 
 // ---- Load a question ----
 function loadQuestion(index){
-    const q = quizzes[currentQuiz].questions[index];
-    currentQuestionIndex = index;
+  const qz = quizzes[currentQuiz];
+  if (!qz) return;
+  const q = qz.questions[index];
+  currentQuestionIndex = index;
 
-    let html = `<div class="question-text">${q.question}</div>`;
-    if(q.type === "multiple-choice"){
-        html += `<ul>` + q.options.map((o,i)=>`
-            <li onclick="selectAnswer(${i})"
-                class="${userAnswers[index]===i ? 'selected':''}">
-                ${o}
-            </li>`).join("") + `</ul>`;
-    }
-    if(q.type === "true-false"){
-        html += `
-          <button onclick="selectAnswer(true)" class="${userAnswers[index]===true?'selected':''}">True</button>
-          <button onclick="selectAnswer(false)" class="${userAnswers[index]===false?'selected':''}">False</button>
-        `;
-    }
-    questionContent.innerHTML = html;
+  let html = `
+    <div class="question-text">${q.question}</div>
+  `;
+
+  if(q.type === "multiple-choice" && Array.isArray(q.options)){
+    html += `
+      <ul class="options-list">
+        ${q.options.map((o,i)=>`
+          <li onclick="selectAnswer(${i})"
+              class="${userAnswers[index]===i ? 'selected':''}">
+            ${o}
+          </li>
+        `).join("")}
+      </ul>
+    `;
+  }
+
+  if(q.type === "true-false"){
+    html += `
+      <div class="true-false-options">
+        <button onclick="selectAnswer(true)"  class="${userAnswers[index]===true  ? 'selected':''}">True</button>
+        <button onclick="selectAnswer(false)" class="${userAnswers[index]===false ? 'selected':''}">False</button>
+      </div>
+    `;
+  }
+
+  // (Add other types later as you need them)
+
+  // Basic nav
+  html += `
+    <div class="question-actions">
+      ${index > 0 ? `<button class="btn" onclick="loadQuestion(${index-1})">Prev</button>` : `<span></span>`}
+      ${index < qz.questions.length - 1
+        ? `<button class="btn btn-primary" onclick="loadQuestion(${index+1})">Next</button>`
+        : `<button class="btn submit-btn" onclick="submitQuiz()">Submit</button>`
+      }
+    </div>
+  `;
+
+  questionContent.innerHTML = html;
 }
 
 // ---- Select answer ----
 function selectAnswer(answer){
-    userAnswers[currentQuestionIndex] = answer;
-    loadQuestion(currentQuestionIndex);
+  userAnswers[currentQuestionIndex] = answer;
+  loadQuestion(currentQuestionIndex);
 }
 
 // ---- Timer ----
 function updateTimer(){
-    timeLeft--;
-    if(timeLeft <= 0){
-        clearInterval(timerInterval);
-        submitQuiz();
-        return;
-    }
-    quizTimer.textContent = Math.floor(timeLeft/60)+":"+String(timeLeft%60).padStart(2,"0");
+  timeLeft--;
+  if(timeLeft <= 0){
+    clearInterval(timerInterval);
+    submitQuiz();
+    return;
+  }
+  const m = Math.floor(timeLeft/60);
+  const s = String(timeLeft%60).padStart(2,"0");
+  quizTimer.textContent = `${m}:${s}`;
 }
 
 // ---- Submit quiz ----
 async function submitQuiz(){
-    clearInterval(timerInterval);
-    try {
-        const res = await api(`/api/games/${currentQuiz}/submit`, {
-            method:"POST",
-            data:{ answers: userAnswers }
-        });
-        alert(`You scored ${res.score}% and earned ${res.points} points!`);
-        dashboardView.style.display = "block";
-        quizView.style.display = "none";
-        loadQuizzes();
-    } catch(e){
-        alert("Failed to submit quiz");
-    }
+  clearInterval(timerInterval);
+  try {
+    const res = await api(`/api/games/${currentQuiz}/submit`, {
+      method:"POST",
+      data:{ answers: userAnswers }
+    });
+    alert(`You scored ${res.score}% and earned ${res.points} points!`);
+    dashboardView.style.display = "block";
+    quizView.style.display = "none";
+    loadQuizzes();
+  } catch(e){
+    console.error(e);
+    alert("Failed to submit quiz");
+  }
 }
 
 // ---- Init ----
 document.addEventListener("DOMContentLoaded", loadQuizzes);
+
+// expose for inline onclick used above
+window.selectAnswer = selectAnswer;
+window.loadQuestion  = loadQuestion;
+window.submitQuiz    = submitQuiz;
 </script>
+
+
 
 </body>
 </html>
