@@ -21,7 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from main.views.pdf import pdf_embed
-
+from main.views.auth import login_page
 
 
 urlpatterns = [

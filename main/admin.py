@@ -86,3 +86,4 @@ class PostAdmin(admin.ModelAdmin):
 class PostLikeAdmin(admin.ModelAdmin):
     list_display = ("post", "user", "created_at")
     search_fields = ("post__thread__title", "user__username")
+

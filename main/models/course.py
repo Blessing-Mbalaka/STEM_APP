@@ -46,6 +46,12 @@ class CourseResource(TimeStamped):
         ('readwrite', 'Read/Write')
     ], default='visual')
 
+    thumbnail = models.ImageField(
+        upload_to="course_resource_thumbs/",
+        blank=True, null=True,
+        help_text="Optional cover/thumbnail image shown in the UI"
+    )
+
     def __str__(self):
         return f"{self.title} ({self.resource_type})"
 

@@ -3,6 +3,8 @@ from django.urls import path
 from main.views import *
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import auth as auth_views
+
 
 
 urlpatterns = [
@@ -17,13 +19,19 @@ urlpatterns = [
     path('profiles/', profiles, name='profiles'),
 
 # API endpoints
-    path("api/auth/register", api_register, name="api_register"),
-    path("api/auth/login", api_login, name="api_login"),
-    path("api/auth/logout", api_logout, name="api_logout"),
-    path("api/me", api_me, name="api_me"),
-    path("login/", login_page, name="login"),
-   
+    # path("api/auth/register", api_register, name="api_register"),
+    # path("api/auth/login", api_login, name="api_login"),
+    # path("api/auth/logout", api_logout, name="api_logout"),
+    # path("api/me", api_me, name="api_me"),
+    # path("login/", login_page, name="login"),
 
+   #Django Login override
+
+    path("login/", auth_views.login_page, name="login"),
+    path("api/auth/login", auth_views.api_login, name="api_login"),
+    path("api/auth/register", auth_views.api_register, name="api_register"),
+    path("api/auth/logout", auth_views.api_logout, name="api_logout"),
+    path("api/me", auth_views.api_me, name="api_me"),
 
     # games API
      path("games/", games, name="games"),
