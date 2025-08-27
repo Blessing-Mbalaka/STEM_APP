@@ -1503,7 +1503,8 @@ async function loadQuizzes(){
           alert("This quiz is missing its id.");
           return;
         }
-        startQuiz(id);
+        console.log("Quiz card id:", id);
+startQuiz(id);
       });
       container.dataset.bound = "1";
     }
