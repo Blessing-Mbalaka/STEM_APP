@@ -122,6 +122,23 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'main' / 'static']
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "main" / "templates"]
+# allow pages/files to be framed by the same origin (your own site)
+
+# DEV media settings
+DEBUG = True
+
+CSP_FRAME_ANCESTORS = ("'self'",)
+
+# settings.py
+MEDIA_URL  = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Ensure the folder exists so FileField can write here
+from pathlib import Path
+Path(MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

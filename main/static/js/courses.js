@@ -1,7 +1,9 @@
+/* static/js/courses.js — API-only renderer with inline Video, Audio, EPUB & PDF */
 (() => {
   "use strict";
 
-  // --------- Helpers ----------
+  /* =============== Utilities =============== */
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -21,7 +23,8 @@
     if (!el) {
       el = document.createElement("div");
       el.id = "courses-error-banner";
-      el.style.cssText = "margin:16px auto;max-width:900px;padding:12px 16px;border-radius:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;box-shadow:0 2px 6px rgba(0,0,0,.05);";
+      el.style.cssText =
+        "margin:16px auto;max-width:900px;padding:12px 16px;border-radius:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;box-shadow:0 2px 6px rgba(0,0,0,.05);";
       const container = document.querySelector(".container") || document.body;
       container.insertBefore(el, container.firstChild.nextSibling);
     }
@@ -49,28 +52,29 @@
     }
     const res = await fetch(path, opts);
 
-    // Ensure JSON (login pages often return HTML with 200 OK)
     const ct = (res.headers.get("content-type") || "").toLowerCase();
     const isJSON = ct.includes("application/json") || ct.includes("json");
-    const bodyText = isJSON ? null : await res.text().catch(() => "");
-
     if (!isJSON) {
-      const snippet = bodyText ? bodyText.slice(0, 120).replace(/\s+/g, " ") : "";
-      const hint = snippet.includes("<form") || snippet.toLowerCase().includes("login") ? " (looks like a login page?)" : "";
-      const msg = `Expected JSON from ${path} but got "${ct || "unknown"}"${hint}.`;
-      throw new Error(msg);
+      const text = await res.text().catch(() => "");
+      const looksLikeLogin =
+        text.toLowerCase().includes("login") || text.toLowerCase().includes("<form");
+      throw new Error(
+        `Expected JSON from ${path} but got "${ct || "unknown"}"${
+          looksLikeLogin ? " (this looks like a login page)" : ""
+        }.`
+      );
     }
 
     const json = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(json?.error || res.statusText);
-    }
+    if (!res.ok) throw new Error(json?.error || res.statusText);
     return json;
   };
 
-  // --------- Data + rendering ----------
-  let subjects = {}; // { key: { name, visual[], auditory[], readwrite[] } }
+  /* =============== State =============== */
+
+  let subjects = {};   // { key: { name, visual[], auditory[], readwrite[] } }
   let currentSubject = "";
+  const hasSubjects = () => Object.keys(subjects).length > 0;
 
   function inferCategory(key) {
     const k = (key || "").toLowerCase();
@@ -79,11 +83,222 @@
     return "general";
   }
 
-  async function hydrateFromAPI() {
-    // IMPORTANT: trailing slash
-    const data = await api("/api/courses/");
+  /* =============== Type detection & thumbs =============== */
 
-    // Preferred shape
+  function extractYouTubeId(u) {
+    try {
+      const url = new URL(u);
+      if (url.hostname.includes("youtu.be")) return url.pathname.slice(1);
+      if (url.hostname.includes("youtube.com")) {
+        const v = url.searchParams.get("v");
+        if (v) return v;
+        const parts = url.pathname.split("/");
+        const i = parts.findIndex(p => p === "embed" || p === "shorts");
+        if (i !== -1 && parts[i + 1]) return parts[i + 1];
+      }
+    } catch { /* ignore */ }
+    return null;
+  }
+
+  function isVideoFile(u) { return /\.((mp4)|(webm)|(ogg))(\?.*)?$/i.test(u || ""); }
+  function isAudioFile(u) { return /\.(mp3|m4a|aac|ogg|wav)(\?.*)?$/i.test(u || ""); }
+  function isEpub(u)     { return /\.epub(\?.*)?$/i.test(u || ""); }
+  function isPdf(u)      { return /\.pdf(\?.*)?$/i.test(u || ""); }
+
+  function videoThumbnailFor(res) {
+    if (res.thumbnail) return res.thumbnail;
+    const url = res.url || "";
+    const isYT = /(?:youtube\.com|youtu\.be)/i.test(url);
+    if (res.resource_type === "youtube" || isYT) {
+      const id = extractYouTubeId(url);
+      if (id) return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    }
+    return null;
+  }
+
+  function buildYouTubeEmbedSrc(url) {
+    const id = extractYouTubeId(url);
+    if (!id) return null;
+    return `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
+  }
+
+  /* =============== Inline players (video) =============== */
+
+  function mountInlinePlayer(container) {
+    if (!container || container.dataset.mounted === "1") return;
+
+    const kind = container.dataset.kind;               // 'youtube' | 'file'
+    const src  = container.dataset.src || "";
+    const poster = container.dataset.poster || "";
+
+    if (kind === "youtube" && src) {
+      container.innerHTML = `
+        <iframe
+          src="${src}&autoplay=1"
+          title="YouTube video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          style="width:100%;height:150px;display:block;border:0;border-radius:8px"
+        ></iframe>`;
+    } else if (kind === "file" && src) {
+      container.innerHTML = `
+        <video
+          src="${src}"
+          ${poster ? `poster="${poster}"` : ""}
+          controls autoplay playsinline
+          style="width:100%;height:150px;display:block;object-fit:cover;border-radius:8px"
+        ></video>`;
+    }
+    container.dataset.mounted = "1";
+  }
+
+  /* =============== EPUB Reader (overlay) =============== */
+
+  let epubLoaded = false;
+  let currentBook = null;
+  let currentRendition = null;
+  let currentFont = 100;
+
+  function loadEpubJs() {
+    if (epubLoaded || window.ePub) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://unpkg.com/epubjs/dist/epub.min.js";
+      s.async = true;
+      s.onload = () => { epubLoaded = true; resolve(); };
+      s.onerror = () => reject(new Error("Failed to load epub.js"));
+      document.head.appendChild(s);
+    });
+  }
+
+  function ensureEpubOverlay() {
+    if (document.getElementById("epub-overlay")) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "epub-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;";
+    overlay.innerHTML = `
+      <div id="epub-modal" style="background:#fff;width:92%;max-width:980px;height:80vh;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #eee">
+          <button id="epub-close" aria-label="Close" style="margin-right:auto;padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">Close</button>
+          <button id="epub-prev"  style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">&larr; Prev</button>
+          <button id="epub-next"  style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">Next &rarr;</button>
+          <div style="margin-left:12px;display:flex;align-items:center;gap:6px">
+            <button id="epub-smaller" style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">A-</button>
+            <button id="epub-bigger"  style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">A+</button>
+          </div>
+        </div>
+        <div id="epub-view" style="flex:1;min-height:0;background:#fafafa"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target.id === "epub-overlay") closeEpub();
+    });
+    document.getElementById("epub-close").addEventListener("click", closeEpub);
+    document.getElementById("epub-prev").addEventListener("click", () => currentRendition && currentRendition.prev());
+    document.getElementById("epub-next").addEventListener("click", () => currentRendition && currentRendition.next());
+    document.getElementById("epub-smaller").addEventListener("click", () => setEpubFont(currentFont - 10));
+    document.getElementById("epub-bigger").addEventListener("click",  () => setEpubFont(currentFont + 10));
+  }
+
+  function setEpubFont(size) {
+    currentFont = Math.max(60, Math.min(180, size));
+    if (currentRendition) currentRendition.themes.fontSize(currentFont + "%");
+  }
+
+  async function openEpub(url) {
+    try {
+      ensureEpubOverlay();
+      await loadEpubJs();
+      if (!window.ePub) throw new Error("epub.js is not available");
+
+      if (currentRendition && currentRendition.destroy) currentRendition.destroy();
+      currentBook = window.ePub(url);
+      currentRendition = currentBook.renderTo("epub-view", {
+        width: "100%",
+        height: "100%",
+        flow: "paginated"
+      });
+      currentRendition.display();
+      setEpubFont(currentFont);
+
+      document.getElementById("epub-overlay").style.display = "flex";
+    } catch (err) {
+      console.error("EPUB open failed:", err);
+      showBanner("Couldn't open EPUB. If it's hosted on another domain, enable CORS for it.");
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  }
+
+  function closeEpub() {
+    const overlay = document.getElementById("epub-overlay");
+    if (overlay) overlay.style.display = "none";
+    if (currentRendition && currentRendition.destroy) currentRendition.destroy();
+    currentBook = null;
+    currentRendition = null;
+  }
+
+  /* =============== PDF Viewer (overlay) =============== */
+
+  function ensurePdfOverlay() {
+    if (document.getElementById("pdf-overlay")) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "pdf-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;";
+    overlay.innerHTML = `
+      <div id="pdf-modal" style="background:#fff;width:92%;max-width:1100px;height:85vh;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #eee">
+          <button id="pdf-close" aria-label="Close" style="margin-right:auto;padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">Close</button>
+          <a id="pdf-open-tab" href="#" target="_blank" rel="noopener" style="padding:6px 10px;border:0;border-radius:8px;background:#eee;text-decoration:none;color:#333;cursor:pointer">Open in new tab</a>
+        </div>
+        <div style="flex:1;min-height:0;background:#fafafa">
+          <!-- Let the browser's built-in PDF viewer handle controls -->
+          <iframe id="pdf-frame" src="about:blank" title="PDF" style="border:0;width:100%;height:100%"></iframe>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target.id === "pdf-overlay") closePdf();
+    });
+    document.getElementById("pdf-close").addEventListener("click", closePdf);
+  }
+
+  function openPdf(url) {
+  ensurePdfOverlay();
+  const origin = window.location.origin.replace(/\/$/, "");
+  const mediaPrefixAbs = origin + "/media/";
+  let src = url;
+
+  // If it's a local media file, use the embed-safe endpoint
+  if (url.startsWith(mediaPrefixAbs)) {
+    const rel = url.slice(mediaPrefixAbs.length);        // course_resources/xyz.pdf
+    src = origin + "/media-pdf/" + rel;                  // our exempt route
+  } else if (url.startsWith("/media/")) {                // relative form
+    src = origin + "/media-pdf/" + url.slice("/media/".length);
+  }
+
+  document.getElementById("pdf-frame").src = src + "#view=FitH";
+  document.getElementById("pdf-open-tab").href = url;    // keep “Open in new tab” to the real URL
+  document.getElementById("pdf-overlay").style.display = "flex";
+}
+
+
+  function closePdf() {
+    const overlay = document.getElementById("pdf-overlay");
+    if (overlay) overlay.style.display = "none";
+    const frame = document.getElementById("pdf-frame");
+    if (frame) frame.src = "about:blank";
+  }
+
+  /* =============== API -> State =============== */
+
+  async function hydrateFromAPI() {
+    const data = await api("/api/courses/"); // trailing slash required
+
     if (data?.subjects && typeof data.subjects === "object" && Object.keys(data.subjects).length > 0) {
       subjects = {};
       for (const [key, incoming] of Object.entries(data.subjects)) {
@@ -94,11 +309,9 @@
           readwrite: Array.isArray(incoming?.readwrite) ? incoming.readwrite : []
         };
       }
-      console.debug("[courses] Loaded subjects:", subjects);
       return;
     }
 
-    // Fallback: results[] → derive subjects (still real data)
     if (Array.isArray(data?.results) && data.results.length > 0) {
       const obj = {};
       for (const r of data.results) {
@@ -106,13 +319,13 @@
         if (!obj[key]) obj[key] = { name: r.title || key, visual: [], auditory: [], readwrite: [] };
       }
       subjects = obj;
-      console.debug("[courses] Derived subjects from results:", subjects);
       return;
     }
 
     subjects = {};
-    console.debug("[courses] API returned no subjects or results.");
   }
+
+  /* =============== Grid & Filters =============== */
 
   function renderCourseGrid() {
     const courseGrid = document.getElementById("course-selection");
@@ -148,14 +361,12 @@
       `);
     }
 
-    // Start Learning
-    courseGrid.addEventListener("click", e => {
+    courseGrid.addEventListener("click", (e) => {
       const btn = e.target.closest(".start-button");
       if (!btn) return;
       selectSubject(btn.dataset.subject);
     });
 
-    // Filters
     const filters = document.querySelectorAll(".category-filter");
     filters.forEach(filter => {
       filter.addEventListener("click", function () {
@@ -167,11 +378,12 @@
   }
 
   function filterCourses(category) {
-    const cards = document.querySelectorAll(".course-card");
-    cards.forEach(card => {
+    document.querySelectorAll(".course-card").forEach(card => {
       card.style.display = (category === "all" || card.getAttribute("data-category") === category) ? "flex" : "none";
     });
   }
+
+  /* =============== Subject Flow =============== */
 
   function selectSubject(subjectId) {
     currentSubject = subjectId;
@@ -205,21 +417,48 @@
     if (evt?.currentTarget) evt.currentTarget.classList.add("active");
   }
 
+  /* =============== Resources (Video + Audio + EPUB + PDF) =============== */
+
   function renderResources(subjectId) {
     const subject = subjects[subjectId];
     if (!subject) return;
 
-    // Visual
+    // VISUAL (videos)
     const videoGrid = document.querySelector("#visual-content .video-grid");
     if (videoGrid) {
       videoGrid.innerHTML = "";
       (subject.visual || []).forEach(v => {
         const href = v.url || v.file || "#";
+        const thumb = videoThumbnailFor(v);
+
+        let kind = "file";
+        let embedSrc = "";
+        if (v.resource_type === "youtube" || /(?:youtube\.com|youtu\.be)/i.test(v.url || "")) {
+          kind = "youtube";
+          embedSrc = buildYouTubeEmbedSrc(v.url || "") || "";
+        } else if (isVideoFile(v.file || v.url)) {
+          kind = "file";
+          embedSrc = href;
+        }
+
         videoGrid.insertAdjacentHTML("beforeend", `
           <div class="video-card">
-            <a class="video-thumbnail" href="${href}" target="_blank" rel="noopener">
-              <i class="fas fa-play"></i>
-            </a>
+            <div class="video-embed" data-kind="${kind}" data-src="${embedSrc}" data-poster="${thumb || ""}" style="position:relative;">
+              <div class="video-thumbnail js-play-video" role="button" tabindex="0" aria-label="Play video"
+                   style="cursor:pointer; ${thumb ? "background:none;padding:0" : ""}">
+                ${ thumb
+                    ? `<img src="${thumb}" alt="Video thumbnail"
+                           style="display:block;width:100%;height:150px;object-fit:cover;border:0;border-radius:8px"/>`
+                    : `<i class="fas fa-play"></i>` }
+                <div class="play-overlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.5);">
+                    <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true" focusable="false" style="margin:auto;fill:#fff">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
             <div class="video-info">
               <div class="video-title">${v.title || ""}</div>
               <div class="video-duration">${v.duration || ""}</div>
@@ -229,35 +468,57 @@
       });
     }
 
-    // Auditory
+    // AUDITORY (audio)
     const audioGrid = document.querySelector("#auditory-content .audio-grid");
     if (audioGrid) {
       audioGrid.innerHTML = "";
       (subject.auditory || []).forEach(a => {
         const href = a.url || a.file || "#";
-        audioGrid.insertAdjacentHTML("beforeend", `
-          <div class="audio-card">
-            <a class="audio-icon" href="${href}" target="_blank" rel="noopener">
-              <i class="fas fa-headphones"></i>
-            </a>
-            <div class="audio-info">
-              <div class="audio-title">${a.title || ""}</div>
-              <div class="audio-duration">${a.duration || ""}</div>
+        if (isAudioFile(href)) {
+          audioGrid.insertAdjacentHTML("beforeend", `
+            <div class="audio-card">
+              <div class="audio-icon" style="background:#ffe08a">
+                <i class="fas fa-headphones"></i>
+              </div>
+              <div class="audio-info" style="flex:1">
+                <div class="audio-title">${a.title || ""}</div>
+                <div class="audio-duration">${a.duration || ""}</div>
+                <audio controls preload="none" style="width:100%;margin-top:8px">
+                  <source src="${href}">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
             </div>
-          </div>
-        `);
+          `);
+        } else {
+          // external platform (spotify/podcast page etc.)
+          audioGrid.insertAdjacentHTML("beforeend", `
+            <div class="audio-card">
+              <a class="audio-icon" href="${href}" target="_blank" rel="noopener">
+                <i class="fas fa-headphones"></i>
+              </a>
+              <div class="audio-info">
+                <div class="audio-title">${a.title || ""}</div>
+                <div class="audio-duration">${a.duration || ""}</div>
+              </div>
+            </div>
+          `);
+        }
       });
     }
 
-    // Read/Write
+    // READ/WRITE (EPUB + PDF + others)
     const materialGrid = document.querySelector("#readwrite-content .material-grid");
     if (materialGrid) {
       materialGrid.innerHTML = "";
       (subject.readwrite || []).forEach(m => {
         const href = m.url || m.file || "#";
+        const isBook = isEpub(href);
+        const isPdfDoc = isPdf(href);
         materialGrid.insertAdjacentHTML("beforeend", `
           <div class="material-card">
-            <a class="material-cover" href="${href}" target="_blank" rel="noopener">
+            <a class="material-cover ${isBook ? "js-open-epub" : isPdfDoc ? "js-open-pdf" : ""}"
+               href="${href}" ${(!isBook && !isPdfDoc) ? 'target="_blank" rel="noopener"' : ""}>
               <i class="fas fa-book"></i>
             </a>
             <div class="material-info">
@@ -271,23 +532,66 @@
     }
   }
 
-  // --------- Boot ---------
+  // Delegated events
+  function handlePlayClick(e) {
+    const play = e.target.closest(".js-play-video");
+    if (!play) return;
+    const container = play.closest(".video-embed");
+    mountInlinePlayer(container);
+  }
+
+  function handlePlayKeydown(e) {
+    const play = e.target.closest(".js-play-video");
+    if (!play) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      const container = play.closest(".video-embed");
+      mountInlinePlayer(container);
+    }
+  }
+
+  function handleEpubClick(e) {
+    const a = e.target.closest("a.js-open-epub");
+    if (!a) return;
+    const href = a.getAttribute("href");
+    if (!href) return;
+    e.preventDefault();
+    openEpub(href);
+  }
+
+  function handlePdfClick(e) {
+    const a = e.target.closest("a.js-open-pdf");
+    if (!a) return;
+    const href = a.getAttribute("href");
+    if (!href) return;
+    e.preventDefault();
+    openPdf(href);
+  }
+
+  /* =============== Boot =============== */
+
   document.addEventListener("DOMContentLoaded", async () => {
     if (!document.getElementById("course-selection")) return;
 
     try {
       await hydrateFromAPI();
-      if (Object.keys(subjects).length === 0) {
+      if (!hasSubjects()) {
         showEmptyState();
       } else {
         renderCourseGrid();
       }
 
-      // expose for inline handlers
+      // expose for inline handlers in template
       window.selectSubject = selectSubject;
       window.showLearningStyle = showLearningStyle;
       window.goBackToCourses = goBackToCourses;
+      window.api = api;
 
+      // global listeners
+      document.addEventListener("click", handlePlayClick);
+      document.addEventListener("keydown", handlePlayKeydown);
+      document.addEventListener("click", handleEpubClick);
+      document.addEventListener("click", handlePdfClick);
     } catch (err) {
       console.error("[courses] API error:", err);
       showBanner(err.message);
