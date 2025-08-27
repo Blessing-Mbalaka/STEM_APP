@@ -2,27 +2,69 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
-    {% for app in app_list %}
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-header bg-primary text-white fw-bold">
-          {{ app.name }}
-        </div>
-        <ul class="list-group list-group-flush">
-          {% for model in app.models %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{{ model.admin_url }}" class="text-decoration-none">{{ model.name }}</a>
-            {% if model.add_url %}
-            <a href="{{ model.add_url }}" class="btn btn-sm btn-success">Add</a>
-            {% endif %}
-          </li>
+<div class="sa-container">
+  {% if app_list %}
+    <div class="sa-dashboard">
+      <!-- App tiles -->
+      <section class="sa-section">
+        <header class="sa-section__header">
+          <h2>Apps & Models</h2>
+        </header>
+        <div class="sa-tilegrid">
+          {% for app in app_list %}
+          <article class="sa-tile">
+            <div class="sa-tile__head">
+              <div class="sa-tile__emoji">📁</div>
+              <h3 class="sa-tile__title">{{ app.name }}</h3>
+            </div>
+            <ul class="sa-tile__list">
+              {% for model in app.models %}
+              <li class="sa-tile__item">
+                <a class="sa-link" href="{{ model.admin_url }}">{{ model.name }}</a>
+                <div class="sa-actions">
+                  {% if model.view_only %}
+                    <span class="sa-badge sa-badge--muted">Read only</span>
+                  {% endif %}
+                  {% if model.add_url %}
+                    <a class="sa-btn sa-btn--success" href="{{ model.add_url }}">Add</a>
+                  {% endif %}
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </article>
           {% endfor %}
-        </ul>
-      </div>
+        </div>
+      </section>
+
+      <!-- Recent actions (built-in context) -->
+      <aside class="sa-aside">
+        <div class="sa-card">
+          <div class="sa-card__header">Recent actions</div>
+          {% load log %}
+          {% get_admin_log 10 as admin_log for_user user %}
+          <ul class="sa-rl">
+            {% for entry in admin_log %}
+              <li class="sa-rl__item">
+                <span class="sa-rl__when">{{ entry.action_time|date:"M d, H:i" }}</span>
+                <span class="sa-rl__what">
+                  {{ entry.object_repr }}
+                  <em class="sa-rl__type">({{ entry.get_action_flag_display }})</em>
+                </span>
+              </li>
+            {% empty %}
+              <li class="sa-rl__item sa-rl__empty">No recent actions</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </aside>
     </div>
-    {% endfor %}
-  </div>
+  {% else %}
+    <div class="sa-empty">
+      <div class="sa-empty__emoji">🎈</div>
+      <h3>No apps available</h3>
+      <p>Check permissions or installed apps.</p>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
