@@ -6,7 +6,7 @@ quizzes = [
         "title": "Calculus Fundamentals Quiz",
         "slug": "calculus-fundamentals",
         "duration_minutes": 15,
-        "points": 10,
+    "max_points": 10,
         "questions": [
             {
                 "order": 1,
@@ -33,7 +33,7 @@ quizzes = [
         "title": "Newtonian Physics Quiz",
         "slug": "newtonian-physics",
         "duration_minutes": 15,
-        "points": 10,
+    "max_points": 10,
         "questions": [
             {
                 "order": 1,
@@ -63,7 +63,7 @@ for quiz in quizzes:
         title=quiz["title"],
         slug=quiz["slug"],
         duration_minutes=quiz["duration_minutes"],
-        points=quiz["points"],
+        max_points=quiz["max_points"],
         category=quiz.get("category", "STEM"),
         difficulty=quiz.get("difficulty", "Medium"),
         is_active=True

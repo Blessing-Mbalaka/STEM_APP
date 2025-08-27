@@ -48,9 +48,11 @@
                 }
             } else if (noQuizzesMessage) {
                 noQuizzesMessage.remove();
-            }
-        }
-
+         }
+        
+    
+        
+    
         // Show quiz view
         function showQuiz(quizId) {
             currentQuiz = quizId;

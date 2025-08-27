@@ -1348,7 +1348,7 @@
         <div class="modal-container">
             <div class="modal-header">
                 <div class="modal-title">Quiz Instructions</div>
-                <button class="modal-close" onclick="startQuiz()">&times;</button>
+                <button class="modal-close" onclick="startQuiz(window.pendingQuizId)">&times;</button>
             </div>
             <div class="modal-body">
                 <h3 style="margin-bottom: 15px; color: var(--power-blue);">Please read the following instructions
@@ -1404,7 +1404,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="startQuiz()">I Understand - Start Quiz</button>
+                <button class="btn btn-primary" onclick="startQuiz(window.pendingQuizId)">I Understand - Start Quiz</button>
             </div>
         </div>
     </div>
@@ -1473,77 +1473,80 @@ async function api(path, { method="GET", data } = {}){
   return json;
 }
 
+
 // ---- Load quizzes from backend ----
 async function loadQuizzes(){
-  try {
-    const data = await api("/api/games/");
-    const container = document.getElementById("quiz-card-container");
-    container.innerHTML = "";
+    try {
+        const data = await api("/api/games/");
+        const container = document.getElementById("quiz-card-container");
+        container.innerHTML = "";
 
-    (data.results || []).forEach(q => {
-      const card = document.createElement("div");
-      card.className = "quiz-card";
-      card.dataset.id = q.id; // store id here
-      card.innerHTML = `
-        <h3>${q.title}</h3>
-        <p>${q.category || ""}</p>
-        <button type="button" class="start-btn">Start</button>
-      `;
-      container.appendChild(card);
-    });
+        (data.results || []).forEach(q => {
+            const card = document.createElement("div");
+            card.className = "quiz-card";
+            card.dataset.id = q.id; // store id here
+            card.innerHTML = `
+                <h3>${q.title}</h3>
+                <p>${q.category || ""}</p>
+                <button type="button" class="start-btn">Start</button>
+            `;
+            container.appendChild(card);
+        });
 
-    // Attach (or re-attach) one delegated listener
-    if (!container.dataset.bound) {
-      container.addEventListener("click", (e) => {
-        const btn = e.target.closest(".start-btn");
-        if (!btn) return;
-        const card = btn.closest(".quiz-card");
-        const id = card?.dataset?.id;
-        if (!id) {
-          alert("This quiz is missing its id.");
-          return;
+        // Attach (or re-attach) one delegated listener
+        if (!container.dataset.bound) {
+            container.addEventListener("click", (e) => {
+                const btn = e.target.closest(".start-btn");
+                if (!btn) return;
+                const card = btn.closest(".quiz-card");
+                const id = card?.dataset?.id;
+                if (!id) {
+                    alert("This quiz is missing its id.");
+                    return;
+                }
+                // Instead of starting quiz directly, show modal and store id
+                window.pendingQuizId = id;
+                document.getElementById('rules-modal').style.display = 'flex';
+            });
+            container.dataset.bound = "1";
         }
-        console.log("Quiz card id:", id);
-startQuiz(id);
-      });
-      container.dataset.bound = "1";
+    } catch(e){
+        console.error(e);
+        alert("Failed to load quizzes");
     }
-  } catch(e){
-    console.error(e);
-    alert("Failed to load quizzes");
-  }
 }
 
 // ---- Start quiz ----
 async function startQuiz(id){
-  if (!id || id === "undefined") {
-    alert("Invalid quiz id.");
-    return;
-  }
-  try {
-    const q = await api(`/api/games/${id}/`);
-    quizzes[id] = q;
-    currentQuiz = id;
-    currentQuestionIndex = 0;
-    userAnswers = Array(q.questions.length).fill(null);
-    markedQuestions = Array(q.questions.length).fill(false);
+    document.getElementById('rules-modal').style.display = 'none';
+    if (!id || id === "undefined") {
+        alert("Invalid quiz id.");
+        return;
+    }
+    try {
+        const q = await api(`/api/games/${id}/`);
+        quizzes[id] = q;
+        currentQuiz = id;
+        currentQuestionIndex = 0;
+        userAnswers = Array(q.questions.length).fill(null);
+        markedQuestions = Array(q.questions.length).fill(false);
 
-    // Switch UI
-    dashboardView.style.display = "none";
-    quizView.style.display = "block";
-    quizTitleEl.textContent = q.title;
+        // Switch UI
+        dashboardView.style.display = "none";
+        quizView.style.display = "block";
+        quizTitleEl.textContent = q.title;
 
-    // Timer
-    timeLeft = (q.duration || 10) * 60; // fallback 10 min
-    clearInterval(timerInterval);
-    timerInterval = setInterval(updateTimer, 1000);
-    updateTimer();
+        // Timer
+        timeLeft = (q.duration || 10) * 60; // fallback 10 min
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
 
-    loadQuestion(0);
-  } catch(e){
-    console.error(e);
-    alert("Failed to start quiz");
-  }
+        loadQuestion(0);
+    } catch(e){
+        console.error(e);
+        alert("Failed to start quiz");
+    }
 }
 
 // ---- Load a question ----
@@ -1618,7 +1621,7 @@ function updateTimer(){
 async function submitQuiz(){
   clearInterval(timerInterval);
   try {
-    const res = await api(`/api/games/${currentQuiz}/submit`, {
+    const res = await api(`/api/games/${currentQuiz}/submit/`, {
       method:"POST",
       data:{ answers: userAnswers }
     });
