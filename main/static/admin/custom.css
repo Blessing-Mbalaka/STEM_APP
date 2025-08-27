@@ -1,0 +1,45 @@
+/* General Admin look */
+body, #container {
+  background-color: #f8f9fa !important;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Tables */
+#changelist table {
+  width: 100% !important;
+}
+#changelist table th {
+  background-color: #0d6efd !important;
+  color: white !important;
+  padding: 12px;
+}
+#changelist table td {
+  padding: 10px;
+}
+#changelist table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Buttons */
+input[type=submit], .button, .submit-row input {
+  background-color: #0d6efd !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+}
+input[type=submit]:hover, .button:hover {
+  background-color: #0b5ed7 !important;
+}
+
+/* Delete button */
+.deletelink {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+.deletelink:hover {
+  background-color: #bb2d3b !important;
+}

@@ -25,6 +25,30 @@ class Course(TimeStamped, Slugged):
     def __str__(self):
         return self.title
 
+
+# Resource model for YouTube/video links
+class CourseResource(TimeStamped):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="resources")
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    resource_type = models.CharField(max_length=50, choices=[
+        ('video', 'Video'),
+        ('youtube', 'YouTube'),
+        ('audio', 'Audio'),
+        ('document', 'Document'),
+        ('link', 'Link')
+    ], blank=True, help_text="Type of resource")
+    url = models.URLField(blank=True, help_text='For YouTube or external links')
+    file = models.FileField(upload_to='course_resources/', blank=True, null=True, help_text='For uploaded files')
+    learning_style = models.CharField(max_length=20, choices=[
+        ('visual', 'Visual'),
+        ('auditory', 'Auditory'),
+        ('readwrite', 'Read/Write')
+    ], default='visual')
+
+    def __str__(self):
+        return f"{self.title} ({self.resource_type})"
+
 class Enrollment(TimeStamped):
     ENROLL_STATUS = (
         ("enrolled", "Enrolled"),

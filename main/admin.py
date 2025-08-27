@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
+
+from .models.course import Course, CourseResource
+admin.site.register(Course)
+admin.site.register(CourseResource)
+
 from main.models import (
     CustomUser, Profile,
     Game, GameQuestion, GameScore,

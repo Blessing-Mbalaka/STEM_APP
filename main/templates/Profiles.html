@@ -873,21 +873,31 @@ function renderProfile(){
 
 // ---- Event listeners ----
 function setupEventListeners(){
-    backToDashboard.addEventListener('click', e => {
-        e.preventDefault();
-        location.href = "/"; // go back to index/dashboard
-    });
+    // Back to dashboard
+    if (backToDashboard) {
+        backToDashboard.addEventListener('click', e => {
+            e.preventDefault();
+            location.href = "/";
+        });
+    }
 
-    // Tabs
+    // Tabs: show only active tab content
     profileTabs.forEach(tab => {
         tab.addEventListener('click', function(){
             const tabId = this.dataset.tab;
             profileTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
             profileTabContents.forEach(c => c.classList.remove('active'));
-            document.getElementById(`${tabId}-tab`).classList.add('active');
+            profileTabContents.forEach(c => c.style.display = 'none');
+            const activeTab = document.getElementById(`${tabId}-tab`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.display = 'block';
+            }
         });
     });
+    // On load, show only the first tab
+    profileTabContents.forEach((c,i) => c.style.display = i === 0 ? 'block' : 'none');
 
     // Save profile to server
     saveProfileBtn.addEventListener('click', async () => {
@@ -906,6 +916,12 @@ function setupEventListeners(){
             notificationPref: document.getElementById('notificationPref').value,
             studyTimes: document.getElementById('studyTimes').value
         };
+        // Add learning styles
+        const learningStyles = Array.from(document.querySelectorAll('input[name="learning-style"]:checked')).map(i => i.value);
+        payload.learningStyles = learningStyles;
+        // Add stream selection
+        const stream = document.querySelector('input[name="stream"]:checked');
+        payload.stream = stream ? stream.value : "";
         try {
             await api("/api/me", { method:"PATCH", data: payload });
             alert("Profile saved successfully");
