@@ -33,8 +33,8 @@ urlpatterns = [
     path("api/games/<int:pk>/submit/", api_game_submit, name="api_game_submit"),
 
     #courses API
-    path("api/courses", api_courses, name="api_courses"),
-
+    
+    path("api/courses/", api_courses, name="api_courses"),
     #API classes
     path("api/classes", api_classes_list, name="api_classes_list"),
     # same path for POST (reserve) and DELETE (unreserve) — handled by method inside the view
