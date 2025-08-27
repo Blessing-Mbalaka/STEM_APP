@@ -1,23 +1,28 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
+
 {% block content %}
 <div class="container mt-4">
   <div class="row">
-    <div class="col-md-4">
-      <div class="card text-white bg-primary mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Users</h5>
-          <p class="card-text">{{ site.each_context.request.user.username }}</p>
+    {% for app in app_list %}
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-primary text-white fw-bold">
+          {{ app.name }}
         </div>
+        <ul class="list-group list-group-flush">
+          {% for model in app.models %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ model.admin_url }}" class="text-decoration-none">{{ model.name }}</a>
+            {% if model.add_url %}
+            <a href="{{ model.add_url }}" class="btn btn-sm btn-success">Add</a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card text-white bg-success mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Models</h5>
-          <p class="card-text">Manage your data here.</p>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

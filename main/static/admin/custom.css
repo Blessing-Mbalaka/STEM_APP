@@ -1,33 +1,81 @@
-/* General Admin look */
+/* ===== General Layout ===== */
 body, #container {
   background-color: #f8f9fa !important;
   font-family: "Poppins", sans-serif;
 }
 
-/* Tables */
+/* Navbar (branding) */
+#header, .navbar {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+}
+#header h1, .navbar-brand {
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+/* Sidebar */
+#nav-sidebar {
+  background-color: #fff !important;
+  border-right: 1px solid #dee2e6;
+}
+#nav-sidebar .module caption {
+  background-color: #e9ecef !important;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+#nav-sidebar a {
+  color: #0d6efd !important;
+}
+#nav-sidebar a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Dashboard index “cards” */
+#content-main .module {
+  border: 1px solid #dee2e6 !important;
+  border-radius: .5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+  margin-bottom: 1.5rem;
+}
+#content-main .module caption {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+  padding: .75rem;
+  border-radius: .5rem .5rem 0 0;
+}
+
+/* ===== Tables ===== */
+#changelist table {
+  @apply table table-striped table-hover; /* if Tailwind is enabled */
+}
 #changelist table {
   width: 100% !important;
+  border-collapse: collapse;
 }
 #changelist table th {
   background-color: #0d6efd !important;
-  color: white !important;
-  padding: 12px;
-}
-#changelist table td {
+  color: #fff !important;
   padding: 10px;
 }
+#changelist table td {
+  padding: 8px;
+  vertical-align: middle;
+}
 #changelist table tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f9f9f9 !important;
 }
 
-/* Buttons */
+/* ===== Buttons ===== */
 input[type=submit], .button, .submit-row input {
   background-color: #0d6efd !important;
   color: white !important;
   border: none !important;
   padding: 8px 16px !important;
-  border-radius: 6px !important;
-  cursor: pointer;
+  border-radius: .375rem !important;
+  font-weight: 500;
+  transition: background-color .2s;
 }
 input[type=submit]:hover, .button:hover {
   background-color: #0b5ed7 !important;
@@ -37,9 +85,32 @@ input[type=submit]:hover, .button:hover {
 .deletelink {
   background-color: #dc3545 !important;
   color: white !important;
-  border-radius: 6px;
+  border-radius: .375rem !important;
   padding: 6px 12px;
 }
 .deletelink:hover {
   background-color: #bb2d3b !important;
+}
+
+/* ===== Forms ===== */
+fieldset.module {
+  border: 1px solid #dee2e6 !important;
+  padding: 1rem !important;
+  border-radius: .5rem;
+  background: #fff !important;
+}
+fieldset.module h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.form-row label {
+  font-weight: 500;
+  margin-bottom: .25rem;
+}
+input[type=text], input[type=password], select, textarea {
+  border: 1px solid #ced4da !important;
+  border-radius: .375rem !important;
+  padding: .5rem .75rem !important;
+  width: 100% !important;
 }
