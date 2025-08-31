@@ -4,6 +4,7 @@ from .course import Course, CourseResource, Enrollment
 from .poll import CoursePollVote
 from .classes import ClassSession, Reservation
 from .forum import ForumCategory, Thread, Post, PostLike
+from .message import Message
 
 __all__ = [
     "CustomUser", "Profile",
@@ -11,4 +12,5 @@ __all__ = [
     "Course", "CourseResource", "Enrollment", "CoursePollVote",
     "ClassSession", "Reservation",
     "ForumCategory", "Thread", "Post", "PostLike",
+    "Message",
 ]

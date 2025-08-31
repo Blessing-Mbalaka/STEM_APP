@@ -15,6 +15,7 @@ from main.views.courses import (
     api_course_sequence,
     api_course_poll_vote,
 )
+from main.views.messages import api_messages_list, api_messages_create, api_messages_read
 from main.views.classes import api_tutor_classes, api_tutor_class_detail
 
 
@@ -72,6 +73,10 @@ urlpatterns = [
     # Tutor classes scheduling
     path('api/tutor/classes', api_tutor_classes, name='api_tutor_classes'),
     path('api/tutor/classes/<int:pk>', api_tutor_class_detail, name='api_tutor_class_detail'),
+    # Messaging
+    path('api/messages', api_messages_list, name='api_messages_list'),
+    path('api/messages/send', api_messages_create, name='api_messages_create'),
+    path('api/messages/<int:pk>/read', api_messages_read, name='api_messages_read'),
     # Course viewer + poll
     path('api/courses/<int:pk>/sequence', api_course_sequence, name='api_course_sequence'),
     path('api/courses/<int:pk>/resources/<int:res_id>/poll/vote', api_course_poll_vote, name='api_course_poll_vote'),

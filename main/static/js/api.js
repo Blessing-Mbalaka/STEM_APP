@@ -37,5 +37,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (el) el.textContent = me.authenticated ? `Hi, ${name}` : "Not signed in";
     const av = document.getElementById('whoami-avatar');
     if (av && me.avatar_url){ av.src = me.avatar_url; av.style.display = 'inline-block'; }
+    // Unread messages badge (student header)
+    try {
+      const inbox = await api('/api/messages?unread=1');
+      const cnt = (inbox.results||[]).length;
+      const badge = document.getElementById('msg-count');
+      if (badge) { badge.textContent = String(cnt); badge.style.display = cnt>0 ? 'inline-block' : 'none'; }
+    } catch {}
   } catch {}
 });

@@ -6,6 +6,7 @@ DIFFICULTY = (("easy","Easy"),("medium","Medium"),("hard","Hard"))
 
 class Game(TimeStamped, Slugged):
     title = models.CharField(max_length=200, unique=True)
+    points = models.IntegerField(default=0)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=100, blank=True)     # e.g., stem / steam / general
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY, blank=True)
