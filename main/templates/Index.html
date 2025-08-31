@@ -420,13 +420,17 @@
             <i class="fas fa-cog"></i>
             <span class="nav-text">Settings</span>
         </a>
+        <a href="#" class="nav-item" id="logoutLink">
+            <i class="fas fa-right-from-bracket"></i>
+            <span class="nav-text">Logout</span>
+        </a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
             <div class="header-dashboard">
-                <h1 class="welcome-message" id="welcomeMessage">Hi, Musa! Ready to Learn Today?</h1>
+                <h1 class="welcome-message" id="welcomeMessage">&nbsp;</h1>
                 <p>Learn new skills, earn badges, and unlock your potential</p>
             </div>
 
@@ -506,6 +510,7 @@
         </a>
     </div>
 
+    <script src="{% static 'js/api.js' %}"></script>
     <script>
 document.addEventListener('DOMContentLoaded', async function () {
     // Time of day greeting
@@ -522,7 +527,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const res = await fetch("/api/me");
         if (res.ok) {
             const user = await res.json();
-            const name = user.first_name || user.username || "Learner";
+            const name = (user.display_name && user.display_name.trim()) || [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || "Learner";
             welcomeMessage.textContent = `${greeting}, ${name}! Ready to Learn Today?`;
         } else {
             welcomeMessage.textContent = `${greeting}! Ready to Learn Today?`;
@@ -548,6 +553,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             this.classList.add('active');
         });
     });
+
+    // Logout handler
+    const logoutLink = document.getElementById('logoutLink');
+    if (logoutLink){
+        logoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await api('/api/auth/logout', { method: 'POST' });
+            } catch(_) {}
+            window.location.href = '/login/';
+        });
+    }
 
     // Confetti effect
     function createConfetti() {

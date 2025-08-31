@@ -3,23 +3,25 @@ from .base import TimeStamped
 from .course import Course
 from .user import CustomUser
 
+
 class ClassSession(TimeStamped):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="sessions")
     title = models.CharField(max_length=200)
     starts_at = models.DateTimeField()
     ends_at = models.DateTimeField()
-    location = models.CharField(max_length=200, blank=True)     # or meeting link
+    location = models.CharField(max_length=200, blank=True)  # meeting link (Teams/Zoom/YouTube Live)
     capacity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="classes_created")
 
     class Meta:
         ordering = ["starts_at"]
-        indexes = [
-            models.Index(fields=["starts_at"]),
-        ]
+        indexes = [models.Index(fields=["starts_at"])]
 
     def __str__(self):
-        return f"{self.course.title} – {self.title}"
+        course_title = self.course.title if self.course_id else "Course"
+        return f"{course_title} — {self.title}"
+
 
 class Reservation(TimeStamped):
     STATUS = (
@@ -40,4 +42,5 @@ class Reservation(TimeStamped):
         ]
 
     def __str__(self):
-        return f"{self.user} – {self.session} ({self.status})"
+        return f"{self.user} — {self.session} ({self.status})"
+

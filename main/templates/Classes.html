@@ -903,25 +903,23 @@ async function loadClasses(){
   classesList = data.results || [];
   // Derive myBookings and calendarEvents
   myBookings = classesList
-    .filter(c => c.reserved)
     .map(c => ({
       id: c.id,
       tutorId: c.id,
-      title: `${c.subject} Session`,
-      tutor: c.tutor,
-      date: fmtDateTime(c.when),
-      duration: "1 hour",
-      subject: c.subject,
-      status: "upcoming",
-      meetingLink: "#",
+      title: c.title || (c.course ? `${c.course} Session` : 'Session'),
+      tutor: c.tutor || '',
+      date: (c.starts_at || ''),
+      duration: '',
+      subject: c.course || '',
+      status: 'upcoming',
+      meetingLink: c.location || '#',
       slotId: c.id
     }));
 
   calendarEvents = classesList
-    .filter(c => true)
     .map(c => {
-      const d = parseDate(c.when);
-      return d ? { date: d, title: c.title || `${c.subject} Session`, time: d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), tutor: c.tutor } : null;
+      const d = parseDate(c.starts_at);
+      return d ? { date: d, title: c.title || (c.course ? `${c.course} Session` : 'Session'), time: d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), tutor: c.tutor || '' } : null;
     })
     .filter(Boolean);
 }
@@ -1021,6 +1019,7 @@ function renderBookings(filter='all'){
     el.className = 'booking-card';
     el.dataset.bookingId = b.id;
     el.dataset.classId = b.tutorId;
+    el.dataset.link = b.meetingLink || '#';
 
     el.innerHTML = `
       <div class="booking-header">
@@ -1212,6 +1211,13 @@ function setupEvents(){
           alert(err.message || "Failed to cancel");
         }
       }
+    }
+    // Open real meeting link if present
+    if (e.target.closest('.btn-join')){
+      const link = card && card.dataset ? card.dataset.link : '';
+      if (link && link !== '#') { window.open(link, '_blank'); }
+      else { alert('No meeting link available for this session yet.'); }
+      return;
     }
     if (e.target.closest('.btn-join')){
       alert('Opening Microsoft Teams (placeholder)…');

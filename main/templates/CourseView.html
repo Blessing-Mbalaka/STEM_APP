@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; background:#f7f7f9; color:#222; }
+    .wrap { max-width: 1000px; margin: 20px auto; padding: 16px; }
+    .card { background:#fff; border-radius:12px; padding:16px; box-shadow: 0 6px 18px rgba(0,0,0,.06); margin-bottom:12px; }
+    .title { font-weight:700; color:#24adb7; margin-bottom: 6px; }
+    .muted { color:#666; font-size:13px; }
+    .btn { background:#24adb7; color:#fff; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; }
+    .options { display:flex; flex-direction:column; gap:8px; margin: 8px 0; }
+    .result { height: 10px; background:#e9ecef; border-radius:6px; overflow:hidden; }
+    .bar { height:100%; background:#24adb7; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2 id="courseTitle" class="title">Course</h2>
+    <div id="seq"></div>
+  </div>
+  <script src="{% static 'js/api.js' %}"></script>
+  <script>
+    const courseId = new URLSearchParams(location.search).get('id');
+    if (!courseId) {
+      document.getElementById('seq').textContent = 'Missing course id';
+    }
+    function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+
+    async function load(){
+      const data = await api(`/api/courses/${courseId}/sequence`);
+      document.getElementById('courseTitle').textContent = data.course.title;
+      const seq = document.getElementById('seq'); seq.innerHTML='';
+      (data.sequence||[]).forEach(item => {
+        const c = el('div','card');
+        c.append(el('div','title', item.title));
+        if (item.description) c.append(el('div','muted', item.description));
+        if (item.type === 'video' || item.type === 'audio' || item.type === 'document' || item.type === 'link'){
+          if (item.url) c.append(el('div','', `<a href="${item.url}" target="_blank">Open link</a>`));
+          if (item.file) c.append(el('div','', `<a href="${item.file}" target="_blank">Open file</a>`));
+        } else if (item.type === 'quiz' && item.game_id){
+          const b = el('button','btn','Open Quiz'); b.onclick = ()=> { window.location.href = '/games/'; alert('Start the quiz from Games page.'); };
+          c.append(b);
+        } else if (item.type === 'poll'){
+          renderPoll(c, item);
+        }
+        seq.append(c);
+      });
+    }
+
+    async function submitVote(item, choices){
+      await api(`/api/courses/${courseId}/resources/${item.id}/poll/vote`, { method:'POST', data: { choices } });
+      await load();
+    }
+
+    function renderPoll(container, item){
+      container.append(el('div','', item.question || '')); 
+      const opts = el('div','options');
+      const inputs = [];
+      (item.options||[]).forEach((t,i)=>{
+        const id = `opt-${item.id}-${i}`;
+        const lab = el('label','');
+        const inp = document.createElement('input'); inp.type = item.multi ? 'checkbox' : 'radio'; inp.name = `poll-${item.id}`; inp.value = i; lab.appendChild(inp); lab.append(' ', t);
+        if (item.my_vote && ((Array.isArray(item.my_vote) && item.my_vote.includes(i)) || item.my_vote===i)) inp.checked = true;
+        inputs.push(inp); opts.append(lab);
+      });
+      container.append(opts);
+      const act = el('div','');
+      const voteBtn = el('button','btn','Vote');
+      voteBtn.onclick = ()=>{
+        if (item.multi){
+          const sel = inputs.map((x,idx)=> x.checked?idx:null).filter(x=>x!==null);
+          if (!sel.length) { alert('Choose at least one option'); return; }
+          submitVote(item, sel);
+        } else {
+          const sel = inputs.findIndex(x=>x.checked);
+          if (sel<0) { alert('Choose one option'); return; }
+          submitVote(item, sel);
+        }
+      };
+      act.append(voteBtn); container.append(act);
+      // results
+      const counts = item.results || [];
+      const total = counts.reduce((a,b)=>a+b,0) || 1;
+      (item.options||[]).forEach((t,i)=>{
+        const row = el('div','', `<div class="muted">${t}</div>`);
+        const bar = el('div','result');
+        const b = el('div','bar'); b.style.width = `${Math.round(100*counts[i]/total)}%`;
+        bar.append(b); container.append(row); container.append(bar);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', load);
+  </script>
+</body>
+</html>
+

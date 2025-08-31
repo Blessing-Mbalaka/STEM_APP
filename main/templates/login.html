@@ -294,14 +294,15 @@
                 <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" required>
             </div>
+            <div id="loginError" style="color:#b00020; font-size:0.9rem; margin: 6px 0; display:none;"></div>
             <div class="forgot-password">
                 <a href="#" id="forgotPassword">Forgot Password?</a>
             </div>
             <div class="role-toggle">
                 <div class="role-option active" id="childRole">I'm a Student</div>
-                <div class="role-option" id="parentRole">I'm a Teacher</div>
+                <div class="role-option" id="parentRole">I'm a Tutor</div>
             </div>
-            <button type="button" class="auth-btn" onclick="location.href='/profiles/'">Get Started!</button>
+            <button type="submit" class="auth-btn">Login</button>
         </form>
         
         <form class="auth-form" id="signupForm" style="display: none;">
@@ -310,17 +311,22 @@
                 <input type="text" id="signupName" required>
             </div>
             <div class="form-group">
+                <label for="signupSurname">Surname</label>
+                <input type="text" id="signupSurname" required>
+            </div>
+            <div class="form-group">
                 <label for="signupEmail">Email</label>
                 <input type="email" id="signupEmail" required>
             </div>
             <div class="form-group">
                 <label for="signupPassword">Password</label>
-                <input type="password" id="signupPassword" required>
+                <input type="password" id="signupPassword" required minlength="6" placeholder="Min 6 characters">
             </div>
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
                 <input type="password" id="confirmPassword" required>
             </div>
+            <div id="signupError" style="color:#b00020; font-size:0.9rem; margin: 6px 0; display:none;"></div>
             <div class="role-toggle">
                 <div class="role-option active" id="signupChildRole">I'm a Student</div>
                 <div class="role-option" id="signupParentRole">I'm a Teacher</div>
@@ -339,6 +345,7 @@
     </div>
 
 
+<script src="{% static 'js/api.js' %}"></script>
 <script src="{% static 'js/login.js' %}"></script>
 <script>
 // Hide splash screen and show login form after DOMContentLoaded

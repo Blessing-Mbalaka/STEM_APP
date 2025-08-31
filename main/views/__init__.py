@@ -2,7 +2,7 @@
 from .index import index
 from .login import login_page, api_me, api_login, api_logout, api_register
 from .profiles import profiles
-from .game import games, api_games_list, api_game_detail, api_game_submit
+from .game import games, add_question, api_games_list, api_game_detail, api_game_submit, api_game_add_question
 from .courses import courses, api_courses
 from .classes import classes, api_classes_list, api_class_reserve, api_class_unreserve, api_me_classes
 from .forum import forum, api_forum_categories, api_forum_threads, api_forum_thread_detail, api_forum_thread_posts, api_forum_post_like
@@ -18,9 +18,11 @@ __all__ = [
     "api_register",
     "profiles",
     "games",
+    "add_question",
     "api_games_list",
     "api_game_detail",
     "api_game_submit",
+    "api_game_add_question",
     "courses", "api_courses",
     "classes",
     "forum",

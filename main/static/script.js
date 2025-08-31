@@ -139,6 +139,9 @@
             // Update active question in navigation
             updateQuestionNavigation();
 
+            // Debug: log question data to console
+            console.log('Rendering question:', question);
+
             let questionHTML = `
                 <div class="question-header">
                     <div class="question-number">Question ${question.id}</div>

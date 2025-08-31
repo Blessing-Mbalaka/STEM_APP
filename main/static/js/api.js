@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const me = await api("/api/me");
     const el = document.getElementById("whoami");
-    if (el) el.textContent = me.authenticated ? `Hi, ${me.display_name}` : "Not signed in";
+    const name = (me.display_name && me.display_name.trim()) || [me.firstName, me.lastName].filter(Boolean).join(' ') || me.username || '';
+    if (el) el.textContent = me.authenticated ? `Hi, ${name}` : "Not signed in";
+    const av = document.getElementById('whoami-avatar');
+    if (av && me.avatar_url){ av.src = me.avatar_url; av.style.display = 'inline-block'; }
   } catch {}
 });

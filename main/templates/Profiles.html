@@ -590,7 +590,7 @@
                             <i class="fas fa-camera"></i>
                         </div>
                     </div>
-                    <div class="profile-name" id="profileName">Thando Mkhize</div>
+                    <div class="profile-name" id="profileName"></div>
                     <div class="profile-role">Matric Learner</div>
                     
                     <div class="profile-stats">
@@ -612,8 +612,14 @@
                         </div>
                     </div>
                     
-                    <button class="btn btn-primary" id="saveProfileBtn" style="width: 100%;">
+                    <button class="btn btn-primary" id="saveProfileBtn" style="width: 100%; margin-bottom:10px;">
                         <i class="fas fa-save"></i> Save Profile
+                    </button>
+                    <a class="btn btn-secondary btn-small" href="/change-password/" style="width: 100%; margin-bottom:10px; text-decoration:none; justify-content:center;">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
+                    <button class="btn btn-secondary btn-small" id="deleteAccountBtn" style="width: 100%;">
+                        <i class="fas fa-user-slash"></i> Delete Account
                     </button>
                 </div>
                 
@@ -632,11 +638,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" value="Mkhize">
+                                <input type="text" id="lastName" value="">
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" id="email" value="thando.mkhize@example.com">
+                                <input type="email" id="email" value="">
                             </div>
                             <div class="form-group">
                                 <label for="phone">Phone</label>
@@ -657,7 +663,7 @@
                             </div>
                             <div class="form-group full-width">
                                 <label for="bio">Bio</label>
-                                <textarea id="bio" rows="3">I'm a matric learner passionate about STEM subjects, especially Mathematics and Physical Sciences. My goal is to study Engineering at university.</textarea>
+                                <textarea id="bio" rows="3"></textarea>
                             </div>
                         </form>
                     </div>
@@ -841,6 +847,8 @@ async function loadProfile(){
         }
         // Merge server data into local state
         profileData = me;
+        // compatibility: ensure pointsEarned key exists for UI
+        profileData.pointsEarned = typeof me.total_points === 'number' ? me.total_points : (me.pointsEarned || 0);
         renderProfile();
     } catch(e){
         alert("Failed to load profile");
@@ -849,7 +857,7 @@ async function loadProfile(){
 
 // ---- Render profile data into UI ----
 function renderProfile(){
-    profileName.textContent = profileData.display_name || profileData.username;
+    profileName.textContent = profileData.display_name || [profileData.firstName, profileData.lastName].filter(Boolean).join(' ') || profileData.username;
     completedSessions.textContent = profileData.completedSessions || 0;
     quizScore.textContent = profileData.quizScore || "N/A";
     streakDays.textContent = profileData.streakDays || 0;
@@ -869,6 +877,15 @@ function renderProfile(){
     document.getElementById('languagePref').value = profileData.languagePref || "english";
     document.getElementById('notificationPref').value = profileData.notificationPref || "all";
     document.getElementById('studyTimes').value = profileData.studyTimes || "";
+    // Render avatar if available
+    if (profileData.avatar_url){
+        const avatar = document.querySelector('.profile-avatar');
+        if (avatar){
+            const bust = (profileData.avatar_url.indexOf('?') === -1 ? `?v=${Date.now()}` : `&v=${Date.now()}`);
+            avatar.innerHTML = `<img src="${profileData.avatar_url}${bust}" alt="Profile Avatar">`;
+            avatar.querySelector('img').style.objectFit = 'cover';
+        }
+    }
 }
 
 // ---- Event listeners ----
@@ -930,13 +947,45 @@ function setupEventListeners(){
         }
     });
 
+    // Delete account
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) return;
+            try {
+                await api('/api/me/delete', { method: 'POST', data: { confirm: 'yes' } });
+                alert('Account deleted');
+                location.href = '/';
+            } catch(e){
+                alert(e?.json?.error || 'Failed to delete account');
+            }
+        });
+    }
+
     // Avatar modal
     avatarEdit.addEventListener('click', () => avatarModal.style.display = 'flex');
     closeAvatarModal.addEventListener('click', () => avatarModal.style.display = 'none');
     cancelAvatar.addEventListener('click', () => avatarModal.style.display = 'none');
-    saveAvatar.addEventListener('click', () => {
-        alert("Avatar upload not yet wired to backend");
-        avatarModal.style.display = 'none';
+    // Click avatar or edit badge to open picker
+    const avatarBox = document.querySelector('.profile-avatar');
+    if (avatarBox) { avatarBox.style.cursor = 'pointer'; avatarBox.addEventListener('click', () => avatarUpload.click()); }
+    if (avatarEdit) { avatarEdit.addEventListener('click', () => avatarUpload.click()); }
+    
+    saveAvatar.addEventListener('click', async () => {
+        if(!avatarUpload.files || !avatarUpload.files[0]){ alert('Choose a photo first'); return; }
+        const fd = new FormData();
+        fd.append('avatar', avatarUpload.files[0]);
+        try {
+            const res = await fetch('/api/me/avatar', { method:'POST', headers:{ 'X-CSRFToken': csrftoken }, body: fd });
+            const json = await res.json();
+            if(!res.ok) throw json;
+            const avatar = document.querySelector('.profile-avatar');
+            if (avatar){
+                avatar.innerHTML = `<img src="${json.avatar_url}" alt="Profile Avatar">`;
+                avatar.querySelector('img').style.objectFit = 'cover';
+            }
+            avatarModal.style.display = 'none';
+        } catch(e){ alert(e?.error || 'Failed to upload avatar'); }
     });
     uploadBtn.addEventListener('click', () => avatarUpload.click());
     avatarUpload.addEventListener('change', function(){

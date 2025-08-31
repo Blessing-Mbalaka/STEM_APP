@@ -4,6 +4,18 @@ from main.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import auth as auth_views
+from main.views.courses import (
+    tutor_admin,
+    api_tutor_courses,
+    api_tutor_course_detail,
+    api_tutor_course_add_resource,
+    api_tutor_resource_detail,
+    api_tutor_course_thumbnail,
+    api_tutor_course_reorder,
+    api_course_sequence,
+    api_course_poll_vote,
+)
+from main.views.classes import api_tutor_classes, api_tutor_class_detail
 
 
 
@@ -14,6 +26,7 @@ urlpatterns = [
     path('courses/', courses, name='courses'),
     path('forum/', forum, name='forum'),
     path('games/', games, name='games'),
+    path('games/add/', add_question, name='add_question'),
     path('', index, name='index'),
     path('login/', login_page, name='login'),
     path('profiles/', profiles, name='profiles'),
@@ -32,18 +45,36 @@ urlpatterns = [
     path("api/auth/register", auth_views.api_register, name="api_register"),
     path("api/auth/logout", auth_views.api_logout, name="api_logout"),
     path("api/me", auth_views.api_me, name="api_me"),
+    path("api/me/delete", auth_views.api_delete_account, name="api_delete_account"),
+    path("api/me/avatar", auth_views.api_upload_avatar, name="api_upload_avatar"),
+    path("change-password/", auth_views.change_password_page, name="change_password"),
+    path("api/auth/change-password", auth_views.api_change_password, name="api_change_password"),
 
-    # games API
-     path("games/", games, name="games"),
+    # games page (already defined above; keep single route)
 
     # Games API (trailing slashes to match your JS)
     path("api/games/", api_games_list, name="api_games_list"),
     path("api/games/<int:pk>/", api_game_detail, name="api_game_detail"),
     path("api/games/<int:pk>/submit/", api_game_submit, name="api_game_submit"),
+    path("api/games/<int:pk>/questions/", api_game_add_question, name="api_game_add_question"),
 
     #courses API
     
     path("api/courses/", api_courses, name="api_courses"),
+    # Tutor admin
+    path('tutor/admin/', tutor_admin, name='tutor_admin'),
+    path('api/tutor/courses', api_tutor_courses, name='api_tutor_courses'),
+    path('api/tutor/courses/<int:pk>', api_tutor_course_detail, name='api_tutor_course_detail'),
+    path('api/tutor/courses/<int:pk>/resources', api_tutor_course_add_resource, name='api_tutor_course_add_resource'),
+    path('api/tutor/resources/<int:res_id>', api_tutor_resource_detail, name='api_tutor_resource_detail'),
+    path('api/tutor/courses/<int:pk>/thumbnail', api_tutor_course_thumbnail, name='api_tutor_course_thumbnail'),
+    path('api/tutor/courses/<int:pk>/reorder', api_tutor_course_reorder, name='api_tutor_course_reorder'),
+    # Tutor classes scheduling
+    path('api/tutor/classes', api_tutor_classes, name='api_tutor_classes'),
+    path('api/tutor/classes/<int:pk>', api_tutor_class_detail, name='api_tutor_class_detail'),
+    # Course viewer + poll
+    path('api/courses/<int:pk>/sequence', api_course_sequence, name='api_course_sequence'),
+    path('api/courses/<int:pk>/resources/<int:res_id>/poll/vote', api_course_poll_vote, name='api_course_poll_vote'),
     #API classes
     path("api/classes", api_classes_list, name="api_classes_list"),
     # same path for POST (reserve) and DELETE (unreserve) — handled by method inside the view

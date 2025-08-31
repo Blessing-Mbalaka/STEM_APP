@@ -1477,18 +1477,50 @@ async function api(path, { method="GET", data } = {}){
 // ---- Load quizzes from backend ----
 async function loadQuizzes(){
     try {
-        const data = await api("/api/games/");
-        const container = document.getElementById("quiz-card-container");
-        container.innerHTML = "";
+    const data = await api("/api/games/");
+    console.log('Loaded quizzes from backend:', data);
+    const container = document.getElementById("quiz-card-container");
+    container.innerHTML = "";
+        refreshUserPoints();
 
         (data.results || []).forEach(q => {
+            // Skip inactive quizzes in the dashboard
+            if (q && q.is_active === false) return;
+
             const card = document.createElement("div");
             card.className = "quiz-card";
-            card.dataset.id = q.id; // store id here
+            // Defensive: ensure id is present and log for debug
+            if (typeof q.id === 'undefined' || q.id === null) {
+                console.error('Quiz missing id:', q);
+                return;
+            }
+            card.dataset.id = q.id;
+            if (typeof q.question_count === 'number') {
+                card.dataset.count = String(q.question_count);
+            }
+            console.log('Creating quiz card with id:', q.id);
+
+            const difficulty = (q.difficulty || '').toString();
+            const difficultyLabel = difficulty ? (difficulty.charAt(0).toUpperCase() + difficulty.slice(1)) : 'N/A';
+            const durationLabel = (q.duration || 0) + ' min';
+            const points = (typeof q.points === 'number') ? q.points : (q.points || 0);
+            const cat = (q.category || '').toString().toLowerCase();
+            const catEmojiMap = { mathematics:'➗', physics:'⚛️', chemistry:'⚗️', art:'🎨', music:'🎵', literature:'📚', business:'💼', leadership:'🧭', communication:'💬', stem:'🧪', steam:'🎭' };
+            const emoji = catEmojiMap[cat] || '';
+
             card.innerHTML = `
-                <h3>${q.title}</h3>
-                <p>${q.category || ""}</p>
-                <button type="button" class="start-btn">Start</button>
+                <div class="quiz-points-badge">${points}</div>
+                <div class="quiz-card-header">
+                    <div class="quiz-card-title">${emoji ? emoji + ' ' : ''}${q.title}</div>
+                    <span class="quiz-card-category">${q.category || "General"}</span>
+                </div>
+                ${q.description ? `<p class="quiz-card-description">${q.description}</p>` : ''}
+                <div style="display:flex; gap:12px; margin: 10px 0; color: #666; font-size: 13px;">
+                    <span><i class="fa-regular fa-clock"></i> ${durationLabel}</span>
+                    <span><i class="fa-solid fa-gauge"></i> ${difficultyLabel}</span>
+                    ${typeof q.question_count === 'number' ? `<span><i class=\"fa-regular fa-question-circle\"></i> ${q.question_count} questions</span>` : ''}
+                </div>
+                <button type="button" class="btn ${(typeof q.question_count === 'number' && q.question_count === 0) ? 'btn-outline' : 'btn-primary'} start-btn" ${(typeof q.question_count === 'number' && q.question_count === 0) ? 'disabled' : ''}>${(typeof q.question_count === 'number' && q.question_count === 0) ? 'No Questions' : 'Start'}</button>
             `;
             container.appendChild(card);
         });
@@ -1499,9 +1531,15 @@ async function loadQuizzes(){
                 const btn = e.target.closest(".start-btn");
                 if (!btn) return;
                 const card = btn.closest(".quiz-card");
-                const id = card?.dataset?.id;
-                if (!id) {
-                    alert("This quiz is missing its id.");
+                const id = card && card.dataset && card.dataset.id ? card.dataset.id : null;
+                const count = card && card.dataset && card.dataset.count ? parseInt(card.dataset.count,10) : undefined;
+                console.log('Quiz card clicked, id:', id);
+                if (!id || id === 'undefined') {
+                    alert("This quiz is missing its id and cannot be started.");
+                    return;
+                }
+                if (typeof count === 'number' && count === 0){
+                    alert('This quiz has no questions yet. Add questions first.');
                     return;
                 }
                 // Instead of starting quiz directly, show modal and store id
@@ -1519,8 +1557,7 @@ async function loadQuizzes(){
 // ---- Start quiz ----
 async function startQuiz(id){
     document.getElementById('rules-modal').style.display = 'none';
-    if (!id || id === "undefined") {
-        alert("Invalid quiz id.");
+    if (quizStarted) {
         return;
     }
     try {
@@ -1528,6 +1565,11 @@ async function startQuiz(id){
         quizzes[id] = q;
         currentQuiz = id;
         currentQuestionIndex = 0;
+        quizStarted = true;
+        if (!q || !Array.isArray(q.questions) || q.questions.length === 0){
+            alert('This quiz has no questions yet.');
+            return;
+        }
         userAnswers = Array(q.questions.length).fill(null);
         markedQuestions = Array(q.questions.length).fill(false);
 
@@ -1542,11 +1584,25 @@ async function startQuiz(id){
         timerInterval = setInterval(updateTimer, 1000);
         updateTimer();
 
+        renderQuestionNav();
+        updateAnsweredCounter();
         loadQuestion(0);
     } catch(e){
         console.error(e);
-        alert("Failed to start quiz");
+        
     }
+}
+
+// Fetch and display the current user's total points
+async function refreshUserPoints(){
+  try {
+    const me = await api('/api/me');
+    const pts = typeof me.total_points === 'number' ? me.total_points : 0;
+    const el = document.getElementById('user-points');
+    const ml = document.getElementById('modal-points');
+    if (el) el.textContent = `${pts} pts`;
+    if (ml) ml.textContent = String(pts);
+  } catch(e) { /* ignore */ }
 }
 
 // ---- Load a question ----
@@ -1556,52 +1612,164 @@ function loadQuestion(index){
   const q = qz.questions[index];
   currentQuestionIndex = index;
 
-  let html = `
-    <div class="question-text">${q.question}</div>
-  `;
-
-  if(q.type === "multiple-choice" && Array.isArray(q.options)){
-    html += `
-      <ul class="options-list">
-        ${q.options.map((o,i)=>`
-          <li onclick="selectAnswer(${i})"
-              class="${userAnswers[index]===i ? 'selected':''}">
-            ${o}
-          </li>
-        `).join("")}
-      </ul>
+    let html = `
+        <div class="question-text">${q.question}</div>
     `;
-  }
 
-  if(q.type === "true-false"){
+    if((q.type === "multiple-choice" || q.type === "case-study") && Array.isArray(q.options)){
+        html += `
+            <div style="margin-bottom:10px; font-weight:600;">Choose 1 answer</div>
+            <ul class="options-list" style="padding-left:0;">
+                ${q.options.map((o,i)=>`
+                    <li style="list-style:none; margin-bottom:8px;">
+                        <label style="display:flex; align-items:center; cursor:pointer; width:100%;">
+                            <input type="radio" name="mc-${index}" value="${i}" ${userAnswers[index]===i ? 'checked' : ''} onclick="selectAnswer(${i})" style="margin-right:10px;">
+                            <span>${o}</span>
+                        </label>
+                    </li>
+                `).join("")}
+            </ul>
+        `;
+    }
+
+    if(q.type === "true-false"){
+        html += `
+            <div class="true-false-options">
+                <button onclick="selectAnswer(true)"  class="btn ${userAnswers[index]===true  ? 'btn-primary':'btn-outline'}">True</button>
+                <button onclick="selectAnswer(false)" class="btn ${userAnswers[index]===false ? 'btn-primary':'btn-outline'}">False</button>
+            </div>
+        `;
+    }
+
+    if(q.type === "essay"){
+        html += `
+            <div class="essay-container">
+                <textarea id="essay-input" class="essay-textarea" rows="6" placeholder="Type your answer here...">${userAnswers[index] ? userAnswers[index] : ""}</textarea>
+                <button class="btn" onclick="saveEssayAnswer()">Save Answer</button>
+            </div>
+        `;
+    }
+
+    if(q.type === "fill-blank"){
+        html += `
+            <div class="fill-blank-container">
+                <input id="fill-blank-input" class="fill-blank-input" type="text" value="${userAnswers[index] ? userAnswers[index] : ""}" placeholder="Enter your answer..." />
+                <button class="btn" onclick="saveFillBlankAnswer()">Save Answer</button>
+            </div>
+        `;
+    }
+
+    if(q.type === "matching"){
+        // Ensure default structure
+        if (!Array.isArray(userAnswers[index])) userAnswers[index] = [];
+        const pairs = userAnswers[index];
+        const left = Array.isArray(q.leftItems) ? q.leftItems : [];
+        const right = Array.isArray(q.rightItems) ? q.rightItems : [];
+
+        html += `
+            <div class="matching-container">
+                <div class="matching-column">
+                    <div style="font-weight:600; margin-bottom:8px;">Left</div>
+                    ${left.map((txt, li)=>{
+                        const used = pairs.some(p => p[0] === li);
+                        return `<div class="matching-item ${used? 'disabled':''}" data-li="${li}" onclick="selectMatchingLeft(${li})">${txt}</div>`
+                    }).join("")}
+                </div>
+                <div class="matching-column">
+                    <div style="font-weight:600; margin-bottom:8px;">Right</div>
+                    ${right.map((txt, ri)=>{
+                        const used = pairs.some(p => p[1] === ri);
+                        return `<div class="matching-item ${used? 'disabled':''}" data-ri="${ri}" onclick="selectMatchingRight(${ri})">${txt}</div>`
+                    }).join("")}
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <div style="font-weight:600; margin-bottom:6px;">Selected Pairs</div>
+                <ul id="matching-pairs" style="padding-left:18px;">
+                    ${pairs.map((p,i)=>`<li>${left[p[0]] ?? p[0]} ⇄ ${right[p[1]] ?? p[1]} <button class="btn" style="margin-left:8px;" onclick="removeMatchingPair(${i})">Remove</button></li>`).join("")}
+                </ul>
+                <div id="matching-pending" style="color:#666; font-size:13px; margin-top:6px;"></div>
+            </div>
+        `;
+    }
+
+    if(q.type && q.type.startsWith("chart-")){
+        // Chart selection behaves like MC: select an index based on labels
+        const chartId = `chart-${currentQuiz}-${index}`;
+        const labels = (q.chartData && Array.isArray(q.chartData.labels)) ? q.chartData.labels : [];
+        html += `
+            <div class="chart-container">
+                <canvas id="${chartId}" height="200"></canvas>
+            </div>
+            <div style="margin-top:10px;">
+                <div style="margin-bottom:8px; font-weight:600;">Select the correct label</div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    ${labels.map((lab,i)=>`<button class="btn ${userAnswers[index]===i ? 'btn-primary':''}" onclick="selectAnswer(${i})">${lab}</button>`).join("")}
+                </div>
+            </div>
+        `;
+        setTimeout(()=>{
+            try {
+                const ctx = document.getElementById(chartId).getContext('2d');
+                if (window._qChart) { window._qChart.destroy(); }
+                window._qChart = new Chart(ctx, {
+                    type: (q.type.replace('chart-','') || 'bar'),
+                    data: q.chartData || { labels: [], datasets: [] },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            } catch(e) { console.warn('Chart render failed', e); }
+        }, 0);
+    }
+
+    // Basic nav
     html += `
-      <div class="true-false-options">
-        <button onclick="selectAnswer(true)"  class="${userAnswers[index]===true  ? 'selected':''}">True</button>
-        <button onclick="selectAnswer(false)" class="${userAnswers[index]===false ? 'selected':''}">False</button>
-      </div>
+        <div class="question-actions">
+            ${index > 0 ? `<button class="btn" onclick="loadQuestion(${index-1})">Prev</button>` : `<span></span>`}
+            ${index < qz.questions.length - 1
+                ? `<button class="btn btn-primary" onclick="loadQuestion(${index+1})">Next</button>`
+                : `<button class="btn submit-btn" onclick="submitQuiz()">Submit</button>`
+            }
+        </div>
     `;
-  }
 
-  // (Add other types later as you need them)
+    questionContent.innerHTML = html;
+    renderQuestionNav();
+    updateAnsweredCounter();
 
-  // Basic nav
-  html += `
-    <div class="question-actions">
-      ${index > 0 ? `<button class="btn" onclick="loadQuestion(${index-1})">Prev</button>` : `<span></span>`}
-      ${index < qz.questions.length - 1
-        ? `<button class="btn btn-primary" onclick="loadQuestion(${index+1})">Next</button>`
-        : `<button class="btn submit-btn" onclick="submitQuiz()">Submit</button>`
-      }
-    </div>
-  `;
-
-  questionContent.innerHTML = html;
+    // Focus input for essay/fill-blank
+    if(q.type === "essay"){
+        setTimeout(()=>{
+            document.getElementById("essay-input")?.focus();
+        }, 100);
+    }
+    if(q.type === "fill-blank"){
+        setTimeout(()=>{
+            document.getElementById("fill-blank-input")?.focus();
+        }, 100);
+    }
 }
 
 // ---- Select answer ----
 function selectAnswer(answer){
-  userAnswers[currentQuestionIndex] = answer;
-  loadQuestion(currentQuestionIndex);
+    userAnswers[currentQuestionIndex] = answer;
+    loadQuestion(currentQuestionIndex);
+}
+
+// ---- Handle radio select for multiple-choice ----
+// No longer needed: radio input handled by selectAnswer directly
+
+// ---- Save essay answer ----
+function saveEssayAnswer(){
+    const val = document.getElementById("essay-input").value;
+    userAnswers[currentQuestionIndex] = val;
+    loadQuestion(currentQuestionIndex);
+}
+
+// ---- Save fill-blank answer ----
+function saveFillBlankAnswer(){
+    const val = document.getElementById("fill-blank-input").value;
+    userAnswers[currentQuestionIndex] = val;
+    loadQuestion(currentQuestionIndex);
 }
 
 // ---- Timer ----
@@ -1629,6 +1797,7 @@ async function submitQuiz(){
     dashboardView.style.display = "block";
     quizView.style.display = "none";
     loadQuizzes();
+    refreshUserPoints();
   } catch(e){
     console.error(e);
     alert("Failed to submit quiz");
@@ -1636,12 +1805,88 @@ async function submitQuiz(){
 }
 
 // ---- Init ----
-document.addEventListener("DOMContentLoaded", loadQuizzes);
+document.addEventListener("DOMContentLoaded", () => { refreshUserPoints(); loadQuizzes(); });
 
 // expose for inline onclick used above
 window.selectAnswer = selectAnswer;
 window.loadQuestion  = loadQuestion;
 window.submitQuiz    = submitQuiz;
+window.saveEssayAnswer = saveEssayAnswer;
+window.saveFillBlankAnswer = saveFillBlankAnswer;
+// window.handleRadioSelect is not used; removed to avoid undefined reference
+window.returnToDashboard = function() {
+    document.getElementById('dashboard-view').style.display = 'block';
+    document.getElementById('quiz-view').style.display = 'none';
+};
+
+// ---- Question navigation + answered counter ----
+function isAnswered(val){
+  if (val === null || val === undefined) return false;
+  if (typeof val === 'string') return val.trim() !== '';
+  if (Array.isArray(val)) return val.length > 0;
+  return true;
+}
+function updateAnsweredCounter(){
+  const qz = quizzes[currentQuiz];
+  if (!qz) return;
+  const total = qz.questions.length;
+  const answered = userAnswers.filter(isAnswered).length;
+  const el = document.getElementById('answered-count');
+  if (el) el.textContent = `${answered}/${total}`;
+}
+function renderQuestionNav(){
+  const qz = quizzes[currentQuiz];
+  if (!qz) return;
+  const grid = document.getElementById('question-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  for (let i=0; i<qz.questions.length; i++){
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'question-btn' + (i===currentQuestionIndex ? ' active' : '') + (isAnswered(userAnswers[i]) ? ' answered' : '');
+    btn.textContent = String(i+1);
+    btn.onclick = () => loadQuestion(i);
+    grid.appendChild(btn);
+  }
+}
+
+// ---- Matching helpers ----
+let matchingPendingLeft = null;
+function selectMatchingLeft(li){
+    const qz = quizzes[currentQuiz];
+    const q  = qz.questions[currentQuestionIndex];
+    if (!Array.isArray(userAnswers[currentQuestionIndex])) userAnswers[currentQuestionIndex] = [];
+    const pairs = userAnswers[currentQuestionIndex];
+    // skip if already used
+    if (pairs.some(p => p[0] === li)) return;
+    matchingPendingLeft = li;
+    const leftTxt = (Array.isArray(q.leftItems) && q.leftItems[li]) ? q.leftItems[li] : li;
+    document.getElementById('matching-pending').textContent = `Selected left: "${leftTxt}". Now pick a right item.`;
+}
+function selectMatchingRight(ri){
+    const qz = quizzes[currentQuiz];
+    const q  = qz.questions[currentQuestionIndex];
+    if (!Array.isArray(userAnswers[currentQuestionIndex])) userAnswers[currentQuestionIndex] = [];
+    const pairs = userAnswers[currentQuestionIndex];
+    // skip if already used
+    if (pairs.some(p => p[1] === ri)) return;
+    if (matchingPendingLeft === null || matchingPendingLeft === undefined){
+        document.getElementById('matching-pending').textContent = 'Pick a left item first.';
+        return;
+    }
+    pairs.push([matchingPendingLeft, ri]);
+    matchingPendingLeft = null;
+    document.getElementById('matching-pending').textContent = '';
+    loadQuestion(currentQuestionIndex);
+}
+function removeMatchingPair(i){
+    if (!Array.isArray(userAnswers[currentQuestionIndex])) return;
+    userAnswers[currentQuestionIndex].splice(i,1);
+    loadQuestion(currentQuestionIndex);
+}
+window.selectMatchingLeft = selectMatchingLeft;
+window.selectMatchingRight = selectMatchingRight;
+window.removeMatchingPair = removeMatchingPair;
 </script>
 
 

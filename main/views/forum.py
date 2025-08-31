@@ -5,7 +5,6 @@ from django.views.decorators.http import require_http_methods, require_GET
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 import json
-
 from main.models.forum import ForumCategory, Thread, Post, PostLike
 
 

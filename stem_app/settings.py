@@ -139,6 +139,11 @@ Path(MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
+# Auth redirects
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/profiles/"
+LOGOUT_REDIRECT_URL = "/login/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
