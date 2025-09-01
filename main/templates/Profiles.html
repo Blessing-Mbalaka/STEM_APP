@@ -625,9 +625,9 @@
                 
                 <div class="profile-content">
                     <div class="profile-tabs">
-                        <div class="profile-tab active" data-tab="personal">Personal Info</div>
-                        <div class="profile-tab" data-tab="academic">Academic Info</div>
-                        <div class="profile-tab" data-tab="preferences">Preferences</div>
+                        <div class="profile-tab active" data-tab="personal" id="personalinfoTab">Personal Info</div>
+                        <div class="profile-tab" data-tab="academic" id="academicinfoTab">Academic Info</div>
+                        <div class="profile-tab" data-tab="preferences" id="preferencesTab">Preferences</div>
                     </div>
                     
                     <div class="profile-tab-content active" id="personal-tab">
@@ -1005,6 +1005,15 @@ function setupEventListeners(){
 document.addEventListener("DOMContentLoaded", () => {
     setupEventListeners();
     loadProfile();
+});
+
+
+</script>
+<script src="{% static 'js/translation.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    setupLanguageToggle();
+    applyTranslations('en'); // Default language
 });
 </script>
 
