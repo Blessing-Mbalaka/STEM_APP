@@ -64,6 +64,22 @@ window.translations = {
         noAnswersYet: "No answers yet. Be the first!",
         loading: "Loading…",
         member: "Member",
+
+        //English Dashboard 
+        dashboardTitle: "Dashboard",
+        dashboardSubtitle: "Learn new skills, earn badges, and unlock your potential",
+        classesTile: "Classes",
+        classesDesc: "View and join upcoming learning sessions",
+        classesAction: "Book/Join",
+        tutorsTile: "Tutors",
+        tutorsDesc: "Connect with expert tutors for personalized learning",
+        tutorsAction: "See Tutors",
+        coursesTile: "Courses",
+        coursesDesc: "Explore our curated learning modules",
+        coursesAction: "Explore",
+        achievementsTile: "Achievements",
+        achievementsDesc: "Track your progress and unlock rewards",
+        achievementsAction: "View",
     },
     zu: {
         profile: "Iphrofayela",
@@ -129,6 +145,24 @@ window.translations = {
         loading: "Ilayisha…",
         member: "Ilungu",
 
+        //Dashboard Translation
+                dashboardTitle: "Iphrofayela",
+        dashboardSubtitle: "Funda amakhono amasha, thola amabheji, futhi uvule amakhono akho",
+        classesTile: "Amakilasi",
+        classesDesc: "Buka futhi ujoyine izifundo ezizayo",
+        classesAction: "Bhuka/Joyina",
+        tutorsTile: "Othisha",
+        tutorsDesc: "Xhumana nothisha abanolwazi ukuze uthole ukufunda okwenziwe ngokwakho",
+        tutorsAction: "Bona Othisha",
+        coursesTile: "Izifundo",
+        coursesDesc: "Hlola izifundo zethu ezikhethiwe",
+        coursesAction: "Hlola",
+        achievementsTile: "Imiklomelo",
+        achievementsDesc: "Landela inqubekela phambili yakho futhi uvule imiklomelo",
+        achievementsAction: "Buka",
+        
+
+
         
     }
     // Add more languages here
@@ -182,6 +216,31 @@ window.applyTranslations = function(lang) {
      if (document.getElementById('personalinfoTab')) document.getElementById('personalinfoTab').textContent = window.translations[lang].personalInfo;
     if (document.getElementById('academicinfoTab')) document.getElementById('academicinfoTab').textContent = window.translations[lang].academicInfo;
     if (document.getElementById('preferencesTab')) document.getElementById('preferencesTab').textContent = window.translations[lang].preferences;
+    // Dashboard header
+if (document.querySelector('.header-dashboard h1')) document.querySelector('.header-dashboard h1').textContent = window.translations[lang].dashboardTitle;
+if (document.querySelector('.header-dashboard p')) document.querySelector('.header-dashboard p').textContent = window.translations[lang].dashboardSubtitle;
+
+// Tiles
+if (document.getElementById('upcomingClassesTile')) {
+    document.getElementById('upcomingClassesTile').querySelector('.tile-title').textContent = window.translations[lang].classesTile;
+    document.getElementById('upcomingClassesTile').querySelector('.tile-description').textContent = window.translations[lang].classesDesc;
+    document.getElementById('upcomingClassesTile').querySelector('.tile-action').textContent = window.translations[lang].classesAction;
+}
+if (document.getElementById('tutorSlotsTile')) {
+    document.getElementById('tutorSlotsTile').querySelector('.tile-title').textContent = window.translations[lang].tutorsTile;
+    document.getElementById('tutorSlotsTile').querySelector('.tile-description').textContent = window.translations[lang].tutorsDesc;
+    document.getElementById('tutorSlotsTile').querySelector('.tile-action').textContent = window.translations[lang].tutorsAction;
+}
+if (document.getElementById('coursesTile')) {
+    document.getElementById('coursesTile').querySelector('.tile-title').textContent = window.translations[lang].coursesTile;
+    document.getElementById('coursesTile').querySelector('.tile-description').textContent = window.translations[lang].coursesDesc;
+    document.getElementById('coursesTile').querySelector('.tile-action').textContent = window.translations[lang].coursesAction;
+}
+if (document.getElementById('achievementsTile')) {
+    document.getElementById('achievementsTile').querySelector('.tile-title').textContent = window.translations[lang].achievementsTile;
+    document.getElementById('achievementsTile').querySelector('.tile-description').textContent = window.translations[lang].achievementsDesc;
+    document.getElementById('achievementsTile').querySelector('.tile-action').textContent = window.translations[lang].achievementsAction;
+}
     // ...update more elements as needed
 }
 

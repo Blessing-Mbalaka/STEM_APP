@@ -391,9 +391,41 @@
             }
         }
     </style>
+         
+            <style>
+.language-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.language-toggle-btn {
+    padding: 5px 15px;
+    border-radius: 20px;
+    background-color: var(--light-gray);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.language-toggle-btn:hover {
+    background-color: var(--medium-gray);
+}
+
+.language-toggle-btn.active {
+    background-color: var(--primary-orange);
+    color: white;
+}
+
+</style>
 </head>
 
 <body>
+    <div class="language-toggle" style="position:fixed;top:20px;right:30px;z-index:100;">
+    <div class="language-toggle-btn" data-lang="en">English</div>
+    <div class="language-toggle-btn" data-lang="zu">Zulu</div>
+</div>
     <!-- Desktop Sidebar with fixed side-by-side layout -->
     <div class="sidebar">
         <a href="{% url 'index' %}" class="nav-item active">
