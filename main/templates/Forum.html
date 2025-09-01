@@ -1295,5 +1295,28 @@ window.togglePostLike = togglePostLike;
 })();
 </script>
 
+
+<script src="{% static 'js/translation.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    setupLanguageToggle();
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    applyTranslations(lang);
+    // Optionally, set the active toggle button
+    document.querySelectorAll('.language-toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+});
+</script>
+
+<script src="{% static 'js/chatbot.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // ...existing translation logic...
+    botSendBtn.addEventListener('click', sendBotMessage);
+    botInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendBotMessage(); });
+});
+</script>
+
 </body>
 </html>

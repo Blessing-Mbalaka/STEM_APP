@@ -13,10 +13,11 @@ from main.views.courses import (
     api_tutor_course_thumbnail,
     api_tutor_course_reorder,
     api_course_sequence,
-    api_course_poll_vote,
+    api_course_poll_vote, 
 )
 from main.views.messages import api_messages_list, api_messages_create, api_messages_read
 from main.views.classes import api_tutor_classes, api_tutor_class_detail
+from main.views.chatbotview import chatbot_api
 
 
 
@@ -92,6 +93,11 @@ urlpatterns = [
     path("api/forum/threads/<slug:slug>", api_forum_thread_detail, name="api_forum_thread_detail"),
     path("api/forum/threads/<slug:slug>/posts", api_forum_thread_posts, name="api_forum_thread_posts"),
     path("api/forum/posts/<int:post_id>/like", api_forum_post_like, name="api_forum_post_like"),
+
+    #Chatbot views
+     path('api/chatbot/', chatbot_api, name='chatbot_api'),
+
+
 
 ]
 

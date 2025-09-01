@@ -333,6 +333,19 @@
       }
     });
   </script>
+
+  <script src="{% static 'js/translation.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    setupLanguageToggle();
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    applyTranslations(lang);
+    // Optionally, set the active toggle button
+    document.querySelectorAll('.language-toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+});
+</script>
   <!-- Class Scheduler Modal -->
   <div id="sc-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1000;">
     <div style="background:#fff; width: 520px; max-width: 92vw; border-radius:12px; padding:16px; box-shadow:0 8px 20px rgba(0,0,0,.2);">

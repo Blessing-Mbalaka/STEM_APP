@@ -53,7 +53,17 @@ window.translations = {
         personalInfo: "Personal Info",
         academicInfo: "Academic Info",
         preferences: "Preferences",
-        // ...add more keys as needed
+        // ...Forum Keys Start Here:
+        forum: "Forum",
+        askQuestion: "Ask a Question",
+        submitQuestion: "Submit Question",
+        cancel: "Cancel",
+        reply: "Reply",
+        answers: "Answers",
+        noQuestionsFound: "No questions found",
+        noAnswersYet: "No answers yet. Be the first!",
+        loading: "Loading…",
+        member: "Member",
     },
     zu: {
         profile: "Iphrofayela",
@@ -107,7 +117,19 @@ window.translations = {
         personalInfo: "Ulwazi Lomuntu",
         academicInfo: "Ulwazi Lokufunda",
         preferences: "Okuthandwayo",
-        // ...add more keys as needed
+        // Zulu forum start here
+            forum: "Iforamu",
+        askQuestion: "Buza Umbuzo",
+        submitQuestion: "Thumela Umbuzo",
+        cancel: "Khansela",
+        reply: "Phendula",
+        answers: "Izimpendulo",
+        noQuestionsFound: "Azikho imibuzo etholakele",
+        noAnswersYet: "Azikho izimpendulo okwamanje. Yiba wokuqala!",
+        loading: "Ilayisha…",
+        member: "Ilungu",
+
+        
     }
     // Add more languages here
 };
@@ -171,8 +193,9 @@ window.setupLanguageToggle = function() {
             languageToggleBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             const lang = this.dataset.lang;
+            // Save language preference
+            localStorage.setItem('preferredLanguage', lang);
             window.applyTranslations(lang);
-            // Optionally, save preference to backend
         });
     });
-}
+};
