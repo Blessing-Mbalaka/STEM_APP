@@ -37,6 +37,8 @@ def api_classes_list(request):
             "capacity": s.capacity,
             "reserved": Reservation.objects.filter(session=s).count(),
             "tutor": (s.created_by.display_name or s.created_by.username) if s.created_by else None,
+            "tutor_id": s.created_by_id,
+            "when": s.starts_at.isoformat(),
         })
     return JsonResponse({"results": data})
 

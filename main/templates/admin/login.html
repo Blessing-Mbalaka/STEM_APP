@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="content" class="colM">
+  {% if form.errors and not form.non_field_errors %}
+    <p class="errornote">{% trans "Please correct the error below." %}</p>
+  {% endif %}
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <p class="errornote">{{ error }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <div id="content-main">
+    <form action="{{ app_path }}" method="post" id="login-form" novalidate>{% csrf_token %}
+      <div class="form-row">
+        {% for field in form.visible_fields %}
+          <div class="form-row">
+            <label class="required" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="submit-row"><input type="submit" value="{% trans 'Log in' %}"></div>
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

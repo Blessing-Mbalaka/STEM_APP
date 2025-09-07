@@ -16,10 +16,25 @@ from main.models import (
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    list_display = ("username", "email", "display_name", "is_staff", "is_active")
+    list_display = ("username", "email", "display_name", "is_tutor", "is_staff", "is_active")
+    list_filter = ("is_active", "is_staff", "is_superuser", "is_tutor")
     fieldsets = UserAdmin.fieldsets + (
-        ("Extra", {"fields": ("display_name",)}),
+        ("Extra", {"fields": ("display_name", "is_tutor")}),
     )
+    actions = [
+        "activate_users",
+        "deactivate_users",
+    ]
+
+    def activate_users(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"Activated {updated} user(s).")
+    activate_users.short_description = "Activate selected users"
+
+    def deactivate_users(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"Deactivated {updated} user(s).")
+    deactivate_users.short_description = "Deactivate selected users"
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):

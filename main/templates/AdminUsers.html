@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;background:#f7f7f9;color:#222}
+    .wrap{max-width:1200px;margin:20px auto;padding:16px}
+    .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .row{display:flex;gap:10px;align-items:center;margin:8px 0}
+    input[type=text],select{padding:8px 10px;border:1px solid #d0d7de;border-radius:8px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #e6eaef;text-align:left}
+    th{background:#f4f6f8}
+    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer}
+    .btn.secondary{background:#e9ecef;color:#222}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-left:6px;border:1px solid #ddd}
+    .pill.green{background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9}
+    .pill.orange{background:#fff8e1;color:#ef6c00;border-color:#ffe0b2}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <h2 style="margin:0;color:#24adb7;">User Management</h2>
+      <a href="/administrator/" class="btn secondary"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="card">
+      <div class="row">
+        <input id="q" type="text" placeholder="Search username/email" style="flex:1;">
+        <select id="role"><option value="">All roles</option><option value="student">Students</option><option value="tutor">Tutors</option><option value="staff">Staff</option></select>
+        <select id="status"><option value="">All status</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        <button id="refresh" class="btn">Refresh</button>
+      </div>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th><th>Email</th><th>Roles</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function api(path,{method='GET',data,headers={}}={}){
+      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
+      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw json; return json;
+    }
+    async function load(){
+      const q=document.getElementById('q').value.trim();
+      const role=document.getElementById('role').value; const status=document.getElementById('status').value;
+      const p=new URLSearchParams(); if(q) p.set('q',q); if(role) p.set('role',role); if(status) p.set('status',status);
+      const data=await api('/api/admin/users'+(p.toString()?('?' + p.toString()):''));
+      const tb=document.getElementById('tbody'); tb.innerHTML='';
+      (data.results||[]).forEach(u=>{
+        const tr=document.createElement('tr');
+        const roles=[]; if(u.is_tutor) roles.push('Tutor'); if(u.is_staff) roles.push('Staff'); if(u.is_superuser) roles.push('Superuser');
+        tr.innerHTML = `<td>${u.display_name||u.username}</td>
+          <td>${u.email||''}</td>
+          <td>${roles.join(', ')||'Student'}</td>
+          <td>${u.is_active? '<span class="pill green">Active</span>':'<span class="pill orange">Inactive</span>'}</td>
+          <td>
+            <button class="btn secondary" data-act="toggle_active" data-id="${u.id}">${u.is_active?'Deactivate':'Activate'}</button>
+            <button class="btn secondary" data-act="toggle_tutor" data-id="${u.id}">${u.is_tutor?'Revoke Tutor':'Make Tutor'}</button>
+          </td>`;
+        tb.appendChild(tr);
+      });
+      tb.querySelectorAll('button').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const id = btn.getAttribute('data-id'); const act=btn.getAttribute('data-act');
+          const payload={};
+          if(act==='toggle_active') payload.is_active = btn.textContent.includes('Activate');
+          if(act==='toggle_tutor') payload.is_tutor = btn.textContent.includes('Make');
+          try{ await api(`/api/admin/users/${id}`, { method:'PATCH', data: payload }); load(); } catch(e){ alert(e.error||'Failed'); }
+        });
+      });
+    }
+    document.getElementById('refresh').addEventListener('click', load);
+    document.addEventListener('DOMContentLoaded', load);
+  </script>
+</body>
+</html>

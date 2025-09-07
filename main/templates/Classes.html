@@ -1168,8 +1168,10 @@ function setupEvents(){
     if (!cls) return;
 
     if (e.target.closest('.message-btn')){
-      messageRecipient.value = cls.tutor;
-      messageModal.style.display = 'flex';
+      const rid = cls.tutor_id ? `recipient=${encodeURIComponent(cls.tutor_id)}` : '';
+      const subj = `subject=${encodeURIComponent('Question about ' + (cls.course || 'class'))}`;
+      const qs = [rid, subj].filter(Boolean).join('&');
+      window.location.href = `/messages/${qs ? ('?' + qs) : ''}`;
       return;
     }
     if (e.target.closest('.book-btn')){

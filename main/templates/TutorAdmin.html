@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutor Admin</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="{% static 'js/api.js' %}"></script>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; background:#f7f7f9; color:#222; }
     .wrap { max-width: 1200px; margin: 20px auto; padding: 16px; }
@@ -28,18 +29,50 @@
 </head>
 <body>
   <div class="wrap">
+    <!-- Top bar -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h2 style="margin:0; color:#24adb7;">Tutor Admin</h2>
-      <button id="openScheduler" class="btn" type="button"><i class="fas fa-calendar-plus"></i> Schedule Class</button>
+      <h2 style="margin:0; color:#24adb7;">Tutor Dashboard</h2>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="openScheduler" class="btn" type="button" title="Schedule Class"><i class="fas fa-calendar-plus"></i></button>
+        <span id="whoami" class="muted"></span>
+        <button id="logoutBtn" class="btn secondary" type="button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
     </div>
-    <div class="grid">
-      <div class="card">
-        <h3 style="margin-top:0;">Courses</h3>
-        <div id="courses" class="list"></div>
-        <hr style="margin:12px 0;">
-        <h4>Create Course</h4>
+
+    <!-- Layout: sidebar + main content -->
+    <div style="display:grid; grid-template-columns: 240px 1fr; gap: 16px; align-items:start;">
+      <!-- Sidebar styled similar to student profile sidebar -->
+      <div class="card" style="padding:16px; position:sticky; top:16px; height:fit-content;">
+        <div style="font-weight:700; color:#24adb7; margin-bottom:8px;">Navigation</div>
+        <div class="list">
+          <a href="#" id="navCourses" class="btn secondary" style="text-align:left;">Courses</a>
+          <a href="#" id="navSchedule" class="btn secondary" style="text-align:left;">Schedule</a>
+          <a href="#" id="navMessages" class="btn secondary" style="text-align:left;">Messages</a>
+          <a href="/messages/" class="btn secondary" style="text-align:left;">Open Messages</a>
+          <label style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+            <input id="filterMine" type="checkbox"> Show My Drafts Only
+          </label>
+          <button id="refreshCourses" class="btn secondary" type="button">Refresh</button>
+        </div>
+      </div>
+
+      <!-- Main content area -->
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin-top:0;">Courses</h3>
+          <div id="courses" class="list"></div>
+          <hr style="margin:12px 0;">
+          <h4>Create Course</h4>
         <div class="row"><label>Title</label><input id="c-title" type="text"></div>
-        <div class="row"><label>Subject</label><input id="c-subj" type="text" placeholder="e.g. Mathematics"></div>
+        <div class="row"><label>Subject</label><input id="c-subj" type="text" placeholder="e.g. Life Sciences"></div>
+        <div class="row"><label>Category</label>
+          <select id="c-class">
+            <option value="">(none)</option>
+            <option value="stem">STEM</option>
+            <option value="steam">STEAM</option>
+            <option value="general">General</option>
+          </select>
+        </div>
         <div class="row"><label>Level</label>
           <select id="c-level"><option value="">(none)</option><option value="intro">Introductory</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
         </div>
@@ -56,6 +89,14 @@
           <h4 style="margin:6px 0 8px 0;">Edit Course</h4>
           <div class="row"><label>Title</label><input id="e-title" type="text"></div>
           <div class="row"><label>Subject</label><input id="e-subj" type="text"></div>
+          <div class="row"><label>Category</label>
+            <select id="e-class">
+              <option value="">(none)</option>
+              <option value="stem">STEM</option>
+              <option value="steam">STEAM</option>
+              <option value="general">General</option>
+            </select>
+          </div>
           <div class="row"><label>Level</label>
             <select id="e-level"><option value="">(none)</option><option value="intro">Introductory</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
           </div>
@@ -103,6 +144,7 @@
           <div class="row" style="justify-content:flex-end;"><button id="addResource" class="btn">Add</button></div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 
@@ -112,7 +154,8 @@
     function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
 
     async function loadCourses(){
-      const data = await api('/api/tutor/courses');
+      const mine = document.getElementById('filterMine')?.checked ? '?mine=true' : '';
+      const data = await api('/api/tutor/courses' + mine);
       state.courses = data.results || [];
       renderCourses();
     }
@@ -144,6 +187,7 @@
       document.getElementById('e-title').value = c.title || '';
       document.getElementById('e-subj').value = c.subject || '';
       document.getElementById('e-level').value = c.level || '';
+      const eClass = document.getElementById('e-class'); if (eClass) eClass.value = (c.classification||'').toLowerCase();
       document.getElementById('e-sum').value = c.summary || '';
       document.getElementById('e-desc').value = c.description || '';
       // Update publish button label if present
@@ -182,6 +226,7 @@
       const payload = {
         title: document.getElementById('c-title').value.trim(),
         subject: document.getElementById('c-subj').value.trim(),
+        classification: (document.getElementById('c-class') && document.getElementById('c-class').value) || '',
         level: document.getElementById('c-level').value,
         summary: document.getElementById('c-sum').value,
         description: document.getElementById('c-desc').value
@@ -263,6 +308,7 @@
       const payload = {
         title: document.getElementById('e-title').value.trim(),
         subject: document.getElementById('e-subj').value.trim(),
+        classification: (document.getElementById('e-class') && document.getElementById('e-class').value) || '',
         level: document.getElementById('e-level').value,
         summary: document.getElementById('e-sum').value,
         description: document.getElementById('e-desc').value
@@ -283,9 +329,10 @@
     // Load games for quiz selector
     async function loadGames(){
       try{
-        const data = await api('/api/games/');
+        const mine = document.getElementById('filterMine')?.checked ? '?mine=true' : '';
+        const data = await api('/api/games/' + mine);
         const sel = document.getElementById('r-game');
-        sel.innerHTML = '<option value="">Select...</option>' + (data.results||[]).map(g=>`<option value="${g.id}">${g.title}</option>`).join('');
+        sel.innerHTML = '<option value="">Select...</option>' + (data.results||[]).map(g=>`<option value="${g.id}">${g.title}${g.is_active? '' : ' (Draft)'}</option>`).join('');
       }catch(e){}
     }
 
@@ -295,6 +342,21 @@
 
     document.addEventListener('DOMContentLoaded', ()=>{ 
       loadCourses(); loadGames(); renderPollOptions();
+      const filterMine = document.getElementById('filterMine');
+      const refreshBtn = document.getElementById('refreshCourses');
+      if (filterMine) {
+        filterMine.addEventListener('change', ()=>{ loadCourses(); loadGames(); });
+      }
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', ()=>{ loadCourses(); loadGames(); });
+      }
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async ()=>{
+          try { await api('/api/auth/logout', { method:'POST' }); } catch(e){}
+          location.href = '/login/';
+        });
+      }
       // Wire scheduler modal
       const openBtn = document.getElementById('openScheduler');
       const modal = document.getElementById('sc-modal');

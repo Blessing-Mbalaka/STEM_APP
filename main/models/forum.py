@@ -14,7 +14,7 @@ class Thread(TimeStamped, Slugged):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="threads")
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True)
-    is_locked = models.BooleanField(False)
+    is_locked = models.BooleanField(default=False)
 
     def _slug_source(self): return self.title
 

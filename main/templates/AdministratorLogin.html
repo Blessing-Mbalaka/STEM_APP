@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrator Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --powder-blue:#A7D8F2; --dark-blue:#041667; --white:#FFF; --gray:#E0E0E0; }
+    body { font-family: 'Poppins', sans-serif; margin:0; background: var(--powder-blue); }
+    .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .card { width:100%; max-width:420px; background:#fff; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); padding:20px; }
+    h2 { margin:0 0 8px 0; color: var(--dark-blue); }
+    label { display:block; font-weight:600; margin:8px 0 6px; color:#333; }
+    input[type=text], input[type=password] { width:100%; padding:10px 12px; border:1px solid var(--gray); border-radius:8px; }
+    .btn { width:100%; margin-top:12px; background:#24adb7; color:#fff; border:none; border-radius:8px; padding:12px; font-weight:600; cursor:pointer; }
+    .muted { color:#666; font-size:.9rem; }
+    .error { color:#b00020; font-size:.9rem; display:none; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Administrator Login</h2>
+      <label for="email">Username or Email</label>
+      <input type="text" id="email" placeholder="admin or you@example.com" />
+      <label for="password">Password</label>
+      <input type="password" id="password" />
+      <div id="err" class="error"></div>
+      <button id="submit" class="btn">Log in</button>
+      <p class="muted" style="margin-top:10px;">Not an administrator? <a href="/login/">Go to learner login</a></p>
+    </div>
+  </div>
+  <script>
+    async function api(path,{method='GET',data,headers={}}={}){
+      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
+      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw Object.assign(new Error(json.error||res.statusText),{status:res.status,json}); return json;
+    }
+    document.getElementById('submit').addEventListener('click', async ()=>{
+      const id = document.getElementById('email').value.trim();
+      const pw = document.getElementById('password').value;
+      const err = document.getElementById('err'); err.style.display='none'; err.textContent='';
+      if(!id || !pw){ err.textContent='Enter username/email and password'; err.style.display='block'; return; }
+      const btn = document.getElementById('submit'); btn.disabled=true; btn.textContent='Signing in...';
+      try{
+        await api('/api/auth/login', { method:'POST', data:{ username: id, password: pw } });
+        // Force navigate to administrator dashboard on success
+        location.href = '/administrator/';
+      }catch(e){
+        let msg = e.json?.error || 'Login failed';
+        if ((e.status||0)===401) msg = 'Invalid credentials';
+        err.textContent = msg; err.style.display='block';
+      } finally { btn.disabled=false; btn.textContent='Log in'; }
+    });
+  </script>
+</body>
+</html>
+

@@ -16,20 +16,34 @@ from main.views.courses import (
     api_course_poll_vote, 
 )
 from main.views.messages import api_messages_list, api_messages_create, api_messages_read
+from main.views.messages import messages_page, api_messages_recipients
 from main.views.classes import api_tutor_classes, api_tutor_class_detail
 from main.views.chatbotview import chatbot_api
+from main.views.adminui import (
+    admin_users_page,
+    api_admin_users,
+    api_admin_user_update,
+    admin_approvals_page,
+    api_admin_content_pending,
+    api_admin_course_approve,
+    api_admin_game_approve,
+    admin_dashboard_page,
+    administrator_login_page,
+)
 
 
 
 urlpatterns = [
     
 #pages
+    path('index/', index, name='index'),
     path('classes/', classes, name='classes'),
     path('courses/', courses, name='courses'),
     path('forum/', forum, name='forum'),
     path('games/', games, name='games'),
     path('games/add/', add_question, name='add_question'),
-    path('', index, name='index'),
+    # Root should show the login page
+    path('', auth_views.login_page, name='root_login'),
     path('login/', login_page, name='login'),
     path('profiles/', profiles, name='profiles'),
 
@@ -51,6 +65,11 @@ urlpatterns = [
     path("api/me/avatar", auth_views.api_upload_avatar, name="api_upload_avatar"),
     path("change-password/", auth_views.change_password_page, name="change_password"),
     path("api/auth/change-password", auth_views.api_change_password, name="api_change_password"),
+    # Forgot/reset password (unauthenticated)
+    path("forgot-password/", auth_views.forgot_password_page, name="forgot_password"),
+    path("api/auth/forgot-password", auth_views.api_forgot_password, name="api_forgot_password"),
+    path("reset-password/<str:uidb64>/<str:token>/", auth_views.reset_password_page, name="reset_password"),
+    path("api/auth/reset-password", auth_views.api_reset_password, name="api_reset_password"),
 
     # games page (already defined above; keep single route)
 
@@ -78,6 +97,8 @@ urlpatterns = [
     path('api/messages', api_messages_list, name='api_messages_list'),
     path('api/messages/send', api_messages_create, name='api_messages_create'),
     path('api/messages/<int:pk>/read', api_messages_read, name='api_messages_read'),
+    path('api/messages/recipients', api_messages_recipients, name='api_messages_recipients'),
+    path('messages/', messages_page, name='messages_page'),
     # Course viewer + poll
     path('api/courses/<int:pk>/sequence', api_course_sequence, name='api_course_sequence'),
     path('api/courses/<int:pk>/resources/<int:res_id>/poll/vote', api_course_poll_vote, name='api_course_poll_vote'),
@@ -96,6 +117,18 @@ urlpatterns = [
 
     #Chatbot views
      path('api/chatbot/', chatbot_api, name='chatbot_api'),
+
+    # Custom Administrator UI (separate from Django /admin)
+    path('administrator/login/', administrator_login_page, name='administrator_login'),
+    path('administrator/', admin_dashboard_page, name='administrator_dashboard'),
+    path('administrator/users/', admin_users_page, name='administrator_users_page'),
+    path('administrator/approvals/', admin_approvals_page, name='administrator_approvals_page'),
+    # Admin APIs (prefixed with /api/admin/*)
+    path('api/admin/users', api_admin_users, name='api_admin_users'),
+    path('api/admin/users/<int:pk>', api_admin_user_update, name='api_admin_user_update'),
+    path('api/admin/content/pending', api_admin_content_pending, name='api_admin_content_pending'),
+    path('api/admin/courses/<int:pk>/approve', api_admin_course_approve, name='api_admin_course_approve'),
+    path('api/admin/games/<int:pk>/approve', api_admin_game_approve, name='api_admin_game_approve'),
 
 
 

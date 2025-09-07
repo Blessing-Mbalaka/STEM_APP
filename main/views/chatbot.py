@@ -2,7 +2,7 @@ import requests
 
 OLLAMA_API_URL = "http://localhost:11434/api/generate"  # Update if your Ollama server runs elsewhere
 
-def ask_ollama(prompt, model="gemma3:latest"):
+def ask_ollama(prompt, model="phi3:mini"):
     payload = {
         "model": model,
         "prompt": prompt,

@@ -11,6 +11,8 @@ class Game(TimeStamped, Slugged):
     category = models.CharField(max_length=100, blank=True)     # e.g., stem / steam / general
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY, blank=True)
     is_active = models.BooleanField(default=True)
+    # Owner for draft/approval workflows
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='games_created')
 
     # NEW: quiz metadata
     duration_minutes = models.PositiveSmallIntegerField(default=15)    # matches JS "duration"

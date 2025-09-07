@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;background:#f7f7f9;color:#222}
+    .wrap{max-width:1100px;margin:20px auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr 2fr;gap:16px}
+    .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .row{display:flex;gap:10px;align-items:center;margin:8px 0}
+    input[type=text],select,textarea{width:100%;padding:8px 10px;border:1px solid #d0d7de;border-radius:8px}
+    textarea{min-height:100px}
+    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer}
+    .btn.secondary{background:#e9ecef;color:#222}
+    .list{display:flex;flex-direction:column;gap:10px;}
+    .item{padding:10px;border:1px solid #e6eaef;border-radius:8px}
+    .muted{color:#666;font-size:13px}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-left:6px;border:1px solid #ddd}
+    .badge.unread{background:#fff8e1;color:#ef6c00;border-color:#ffe0b2}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <h2 style="margin:0;color:#24adb7;">Messages</h2>
+      <a href="/index/" class="btn secondary"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3 style="margin:0 0 8px 0;">New Message</h3>
+        <div class="row"><label style="width:110px;font-weight:600;">To</label><select id="recipient"></select></div>
+        <div class="row"><label style="width:110px;font-weight:600;">Subject</label><input id="subject" type="text" placeholder="Optional"></div>
+        <div class="row"><label style="width:110px;font-weight:600;">Message</label><textarea id="body"></textarea></div>
+        <div class="row" style="justify-content:flex-end;"><button id="send" class="btn">Send</button></div>
+        <div id="sendNote" class="muted" style="display:none; margin-top:8px;">Sent!</div>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div>
+            <button id="tabInbox" class="btn secondary">Inbox</button>
+            <button id="tabSent" class="btn secondary">Sent</button>
+          </div>
+          <div class="row" style="margin:0;">
+            <input id="search" type="text" placeholder="Search messages" style="min-width:220px;">
+            <button id="doSearch" class="btn secondary">Search</button>
+          </div>
+        </div>
+        <div id="listTitle" class="muted" style="margin-bottom:6px;">Inbox</div>
+        <div id="inbox" class="list"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function api(path,{method='GET',data,headers={}}={}){
+      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
+      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw json; return json;
+    }
+    function getParam(name){ const m=location.search.match(new RegExp(`[?&]${name}=([^&]+)`)); return m? decodeURIComponent(m[1]) : ''; }
+    async function loadRecipients(){
+      const data = await api('/api/messages/recipients');
+      const sel = document.getElementById('recipient');
+      sel.innerHTML = (data.results||[]).map(u=>`<option value="${u.id}">${u.name}</option>`).join('') || '<option value="">No tutors available</option>';
+      const pre = getParam('recipient'); if (pre) sel.value = String(pre);
+      const subj = getParam('subject'); if (subj) document.getElementById('subject').value = subj;
+      const body = getParam('body'); if (body) document.getElementById('body').value = body;
+    }
+    let currentBox = 'inbox';
+    async function loadInbox(){
+      const q = document.getElementById('search').value.trim();
+      const p = new URLSearchParams(); if(currentBox==='sent') p.set('box','sent'); if(q) p.set('q',q);
+      const data = await api('/api/messages' + (p.toString()?`?${p.toString()}`:''));
+      const box = document.getElementById('inbox'); box.innerHTML='';
+      (data.results||[]).forEach(m=>{
+        const div=document.createElement('div');
+        div.className='item';
+        const created = (m.created_at||'').toString().slice(0,19).replace('T',' ');
+        const subj = m.subject || 'Message';
+        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><strong>${subj}</strong> <span class="muted">from ${m.from}</span> ${m.read? '' : '<span class="badge unread">unread</span>'}</div>
+          <div class="muted">${created}</div>
+        </div>
+        <div style="margin-top:6px; white-space:pre-wrap;">${m.body}</div>
+        <div class="row" style="justify-content:flex-end; margin-top:8px;"><button class="btn secondary reply">Reply</button></div>`;
+        // Mark as read when clicking item body (not the reply button)
+        div.addEventListener('click', async (ev)=>{
+          if (ev.target && ev.target.classList.contains('reply')) return;
+          try{ await api(`/api/messages/${m.id}/read`, { method:'PATCH' }); }catch(_){}
+          loadInbox();
+        });
+        // Reply action
+        div.querySelector('.reply').addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          const sel = document.getElementById('recipient'); if (m.sender_id) sel.value = String(m.sender_id);
+          document.getElementById('subject').value = m.subject ? `Re: ${m.subject}` : '';
+          document.getElementById('body').focus();
+        });
+        box.appendChild(div);
+      });
+    }
+    document.getElementById('send').addEventListener('click', async ()=>{
+      const rid = parseInt(document.getElementById('recipient').value||'0',10);
+      const subject = document.getElementById('subject').value.trim();
+      const body = document.getElementById('body').value.trim();
+      if(!rid || !body){ alert('Recipient and message are required'); return; }
+      try{
+        await api('/api/messages/send', { method:'POST', data:{ recipient_id: rid, subject, body }});
+        document.getElementById('subject').value=''; document.getElementById('body').value='';
+        const note = document.getElementById('sendNote'); note.style.display='block'; setTimeout(()=> note.style.display='none', 1500);
+        loadInbox();
+      }catch(e){ alert(e.error||'Failed to send'); }
+    });
+    document.getElementById('tabInbox').addEventListener('click', ()=>{ currentBox='inbox'; document.getElementById('listTitle').textContent='Inbox'; loadInbox(); });
+    document.getElementById('tabSent').addEventListener('click', ()=>{ currentBox='sent'; document.getElementById('listTitle').textContent='Sent'; loadInbox(); });
+    document.getElementById('doSearch').addEventListener('click', ()=> loadInbox());
+    document.addEventListener('DOMContentLoaded', ()=>{ loadRecipients(); loadInbox(); });
+  </script>
+</body>
+</html>

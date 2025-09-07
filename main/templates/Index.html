@@ -535,6 +535,12 @@
             <span>Forum</span>
             <div class="nav-tooltip">Forum</div>
         </a>
+        <a href="/messages/" class="nav-item">
+            <i class="fa-solid fa-envelope"></i>
+            <span>Messages</span>
+            <div class="nav-tooltip">Messages</div>
+            <span id="msg-count" style="display:none; position:absolute; top:6px; right:10px; background:#e53935; color:#fff; border-radius:12px; padding:1px 6px; font-size:11px;">0</span>
+        </a>
         <a href="{% url 'profiles' %}" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Profile</span>
@@ -544,6 +550,17 @@
 
     <script src="{% static 'js/api.js' %}"></script>
     <script>
+// Profile hint toast
+const hintCss = '.toast-hint{position:fixed;right:16px;bottom:16px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;max-width:320px;z-index:10000;border-left:4px solid #24adb7;} .toast-hint .actions{display:flex;gap:8px;margin-top:8px;} .toast-hint button{border:none;border-radius:6px;padding:6px 10px;cursor:pointer;} .toast-hint .primary{background:#24adb7;color:#fff;} .toast-hint .secondary{background:#e9ecef;color:#222;}';
+const styleEl = document.createElement('style'); styleEl.textContent = hintCss; document.head.appendChild(styleEl);
+function showProfileHint(){
+  if (localStorage.getItem('profile_hint_dismissed') === '1') return;
+  const box = document.createElement('div'); box.className = 'toast-hint';
+  box.innerHTML = '<div><strong>Complete your profile</strong><div class="muted">Update your name and preferences to personalize your learning.</div><div class="actions"><button class="primary" id="goProfile">Go to Profile</button><button class="secondary" id="dismissHint">Dismiss</button></div></div>';
+  document.body.appendChild(box);
+  box.querySelector('#goProfile').addEventListener('click', ()=>{ window.location.href = '/profiles/'; });
+  box.querySelector('#dismissHint').addEventListener('click', ()=>{ localStorage.setItem('profile_hint_dismissed','1'); box.remove(); });
+}
 document.addEventListener('DOMContentLoaded', async function () {
     // Time of day greeting
     const hour = new Date().getHours();
@@ -597,6 +614,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             window.location.href = '/login/';
         });
     }
+
+    // Show profile hint once for students (non-staff/tutor)
+    try {
+      const me = await api('/api/me');
+      if (me && me.authenticated && !me.is_staff && !me.is_tutor) {
+        showProfileHint();
+      }
+    } catch(e) {}
 
     // Confetti effect
     function createConfetti() {

@@ -5,7 +5,7 @@ from django.views.decorators.http import require_GET, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.conf import settings
 
 def courses(request):
@@ -26,14 +26,14 @@ def api_courses(request):
     from main.models.course import Course, CourseResource
     subjects = {}
     for course in Course.objects.filter(is_active=True):
-        subj_key = course.subject.lower() if course.subject else course.title.lower()
-        if subj_key not in subjects:
-            subjects[subj_key] = {
-                "name": course.title,
-                "visual": [],
-                "auditory": [],
-                "readwrite": []
-            }
+        key = f"course-{course.id}"
+        subjects[key] = {
+            "name": course.title,
+            "classification": (course.classification or '').lower(),
+            "visual": [],
+            "auditory": [],
+            "readwrite": []
+        }
         resources = CourseResource.objects.filter(course=course)
         for res in resources:
             entry = {
@@ -51,18 +51,18 @@ def api_courses(request):
                 entry["duration"] = ""
             if res.learning_style == "auditory":
                 entry["duration"] = ""
-            subjects[subj_key][res.learning_style].append(entry)
+            subjects[key][res.learning_style].append(entry)
     return JsonResponse({"subjects": subjects})
 
 
 # ---------- Tutor Admin (page) ----------
 @login_required
 def tutor_admin(request):
-    # Gate by staff or tutor based on settings flags
+    # Gate by tutor or superuser only
     require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
     require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_staff) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
-        return HttpResponseForbidden("Staff only")
+    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
+        return HttpResponseForbidden("Forbidden")
     return render(request, "TutorAdmin.html")
 
 
@@ -72,12 +72,17 @@ def tutor_admin(request):
 def api_tutor_courses(request):
     require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
     require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_staff) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
         return JsonResponse({"error": "forbidden"}, status=403)
     from main.models.course import Course, CourseResource
     if request.method == "GET":
         data = []
-        for c in Course.objects.all().order_by("-created_at"):
+        # Show all courses for Tutor Admin. The optional 'mine=true' narrows to just my drafts.
+        qs = Course.objects.all().order_by("-created_at")
+        mine = (request.GET.get("mine") or "").strip().lower() == 'true'
+        if mine and request.user.is_authenticated:
+            qs = qs.filter(created_by=request.user)
+        for c in qs:
             resources = [{
                 "id": r.id,
                 "title": r.title,
@@ -103,6 +108,7 @@ def api_tutor_courses(request):
                 "thumbnail": (request.build_absolute_uri(c.thumbnail.url) if c.thumbnail else None),
                 "is_active": c.is_active,
                 "resources": resources,
+                "classification": getattr(c, 'classification', '') or '',
             })
         return JsonResponse({"results": data})
 
@@ -116,13 +122,21 @@ def api_tutor_courses(request):
     title = (payload.get("title") or "").strip()
     if not title:
         return JsonResponse({"error": "title is required"}, status=400)
+    # Enforce approval workflow: only staff can create active courses
+    # Normalize subject to allowed set
+    _subject = (payload.get("subject") or "").strip()
+    _class_raw = (payload.get("classification") or "").strip().lower()
+    _CLASS = _class_raw if _class_raw in {"stem","steam","general",""} else ""
+
     c = Course.objects.create(
         title=title,
         summary=payload.get("summary") or "",
         description=payload.get("description") or "",
-        subject=(payload.get("subject") or "").strip(),
+        subject=_subject,
+        classification=_CLASS,
         level=(payload.get("level") or "").strip() if (payload.get("level") or "") in dict(LEVEL) else "",
-        is_active=bool(payload.get("is_active", True)),
+        is_active=(bool(payload.get("is_active")) if request.user.is_staff else False),
+        created_by=request.user if request.user.is_authenticated else None,
     )
     return JsonResponse({"id": c.id, "title": c.title})
 
@@ -132,7 +146,7 @@ def api_tutor_courses(request):
 def api_tutor_course_detail(request, pk: int):
     require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
     require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_staff) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
         return JsonResponse({"error": "forbidden"}, status=403)
     import json
     from main.models.course import Course
@@ -142,9 +156,17 @@ def api_tutor_course_detail(request, pk: int):
     except Exception:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     changed = False
-    for f in ["title", "summary", "description", "subject", "level", "is_active"]:
+    for f in ["title", "summary", "description", "subject", "level", "classification", "is_active"]:
         if f in payload:
-            setattr(c, f, payload.get(f))
+            if f == "is_active" and not request.user.is_staff:
+                # Only staff may toggle activation; enforce False for non-staff updates
+                c.is_active = False
+            elif f == "classification":
+                _raw = (payload.get("classification") or "").strip().lower()
+                if _raw in {"stem","steam","general",""}:
+                    c.classification = _raw
+            else:
+                setattr(c, f, payload.get(f))
             changed = True
     if changed:
         c.save()
@@ -157,7 +179,7 @@ def api_tutor_course_detail(request, pk: int):
 def api_tutor_course_add_resource(request, pk: int):
     require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
     require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_staff) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
         return JsonResponse({"error": "forbidden"}, status=403)
     from main.models.course import Course, CourseResource
     c = get_object_or_404(Course, pk=pk)
@@ -285,7 +307,9 @@ def api_tutor_course_thumbnail(request, pk: int):
 @require_http_methods(["POST"])
 @login_required
 def api_tutor_course_reorder(request, pk: int):
-    if getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False) and not request.user.is_staff:
+    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
+    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
+    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
         return JsonResponse({"error": "forbidden"}, status=403)
     import json
     from main.models.course import Course, CourseResource

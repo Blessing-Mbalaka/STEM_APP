@@ -10,14 +10,24 @@ from django.utils.text import slugify
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.db.models import Sum, Avg
 from django.views.decorators.http import require_http_methods
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 User = get_user_model()
 
 
 @ensure_csrf_cookie
 def login_page(request: HttpRequest):
-    """Render the custom login page and set csrftoken cookie."""
-    from django.shortcuts import render
+    """Render the custom login page and set csrftoken cookie. Redirect if already logged in."""
+    from django.shortcuts import render, redirect
+    if request.user.is_authenticated:
+        target = "/index/"
+        if getattr(request.user, "is_staff", False):
+            target = "/tutor/admin/"
+        elif getattr(request.user, "is_tutor", False):
+            target = "/tutor/admin/"
+        return redirect(target)
     return render(request, "Login.html")
 
 
@@ -52,10 +62,16 @@ def api_login(request: HttpRequest):
     if not user:
         return JsonResponse({"error": "Invalid credentials"}, status=401)
     if not user.is_active:
-        return JsonResponse({"error": "Account disabled"}, status=403)
+        return JsonResponse({"error": "Account pending activation by an administrator"}, status=403)
 
     login(request, user)
-    return JsonResponse({"ok": True})
+    # Role-based redirect target (students -> index dashboard)
+    target = "/index/"
+    if getattr(user, "is_staff", False):
+        target = "/tutor/admin/"
+    elif getattr(user, "is_tutor", False):
+        target = "/tutor/admin/"
+    return JsonResponse({"ok": True, "redirect": target})
 
 
 @require_http_methods(["POST"])
@@ -73,6 +89,7 @@ def api_register(request: HttpRequest):
     first_name = (payload.get("first_name") or payload.get("firstName") or "").strip()
     last_name = (payload.get("last_name") or payload.get("lastName") or "").strip()
     display_name = (payload.get("display_name") or f"{first_name} {last_name}" or username or (email.split("@")[0] if email else "")).strip()
+    role = (payload.get("role") or "").strip().lower()  # 'student' or 'tutor'
 
     if not password:
         return JsonResponse({"error": "password required"}, status=400)
@@ -107,10 +124,21 @@ def api_register(request: HttpRequest):
         user.last_name = last_name
     if hasattr(user, "display_name"):
         user.display_name = display_name
-    user.save()
-
-    login(request, user)  # auto-login after register
-    return JsonResponse({"ok": True})
+    # Auto-activate students; tutors require approval
+    if role == 'tutor':
+        if hasattr(user, 'is_tutor'):
+            user.is_tutor = True
+        user.is_active = False
+        pending_msg = "Registration successful. Your tutor account is pending admin approval."
+        user.save()
+        return JsonResponse({"ok": True, "message": pending_msg})
+    else:
+        # Default: student
+        user.is_active = True
+        user.save()
+        # Optionally auto-login students
+        login(request, user)
+        return JsonResponse({"ok": True, "redirect": "/index/"})
 
 
 @require_http_methods(["POST"])
@@ -170,8 +198,100 @@ def api_change_password(request: HttpRequest):
     user.save()
     # Re-login to keep session
     login(request, user)
-    return JsonResponse({"ok": True})
+    # Role-based redirect target
+    target = "/index/"
+    if getattr(user, "is_staff", False):
+        target = "/tutor/admin/"
+    elif getattr(user, "is_tutor", False):
+        target = "/tutor/admin/"
+    return JsonResponse({"ok": True, "redirect": target})
 
+
+# ---- Forgot/Reset password (unauthenticated flow) ----
+@ensure_csrf_cookie
+def forgot_password_page(request: HttpRequest):
+    from django.shortcuts import render
+    return render(request, "ForgotPassword.html")
+
+
+@require_http_methods(["POST"])
+@csrf_protect
+def api_forgot_password(request: HttpRequest):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    identifier = (payload.get("email") or payload.get("username") or payload.get("identifier") or "").strip()
+    if not identifier:
+        return JsonResponse({"error": "Email or username required"}, status=400)
+
+    # Find user by email or username
+    user = None
+    try:
+        if "@" in identifier:
+            user = User.objects.get(email__iexact=identifier)
+        else:
+            user = User.objects.get(username__iexact=identifier)
+    except User.DoesNotExist:
+        # Always return ok to avoid user enumeration
+        return JsonResponse({"ok": True, "message": "If the account exists, a reset link has been sent."})
+
+    # Generate token and build link
+    token_gen = PasswordResetTokenGenerator()
+    token = token_gen.make_token(user)
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    # absolute link for console and development
+    try:
+        base = request.build_absolute_uri('/')[:-1]
+    except Exception:
+        base = ''
+    link = f"{base}/reset-password/{uidb64}/{token}/"
+    # Print to terminal for now
+    print(f"[DEV] Password reset link for {user.username}: {link}")
+
+    return JsonResponse({"ok": True, "message": "If the account exists, a reset link has been sent."})
+
+
+@ensure_csrf_cookie
+def reset_password_page(request: HttpRequest, uidb64: str, token: str):
+    from django.shortcuts import render
+    # We pass through; actual validation occurs on POST to API
+    return render(request, "ResetPassword.html", {"uidb64": uidb64, "token": token})
+
+
+@require_http_methods(["POST"])
+@csrf_protect
+def api_reset_password(request: HttpRequest):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    uidb64 = (payload.get("uidb64") or "").strip()
+    token = (payload.get("token") or "").strip()
+    new_password = payload.get("new_password") or ""
+    confirm_password = payload.get("confirm_password") or ""
+    if not uidb64 or not token:
+        return JsonResponse({"error": "Invalid reset link"}, status=400)
+    if not new_password or len(new_password) < 6:
+        return JsonResponse({"error": "Password must be at least 6 characters"}, status=400)
+    if new_password != confirm_password:
+        return JsonResponse({"error": "Passwords do not match"}, status=400)
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except Exception:
+        return JsonResponse({"error": "Invalid reset link"}, status=400)
+
+    token_gen = PasswordResetTokenGenerator()
+    if not token_gen.check_token(user, token):
+        return JsonResponse({"error": "Reset link has expired or is invalid"}, status=400)
+
+    user.set_password(new_password)
+    user.save()
+    return JsonResponse({"ok": True})
 
 @require_http_methods(["GET", "PATCH"])
 @ensure_csrf_cookie  # set csrftoken on GET; PATCH still enforced by middleware
@@ -298,6 +418,8 @@ def api_me(request: HttpRequest):
         "authenticated": True,
         "id": user.id,
         "username": user.username,
+        "is_staff": bool(getattr(user, "is_staff", False)),
+        "is_tutor": bool(getattr(user, "is_tutor", False)),
         "first_name": getattr(user, "first_name", "") or "",
         "last_name": getattr(user, "last_name", "") or "",
         # camelCase copies for frontend compatibility

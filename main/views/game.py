@@ -26,6 +26,9 @@ def api_games_list(request):
     Creates a Game and returns its summary.
     """
     if request.method == "POST":
+        # Only authenticated users may create games; non-staff creations are inactive until admin approval
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Login required"}, status=401)
         try:
             data = json.loads(request.body.decode("utf-8"))
         except Exception:
@@ -35,7 +38,9 @@ def api_games_list(request):
         if not title:
             return JsonResponse({"error": "title is required"}, status=400)
         description = data.get("description") or ""
-        category = (data.get("category") or "").strip()
+        category = (data.get("category") or "").strip().lower()
+        if category not in {"stem","steam","general",""}:
+            category = "general" if category else ""
         difficulty = (data.get("difficulty") or "").strip().lower()
         if difficulty not in {"easy", "medium", "hard", ""}:
             difficulty = ""
@@ -47,9 +52,8 @@ def api_games_list(request):
             max_points = int(data.get("max_points") or data.get("points") or 10)
         except Exception:
             max_points = 10
-        is_active = data.get("is_active")
-        if not isinstance(is_active, bool):
-            is_active = True
+        # Enforce approval workflow: only staff can control activation
+        is_active = bool(data.get("is_active")) if request.user.is_staff else False
 
         g = Game.objects.create(
             title=title,
@@ -59,6 +63,7 @@ def api_games_list(request):
             duration_minutes=duration_minutes,
             max_points=max_points,
             is_active=is_active,
+            created_by=request.user,
         )
         resp = {
             "id": g.id,
@@ -86,11 +91,18 @@ def api_games_list(request):
         qs = qs.filter(category__iexact=category)
     if difficulty:
         qs = qs.filter(difficulty__iexact=difficulty)
-    # default: only active unless explicitly overridden
-    if active in {"true","false"}:
-        qs = qs.filter(is_active=(active == "true"))
+    mine = (request.GET.get("mine") or "").strip().lower() == 'true'
+    # Only staff may view inactive entries in general; allow tutors to view their own drafts with ?mine=true
+    if request.user.is_authenticated and request.user.is_staff:
+        if active in {"true","false"}:
+            qs = qs.filter(is_active=(active == "true"))
+        if mine:
+            qs = qs.filter(created_by=request.user)
     else:
-        qs = qs.filter(is_active=True)
+        if mine and request.user.is_authenticated:
+            qs = qs.filter(created_by=request.user)
+        else:
+            qs = qs.filter(is_active=True)
 
     data = [{
         "id": g.id,
@@ -145,6 +157,8 @@ def api_game_detail(request, pk: int):
     PATCH/PUT /api/games/<id>/ : update basic game fields (active or inactive)
     """
     if request.method in {"PATCH", "PUT"}:
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Login required"}, status=401)
         g = get_object_or_404(Game, pk=pk)
 
         try:
@@ -161,7 +175,10 @@ def api_game_detail(request, pk: int):
         if "description" in data:
             g.description = data.get("description") or ""; changed = True
         if "category" in data:
-            g.category = (data.get("category") or "").strip(); changed = True
+            cat = (data.get("category") or "").strip().lower()
+            if cat not in {"stem","steam","general",""}:
+                return JsonResponse({"error": "category must be stem, steam, general or empty"}, status=400)
+            g.category = cat; changed = True
         if "difficulty" in data:
             diff = (data.get("difficulty") or "").strip().lower()
             if diff not in {"easy","medium","hard",""}:
@@ -180,7 +197,9 @@ def api_game_detail(request, pk: int):
                 return JsonResponse({"error": "max_points must be an integer"}, status=400)
             changed = True
         if "is_active" in data:
-            g.is_active = bool(data.get("is_active")); changed = True
+            # Only staff can change activation state
+            if request.user.is_staff:
+                g.is_active = bool(data.get("is_active")); changed = True
 
         if changed:
             g.save()

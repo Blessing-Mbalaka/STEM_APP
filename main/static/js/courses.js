@@ -76,7 +76,9 @@
   let currentSubject = "";
   const hasSubjects = () => Object.keys(subjects).length > 0;
 
-  function inferCategory(key) {
+  function inferCategoryFrom(key, subject) {
+    const cls = (subject && subject.classification) ? String(subject.classification).toLowerCase() : "";
+    if (cls === "stem" || cls === "steam" || cls === "general") return cls;
     const k = (key || "").toLowerCase();
     if (k.includes("stem")) return "stem";
     if (k.includes("steam")) return "steam";
@@ -304,6 +306,7 @@
       for (const [key, incoming] of Object.entries(data.subjects)) {
         subjects[key] = {
           name: incoming?.name || key,
+          classification: incoming?.classification || "",
           visual: Array.isArray(incoming?.visual) ? incoming.visual : [],
           auditory: Array.isArray(incoming?.auditory) ? incoming.auditory : [],
           readwrite: Array.isArray(incoming?.readwrite) ? incoming.readwrite : []
@@ -334,7 +337,7 @@
     courseGrid.innerHTML = "";
 
     for (const [key, subject] of Object.entries(subjects)) {
-      const category = inferCategory(key);
+      const category = inferCategoryFrom(key, subject);
       const iconClass = category === "stem" ? "fa-square-root-alt"
                        : category === "steam" ? "fa-palette"
                        : "fa-book-open";

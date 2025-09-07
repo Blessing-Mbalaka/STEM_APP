@@ -40,18 +40,25 @@ document.addEventListener("DOMContentLoaded", () => {
       if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
       // Always login as student for this page
       try {
-        await api("/api/auth/login", { method: "POST", data: { username: email, password } });
-        location.href = "/profiles/";
+        const res = await api("/api/auth/login", { method: "POST", data: { username: email, password } });
+        const redirect = res && res.redirect ? res.redirect : "/profiles/";
+        location.href = redirect;
       } catch (e) {
         const status = e.status || 0;
         let msg = e.json?.error || 'Login failed';
         if (status === 401) msg = 'Invalid email or password';
-        if (status === 403) msg = 'Your account is disabled';
+        if (status === 403) msg = 'Your account is disabled or pending approval';
         err.textContent = msg;
         err.style.display = 'block';
       }
       finally { if (btn) { btn.disabled = false; btn.textContent = 'Get Started!'; } }
     });
+  }
+
+  // Forgot password link -> redirect
+  const forgot = document.getElementById('forgotPassword');
+  if (forgot) {
+    forgot.addEventListener('click', (e)=>{ e.preventDefault(); location.href = '/forgot-password/'; });
   }
 
   // Signup logic
@@ -63,6 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = document.getElementById("signupEmail").value.trim();
       const password = document.getElementById("signupPassword").value;
       const confirm = document.getElementById("confirmPassword").value;
+      // role from toggle (purely cosmetic until backend reads it)
+      const tutorToggle = document.getElementById('signupParentRole');
+      const isTutor = tutorToggle && tutorToggle.classList.contains('active');
       const err = document.getElementById('signupError');
       err.style.display = 'none';
       err.textContent = '';
@@ -80,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = signupForm.querySelector('button[type="submit"]');
       if (btn) { btn.disabled = true; btn.textContent = 'Creating account...'; }
       try {
-        await api("/api/auth/register", {
+        const resp = await api("/api/auth/register", {
           method: "POST",
           data: {
             username: email,
@@ -88,10 +98,26 @@ document.addEventListener("DOMContentLoaded", () => {
             email,
             display_name: `${name} ${surname}`.trim(),
             first_name: name,
-            last_name: surname
+            last_name: surname,
+            role: isTutor ? 'tutor' : 'student'
           }
         });
-        location.href = "/profiles/";
+        // Registration now requires admin activation. Show a banner and switch to login tab.
+        const notice = document.getElementById('pendingNotice');
+        const text = document.getElementById('pendingNoticeText');
+        if (text) {
+          text.textContent = resp?.message || 'Registration successful. Your account is pending admin approval.';
+        }
+        if (notice) { notice.style.display = 'block'; }
+        // Switch to login tab
+        const loginTab = document.getElementById("loginTab");
+        const signupTab = document.getElementById("signupTab");
+        const loginForm = document.getElementById("loginForm");
+        const signupForm = document.getElementById("signupForm");
+        if (loginTab) loginTab.classList.add("active");
+        if (signupTab) signupTab.classList.remove("active");
+        if (loginForm) loginForm.style.display = "block";
+        if (signupForm) signupForm.style.display = "none";
       } catch (e) {
         const status = e.status || 0;
         let msg = e.json?.error || 'Signup failed';

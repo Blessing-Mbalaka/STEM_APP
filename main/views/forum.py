@@ -80,7 +80,7 @@ def api_forum_threads(request):
 
     category = get_object_or_404(ForumCategory, slug=cat_slug)
     thread = Thread.objects.create(
-        category=category, author=request.user, title=title, body=body
+        category=category, author=request.user, title=title, body=body, is_locked=False
     )
     return JsonResponse({"ok": True, "slug": thread.slug})
 

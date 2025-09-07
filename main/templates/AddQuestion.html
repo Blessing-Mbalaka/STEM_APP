@@ -37,7 +37,14 @@
         <h3 style="margin-top:0;">Create New Game</h3>
         <div class="row"><label>Title</label><input id="g-title" type="text" placeholder="e.g., Algebra Basics" /></div>
         <div class="row"><label>Description</label><textarea id="g-desc" placeholder="Optional"></textarea></div>
-        <div class="row"><label>Category</label><input id="g-cat" type="text" placeholder="e.g., Mathematics" /></div>
+        <div class="row"><label>Category</label>
+          <select id="g-cat">
+            <option value="">(none)</option>
+            <option value="stem">STEM</option>
+            <option value="steam">STEAM</option>
+            <option value="general">General</option>
+          </select>
+        </div>
         <div class="row"><label>Difficulty</label>
           <select id="g-diff">
             <option value="">(none)</option>
@@ -63,7 +70,14 @@
           <h3 style="margin-top:0;">Edit Selected Game</h3>
           <div class="row"><label>Title</label><input id="eg-title" type="text" /></div>
           <div class="row"><label>Description</label><textarea id="eg-desc"></textarea></div>
-          <div class="row"><label>Category</label><input id="eg-cat" type="text" /></div>
+          <div class="row"><label>Category</label>
+            <select id="eg-cat">
+              <option value="">(none)</option>
+              <option value="stem">STEM</option>
+              <option value="steam">STEAM</option>
+              <option value="general">General</option>
+            </select>
+          </div>
           <div class="row"><label>Difficulty</label>
             <select id="eg-diff">
               <option value="">(none)</option>

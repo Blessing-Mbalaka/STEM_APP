@@ -149,3 +149,10 @@ LOGOUT_REDIRECT_URL = "/login/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Role gating for tutor/admin pages
+# Enforce staff-only access to Tutor Admin views and APIs
+# Tutor/Admin access control for the builder dashboard
+# Allow tutors and staff to use Tutor Admin
+TUTOR_ADMIN_REQUIRE_STAFF = False
+TUTOR_ADMIN_REQUIRE_TUTOR = True

@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Approvals</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;background:#f7f7f9;color:#222}
+    .wrap{max-width:1100px;margin:20px auto;padding:16px}
+    .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06);margin-bottom:16px}
+    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer}
+    .btn.secondary{background:#e9ecef;color:#222}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #e6eaef;text-align:left}
+    th{background:#f4f6f8}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <h2 style="margin:0;color:#24adb7;">Content Approvals</h2>
+      <div>
+        <a href="/administrator/" class="btn secondary"><i class="fas fa-arrow-left"></i> Back</a>
+        <button id="refresh" class="btn">Refresh</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Pending Courses</h3>
+      <div style="overflow:auto;">
+        <table>
+          <thead><tr><th>Title</th><th>Subject/Level</th><th>Created</th><th>Action</th></tr></thead>
+          <tbody id="courses"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Pending Games</h3>
+      <div style="overflow:auto;">
+        <table>
+          <thead><tr><th>Title</th><th>Category/Difficulty</th><th>Created</th><th>Action</th></tr></thead>
+          <tbody id="games"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function api(path,{method='GET',data,headers={}}={}){
+      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
+      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw json; return json;
+    }
+    async function load(){
+      const data = await api('/api/admin/content/pending');
+      const tc=document.getElementById('courses'); tc.innerHTML='';
+      (data.courses||[]).forEach(c=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${c.title}</td><td>${c.subject||''} ${c.level||''}</td><td>${(c.created_at||'').toString().slice(0,19).replace('T',' ')}</td>
+        <td><button class='btn' data-type='course' data-id='${c.id}'>Approve</button></td>`;
+        tc.appendChild(tr);
+      });
+      const tg=document.getElementById('games'); tg.innerHTML='';
+      (data.games||[]).forEach(g=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${g.title}</td><td>${g.category||''} ${g.difficulty||''}</td><td>${(g.created_at||'').toString().slice(0,19).replace('T',' ')}</td>
+        <td><button class='btn' data-type='game' data-id='${g.id}'>Approve</button></td>`;
+        tg.appendChild(tr);
+      });
+      document.querySelectorAll('button[data-type]').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const type=btn.getAttribute('data-type'); const id=btn.getAttribute('data-id');
+          try{
+            if(type==='course') await api(`/api/admin/courses/${id}/approve`, { method:'PATCH' });
+            else await api(`/api/admin/games/${id}/approve`, { method:'PATCH' });
+            load();
+          }catch(e){ alert(e.error||'Failed'); }
+        });
+      });
+    }
+    document.getElementById('refresh').addEventListener('click', load);
+    document.addEventListener('DOMContentLoaded', load);
+  </script>
+</body>
+</html>

@@ -280,6 +280,10 @@
 
     <!-- Sign Up / Login Screen -->
     <div class="auth-container" id="authContainer">
+        <!-- Pending approval banner (hidden by default) -->
+        <div id="pendingNotice" style="display:none; width:100%; max-width: 600px; margin: 0 auto 12px; background:#fff7e6; color:#8a6d3b; border:1px solid #faebcc; border-radius:8px; padding:10px 14px;">
+            <span id="pendingNoticeText">Your account is pending admin approval. You can log in once activated.</span>
+        </div>
         <div class="auth-tabs">
             <div class="auth-tab active" id="loginTab">Login</div>
             <div class="auth-tab" id="signupTab">Sign Up</div>
@@ -300,7 +304,7 @@
             </div>
             <div class="role-toggle">
                 <div class="role-option active" id="childRole">I'm a Student</div>
-                <div class="role-option" id="parentRole">I'm a Tutor</div>
+                <div class="role-option" id="parentRole">I'm Staff</div>
             </div>
             <button type="submit" class="auth-btn">Login</button>
         </form>
@@ -329,7 +333,7 @@
             <div id="signupError" style="color:#b00020; font-size:0.9rem; margin: 6px 0; display:none;"></div>
             <div class="role-toggle">
                 <div class="role-option active" id="signupChildRole">I'm a Student</div>
-                <div class="role-option" id="signupParentRole">I'm a Teacher</div>
+                <div class="role-option" id="signupParentRole">I'm Staff</div>
             </div>
             <button type="submit" class="auth-btn">Create Account</button>
         </form>

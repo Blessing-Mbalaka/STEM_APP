@@ -14,9 +14,13 @@ class Course(TimeStamped, Slugged):
     summary = models.CharField(max_length=300, blank=True)
     description = models.TextField(blank=True)
     subject = models.CharField(max_length=120, blank=True)     # e.g., Physics
+    # New: classification for high-level grouping (STEM/STEAM/GENERAL)
+    classification = models.CharField(max_length=20, blank=True)
     level = models.CharField(max_length=20, choices=LEVEL, blank=True)
     thumbnail = models.ImageField(upload_to="course_thumbs/", blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    # Owner for draft/approval workflows
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="courses_created")
 
     class Meta:
         indexes = [

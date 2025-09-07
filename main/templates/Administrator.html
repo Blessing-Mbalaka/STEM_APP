@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;background:#f7f7f9;color:#222}
+    .wrap{max-width:1100px;margin:20px auto;padding:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .tile{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.06);display:flex;gap:12px;align-items:center;cursor:pointer;border:1px solid #e6eaef}
+    .tile i{font-size:22px;color:#24adb7}
+    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer}
+    .btn.secondary{background:#e9ecef;color:#222}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <h2 style="margin:0;color:#24adb7;">Administrator Dashboard</h2>
+      <div>
+        <a href="/admin/" class="btn secondary">Django Admin</a>
+        <button id="logoutBtn" class="btn secondary"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <a class="tile" href="/administrator/users/"><i class="fas fa-users-cog"></i><div><div style="font-weight:700">Users</div><div style="color:#666">Activate, tutor/staff roles</div></div></a>
+      <a class="tile" href="/administrator/approvals/"><i class="fas fa-check-circle"></i><div><div style="font-weight:700">Approvals</div><div style="color:#666">Publish courses and games</div></div></a>
+      <a class="tile" href="/tutor/admin/"><i class="fas fa-tools"></i><div><div style="font-weight:700">Tutor Builder</div><div style="color:#666">Create courses and quizzes</div></div></a>
+    </div>
+  </div>
+  <script>
+    async function api(path,{method='GET',data,headers={}}={}){
+      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
+      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
+      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw json; return json;
+    }
+    document.getElementById('logoutBtn').addEventListener('click', async ()=>{ try{ await api('/api/auth/logout',{method:'POST'});}catch(_){ } location.href='/administrator/login/';});
+  </script>
+</body>
+</html>
+
