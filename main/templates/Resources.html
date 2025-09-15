@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning Resources</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body{margin:0;font-family:'Poppins',sans-serif;background:#f7f7f9;color:#222;}
+    .wrap{max-width:1100px;margin:40px auto;padding:0 20px 60px;}
+    .header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+    .header h1{margin:0;color:#24adb7;}
+    .header p{margin:0;color:#555;max-width:600px;}
+    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:10px 16px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;}
+    .btn.secondary{background:#e9ecef;color:#222;}
+    .resources-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}
+    .resource-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:12px;min-height:220px;}
+    .resource-card-header{display:flex;gap:12px;align-items:center;}
+    .resource-icon{font-size:2.4rem;}
+    .resource-card-header h4{margin:0;font-size:1.15rem;color:#1f4b4f;}
+    .resource-card-header .resource-meta{margin:4px 0;font-size:0.85rem;color:#666;}
+    .resource-total{margin-top:6px;font-size:0.85rem;color:#666;}
+    .resource-card-body details{background:rgba(245,245,245,0.9);border-radius:12px;padding:10px;margin-bottom:8px;}
+    .resource-card-body summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;color:#1f4b4f;gap:8px;}
+    .resource-count{background:rgba(36,173,183,0.18);color:#0f5d63;border-radius:999px;padding:2px 8px;font-size:0.75rem;margin-left:auto;}
+    .resource-list{list-style:none;padding-left:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px;}
+    .resource-list a{color:#1f4b4f;font-weight:600;text-decoration:none;}
+    .resource-list a:hover{text-decoration:underline;}
+    .resource-meta{display:block;font-size:0.75rem;color:#666;margin-top:2px;}
+    .resource-placeholder{padding:28px;text-align:center;color:#777;background:rgba(255,255,255,0.78);border-radius:12px;width:100%;}
+    @media (max-width:600px){.header{gap:12px;} .header h1{font-size:1.6rem;} .btn{width:100%;justify-content:center;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>Learning Resources</h1>
+        <p>Browse subject notes, annual teaching plans, and past papers prepared by our administrators.</p>
+      </div>
+      <a href="{% url 'index' %}" class="btn secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+    <div id="resourcesGrid" class="resources-grid">
+      <div class="resource-placeholder">Resources loading...</div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/api.js' %}"></script>
+  <script>
+    const resourcesGrid = document.getElementById('resourcesGrid');
+    const resourceIcons = ['📘','📗','📙','📕','📓','📒','📚','📄'];
+
+    function chooseResourceIcon(index){
+      return resourceIcons[index % resourceIcons.length];
+    }
+
+    function formatResourceDate(iso){
+      if(!iso) return '';
+      const date = new Date(iso);
+      if(Number.isNaN(date.getTime())) return '';
+      return date.toLocaleDateString();
+    }
+
+    function setResourcePlaceholder(message){
+      if(!resourcesGrid) return;
+      resourcesGrid.innerHTML = '';
+      const box = document.createElement('div');
+      box.className = 'resource-placeholder';
+      box.textContent = message;
+      resourcesGrid.appendChild(box);
+    }
+
+    function createResourceCard(category, terms, index){
+      const card = document.createElement('div');
+      card.className = 'resource-card';
+
+      const header = document.createElement('div');
+      header.className = 'resource-card-header';
+      const icon = document.createElement('div');
+      icon.className = 'resource-icon';
+      icon.textContent = chooseResourceIcon(index);
+      header.appendChild(icon);
+
+      const heading = document.createElement('div');
+      const title = document.createElement('h4');
+      title.textContent = category.name || 'Resources';
+      heading.appendChild(title);
+      if(category.description){
+        const desc = document.createElement('p');
+        desc.className = 'resource-meta';
+        desc.textContent = category.description;
+        heading.appendChild(desc);
+      }
+      const total = document.createElement('p');
+      total.className = 'resource-total';
+      const count = category.total_documents || 0;
+      total.textContent = count === 1 ? '1 file available' : `${count} files available`;
+      heading.appendChild(total);
+
+      header.appendChild(heading);
+      card.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'resource-card-body';
+      let hasDocs = false;
+
+      (terms || []).forEach((term) => {
+        const docs = (category.documents && category.documents[term.value]) || [];
+        if(!docs.length) return;
+        hasDocs = true;
+        const details = document.createElement('details');
+        if(term.value === 'term1'){ details.open = true; }
+        const summary = document.createElement('summary');
+        summary.textContent = term.label;
+        const badge = document.createElement('span');
+        badge.className = 'resource-count';
+        badge.textContent = docs.length;
+        summary.appendChild(badge);
+        details.appendChild(summary);
+
+        const list = document.createElement('ul');
+        list.className = 'resource-list';
+        docs.forEach((doc) => {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.textContent = doc.title || doc.original_filename || 'Download';
+          if(doc.file){
+            link.href = doc.file;
+            link.target = '_blank';
+            link.rel = 'noopener';
+          } else {
+            link.href = '#';
+            link.setAttribute('aria-disabled', 'true');
+          }
+          item.appendChild(link);
+          const metaBits = [];
+          if(doc.description){ metaBits.push(doc.description); }
+          const formatted = formatResourceDate(doc.uploaded_at);
+          if(formatted){ metaBits.push(formatted); }
+          if(metaBits.length){
+            const meta = document.createElement('span');
+            meta.className = 'resource-meta';
+            meta.textContent = metaBits.join(' • ');
+            item.appendChild(meta);
+          }
+          list.appendChild(item);
+        });
+        details.appendChild(list);
+        body.appendChild(details);
+      });
+
+      if(!hasDocs){
+        const empty = document.createElement('div');
+        empty.className = 'resource-placeholder';
+        empty.textContent = 'Files coming soon.';
+        body.appendChild(empty);
+      }
+
+      card.appendChild(body);
+      return card;
+    }
+
+    async function loadResources(){
+      setResourcePlaceholder('Resources loading...');
+      try{
+        const data = await api('/api/resources/library');
+        const categories = data.categories || [];
+        const terms = data.terms || [];
+        if(!categories.length){
+          setResourcePlaceholder('Resources will be published soon.');
+          return;
+        }
+        resourcesGrid.innerHTML = '';
+        categories.forEach((category, index) => {
+          resourcesGrid.appendChild(createResourceCard(category, terms, index));
+        });
+      } catch(err){
+        const message = (err && err.error) || 'Unable to load resources at this time.';
+        setResourcePlaceholder(message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadResources);
+  </script>
+</body>
+</html>

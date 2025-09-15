@@ -15,6 +15,7 @@ from main.views.courses import (
     api_course_sequence,
     api_course_poll_vote, 
 )
+from main.views.resources import api_resources_library
 from main.views.messages import api_messages_list, api_messages_create, api_messages_read
 from main.views.messages import messages_page, api_messages_recipients
 from main.views.classes import api_tutor_classes, api_tutor_class_detail
@@ -29,16 +30,22 @@ from main.views.adminui import (
     api_admin_game_approve,
     admin_dashboard_page,
     administrator_login_page,
+    admin_resources_page,
+    api_admin_resource_categories,
+    api_admin_resource_category_detail,
+    api_admin_resource_documents,
+    api_admin_resource_upload,
+    api_admin_resource_document_detail,
 )
 
-
-
 urlpatterns = [
-    
+
+
 #pages
     path('index/', index, name='index'),
     path('classes/', classes, name='classes'),
     path('courses/', courses, name='courses'),
+    path('resources/', resources, name='resources'),
     path('forum/', forum, name='forum'),
     path('games/', games, name='games'),
     path('games/add/', add_question, name='add_question'),
@@ -82,6 +89,7 @@ urlpatterns = [
     #courses API
     
     path("api/courses/", api_courses, name="api_courses"),
+    path('api/resources/library', api_resources_library, name='api_resources_library'),
     # Tutor admin
     path('tutor/admin/', tutor_admin, name='tutor_admin'),
     path('api/tutor/courses', api_tutor_courses, name='api_tutor_courses'),
@@ -123,7 +131,13 @@ urlpatterns = [
     path('administrator/', admin_dashboard_page, name='administrator_dashboard'),
     path('administrator/users/', admin_users_page, name='administrator_users_page'),
     path('administrator/approvals/', admin_approvals_page, name='administrator_approvals_page'),
+    path('administrator/resources/', admin_resources_page, name='administrator_resources_page'),
     # Admin APIs (prefixed with /api/admin/*)
+    path('api/admin/resource-categories', api_admin_resource_categories, name='api_admin_resource_categories'),
+    path('api/admin/resource-categories/<int:pk>', api_admin_resource_category_detail, name='api_admin_resource_category_detail'),
+    path('api/admin/resource-documents', api_admin_resource_documents, name='api_admin_resource_documents'),
+    path('api/admin/resource-documents/<int:pk>', api_admin_resource_document_detail, name='api_admin_resource_document_detail'),
+    path('api/admin/resource-upload', api_admin_resource_upload, name='api_admin_resource_upload'),
     path('api/admin/users', api_admin_users, name='api_admin_users'),
     path('api/admin/users/<int:pk>', api_admin_user_update, name='api_admin_user_update'),
     path('api/admin/content/pending', api_admin_content_pending, name='api_admin_content_pending'),

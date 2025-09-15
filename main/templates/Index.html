@@ -444,7 +444,7 @@
             <i class="fas fa-user"></i>
             <span class="nav-text">Profile</span>
         </a>
-        <a href="#" class="nav-item">
+        <a href="{% url 'resources' %}" class="nav-item">
             <i class="fas fa-book"></i>
             <span class="nav-text">Resources</span>
         </a>
@@ -515,6 +515,7 @@
                     <span class="tile-action">View</span>
                 </a>
             </div>
+
         </div>
     </div>
 
@@ -541,6 +542,11 @@
             <div class="nav-tooltip">Messages</div>
             <span id="msg-count" style="display:none; position:absolute; top:6px; right:10px; background:#e53935; color:#fff; border-radius:12px; padding:1px 6px; font-size:11px;">0</span>
         </a>
+        <a href="{% url 'resources' %}" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span>Resources</span>
+            <div class="nav-tooltip">Resources</div>
+        </a>
         <a href="{% url 'profiles' %}" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Profile</span>
@@ -550,7 +556,7 @@
 
     <script src="{% static 'js/api.js' %}"></script>
     <script>
-// Profile hint toast
+    // Profile hint toast
 const hintCss = '.toast-hint{position:fixed;right:16px;bottom:16px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;max-width:320px;z-index:10000;border-left:4px solid #24adb7;} .toast-hint .actions{display:flex;gap:8px;margin-top:8px;} .toast-hint button{border:none;border-radius:6px;padding:6px 10px;cursor:pointer;} .toast-hint .primary{background:#24adb7;color:#fff;} .toast-hint .secondary{background:#e9ecef;color:#222;}';
 const styleEl = document.createElement('style'); styleEl.textContent = hintCss; document.head.appendChild(styleEl);
 function showProfileHint(){

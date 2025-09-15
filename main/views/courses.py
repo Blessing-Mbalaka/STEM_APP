@@ -8,6 +8,31 @@ from django.db import transaction
 from django.db.models import Max, Q
 from django.conf import settings
 
+def user_can_manage_tutor_admin(user):
+    """Return True when the user should access tutor/admin tooling."""
+    if not getattr(user, "is_authenticated", False):
+        return False
+    if getattr(user, "is_superuser", False):
+        return True
+    group_name = getattr(settings, "ADMINISTRATOR_GROUP_NAME", "Administrator")
+    in_admin_group = False
+    if group_name:
+        try:
+            in_admin_group = user.groups.filter(name__iexact=group_name).exists()
+        except Exception:
+            in_admin_group = False
+    require_staff = getattr(settings, "TUTOR_ADMIN_REQUIRE_STAFF", True)
+    require_tutor = getattr(settings, "TUTOR_ADMIN_REQUIRE_TUTOR", False)
+    if require_staff:
+        if getattr(user, "is_staff", False) or in_admin_group:
+            return True
+        return False
+    if getattr(user, "is_staff", False):
+        return True
+    if require_tutor and getattr(user, "is_tutor", False):
+        return True
+    return in_admin_group
+
 def courses(request):
     return render(request, "Courses.html")
 
@@ -58,10 +83,7 @@ def api_courses(request):
 # ---------- Tutor Admin (page) ----------
 @login_required
 def tutor_admin(request):
-    # Gate by tutor or superuser only
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
+    if not user_can_manage_tutor_admin(request.user):
         return HttpResponseForbidden("Forbidden")
     return render(request, "TutorAdmin.html")
 
@@ -70,9 +92,7 @@ def tutor_admin(request):
 @require_http_methods(["GET", "POST"])
 @login_required
 def api_tutor_courses(request):
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     from main.models.course import Course, CourseResource
     if request.method == "GET":
@@ -144,9 +164,7 @@ def api_tutor_courses(request):
 @require_http_methods(["PATCH"])
 @login_required
 def api_tutor_course_detail(request, pk: int):
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     import json
     from main.models.course import Course
@@ -177,9 +195,7 @@ def api_tutor_course_detail(request, pk: int):
 @login_required
 @csrf_exempt  # we'll manually check CSRF token from header for multipart
 def api_tutor_course_add_resource(request, pk: int):
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     from main.models.course import Course, CourseResource
     c = get_object_or_404(Course, pk=pk)
@@ -265,9 +281,7 @@ def api_tutor_course_add_resource(request, pk: int):
 @require_http_methods(["DELETE"])
 @login_required
 def api_tutor_resource_detail(request, res_id: int):
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_staff) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     from main.models.course import CourseResource
     r = get_object_or_404(CourseResource, pk=res_id)
@@ -285,9 +299,7 @@ def api_tutor_resource_detail(request, res_id: int):
 @login_required
 @csrf_exempt
 def api_tutor_course_thumbnail(request, pk: int):
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_staff) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     from main.models.course import Course
     c = get_object_or_404(Course, pk=pk)
@@ -307,9 +319,7 @@ def api_tutor_course_thumbnail(request, pk: int):
 @require_http_methods(["POST"])
 @login_required
 def api_tutor_course_reorder(request, pk: int):
-    require_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    require_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (require_staff and not request.user.is_superuser) or (require_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_superuser)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     import json
     from main.models.course import Course, CourseResource

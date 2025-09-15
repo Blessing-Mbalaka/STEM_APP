@@ -150,9 +150,8 @@ LOGOUT_REDIRECT_URL = "/login/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Role gating for tutor/admin pages
-# Enforce staff-only access to Tutor Admin views and APIs
-# Tutor/Admin access control for the builder dashboard
-# Allow tutors and staff to use Tutor Admin
-TUTOR_ADMIN_REQUIRE_STAFF = False
-TUTOR_ADMIN_REQUIRE_TUTOR = True
+# Tutor/Admin access control
+# Only staff/superusers (or members of ADMINISTRATOR_GROUP_NAME) may access tutor tools
+TUTOR_ADMIN_REQUIRE_STAFF = True
+TUTOR_ADMIN_REQUIRE_TUTOR = False
+ADMINISTRATOR_GROUP_NAME = "Administrator"

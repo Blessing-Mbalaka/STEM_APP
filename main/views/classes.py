@@ -7,6 +7,7 @@ from ..models import ClassSession, Reservation
 from django.utils.timezone import now
 from django.utils import timezone
 from django.conf import settings
+from main.views.courses import user_can_manage_tutor_admin
 import json
 
 def classes(request):
@@ -93,9 +94,7 @@ def api_me_classes(request):
 @login_required
 def api_tutor_classes(request):
     # gate by settings like tutor admin
-    req_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    req_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (req_staff and not request.user.is_staff) or (req_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
 
     if request.method == "GET":
@@ -151,9 +150,7 @@ def api_tutor_classes(request):
 @require_http_methods(["DELETE"]) 
 @login_required
 def api_tutor_class_detail(request, pk: int):
-    req_staff = getattr(settings, 'TUTOR_ADMIN_REQUIRE_STAFF', False)
-    req_tutor = getattr(settings, 'TUTOR_ADMIN_REQUIRE_TUTOR', False)
-    if (req_staff and not request.user.is_staff) or (req_tutor and not (getattr(request.user, 'is_tutor', False) or request.user.is_staff)):
+    if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
     s = get_object_or_404(ClassSession, pk=pk)
     s.delete()

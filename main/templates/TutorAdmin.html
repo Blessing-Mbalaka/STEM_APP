@@ -31,7 +31,7 @@
   <div class="wrap">
     <!-- Top bar -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h2 style="margin:0; color:#24adb7;">Tutor Dashboard</h2>
+      <h2 id="dashboardTitle" style="margin:0; color:#24adb7;">Tutor Dashboard</h2>
       <div style="display:flex; gap:8px; align-items:center;">
         <button id="openScheduler" class="btn" type="button" title="Schedule Class"><i class="fas fa-calendar-plus"></i></button>
         <span id="whoami" class="muted"></span>
@@ -151,7 +151,39 @@
   <script src="{% static 'js/api.js' %}"></script>
   <script>
     let state = { courses: [], current: null };
+    let currentUser = null;
     function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+
+    async function hydrateUserHeader(){
+      try {
+        const me = await api('/api/me');
+        currentUser = me;
+        let name = '';
+        if (me.display_name && me.display_name.trim()) {
+          name = me.display_name.trim();
+        } else {
+          const fallback = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
+          name = fallback || me.username || '';
+        }
+        const isAdminRole = Boolean(me.is_superuser || me.is_staff);
+        const who = document.getElementById('whoami');
+        if (who) {
+          if (isAdminRole) {
+            const adminName = name || 'Administrator';
+            who.textContent = 'Administrator: ' + adminName;
+          } else {
+            who.textContent = name;
+          }
+        }
+        const title = document.getElementById('dashboardTitle');
+        if (title) {
+          title.textContent = 'Tutor Dashboard';
+          title.style.visibility = isAdminRole ? 'hidden' : 'visible';
+        }
+      } catch (err) {
+        console.warn('Failed to load current user for Tutor Admin', err);
+      }
+    }
 
     async function loadCourses(){
       const mine = document.getElementById('filterMine')?.checked ? '?mine=true' : '';
@@ -340,7 +372,8 @@
     // Publish toggle
     // old inline publish handler removed; using handlePublish instead
 
-    document.addEventListener('DOMContentLoaded', ()=>{ 
+    document.addEventListener('DOMContentLoaded', async ()=>{ 
+      await hydrateUserHeader();
       loadCourses(); loadGames(); renderPollOptions();
       const filterMine = document.getElementById('filterMine');
       const refreshBtn = document.getElementById('refreshCourses');

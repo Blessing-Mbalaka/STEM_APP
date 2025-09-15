@@ -1,5 +1,5 @@
 # stem_app/views/__init__.py
-from .index import index
+from .index import index, resources
 from .login import login_page, api_me, api_login, api_logout, api_register
 from .profiles import profiles
 from .game import games, add_question, api_games_list, api_game_detail, api_game_submit, api_game_add_question
@@ -10,7 +10,7 @@ from .forum import forum, api_forum_categories, api_forum_threads, api_forum_thr
 
 
 __all__ = [
-    "index",
+    "index", "resources",
     "login_page",
     "api_me",
     "api_login",

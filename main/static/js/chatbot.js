@@ -1,15 +1,17 @@
-window.getBotResponse = async function(message, model="gemma3") {
+window.getBotResponse = async function(message, model) {
     try {
         const res = await fetch('/api/chatbot/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: message, model })
+            body: JSON.stringify(Object.assign({ prompt: message }, model ? { model } : {}))
         });
-        if (!res.ok) throw new Error("Chatbot model not yet running");
-        const data = await res.json();
-        return data.response || "Sorry, I couldn't get an answer.";
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            throw new Error(data.error || data.response || res.statusText || 'Chatbot model not yet running');
+        }
+        return data.response || data.error || "Sorry, I couldn't get an answer.";
     } catch (e) {
-        return "Chatbot model not yet running. Please ask your admin to deploy it.";
+        return e.message || "Chatbot model not yet running. Please ask your admin to deploy it.";
     }
 };
 

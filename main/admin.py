@@ -12,6 +12,7 @@ from main.models import (
     Course, Enrollment,
     ClassSession, Reservation,
     ForumCategory, Thread, Post, PostLike,
+    ResourceCategory, ResourceDocument,
 )
 
 @admin.register(CustomUser)
@@ -102,3 +103,14 @@ class PostLikeAdmin(admin.ModelAdmin):
     list_display = ("post", "user", "created_at")
     search_fields = ("post__thread__title", "user__username")
 
+@admin.register(ResourceCategory)
+class ResourceCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_at", "updated_at")
+    search_fields = ("name",)
+
+
+@admin.register(ResourceDocument)
+class ResourceDocumentAdmin(admin.ModelAdmin):
+    list_display = ("title", "category", "term", "created_at")
+    list_filter = ("category", "term")
+    search_fields = ("title", "original_filename")

@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from main.views.courses import user_can_manage_tutor_admin
 
 User = get_user_model()
 
@@ -23,9 +24,7 @@ def login_page(request: HttpRequest):
     from django.shortcuts import render, redirect
     if request.user.is_authenticated:
         target = "/index/"
-        if getattr(request.user, "is_staff", False):
-            target = "/tutor/admin/"
-        elif getattr(request.user, "is_tutor", False):
+        if user_can_manage_tutor_admin(request.user):
             target = "/tutor/admin/"
         return redirect(target)
     return render(request, "Login.html")
@@ -67,9 +66,7 @@ def api_login(request: HttpRequest):
     login(request, user)
     # Role-based redirect target (students -> index dashboard)
     target = "/index/"
-    if getattr(user, "is_staff", False):
-        target = "/tutor/admin/"
-    elif getattr(user, "is_tutor", False):
+    if user_can_manage_tutor_admin(user):
         target = "/tutor/admin/"
     return JsonResponse({"ok": True, "redirect": target})
 
@@ -200,9 +197,7 @@ def api_change_password(request: HttpRequest):
     login(request, user)
     # Role-based redirect target
     target = "/index/"
-    if getattr(user, "is_staff", False):
-        target = "/tutor/admin/"
-    elif getattr(user, "is_tutor", False):
+    if user_can_manage_tutor_admin(user):
         target = "/tutor/admin/"
     return JsonResponse({"ok": True, "redirect": target})
 

@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Resources</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;background:#f7f7f9;color:#222;margin:0;}
+    .wrap{max-width:1200px;margin:20px auto;padding:16px;}
+    .header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap;}
+    .header-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06);}
+    .layout{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start;}
+    @media(max-width:900px){.layout{grid-template-columns:1fr;}}
+    .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+    .tile{background:#fdfdfd;border:1px solid #e6eaef;border-radius:12px;padding:14px 16px;box-shadow:0 4px 12px rgba(0,0,0,.04);cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:transform .1s ease, box-shadow .1s ease;}
+    .tile:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.08);}
+    .tile.active{border-color:#24adb7;box-shadow:0 8px 20px rgba(36,173,183,.2);}
+    .tile .subject{font-weight:700;color:#24adb7;font-size:16px;}
+    .tile .totals{color:#555;font-size:13px;}
+    .badge-row{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;}
+    .badge{background:#e9ecef;border-radius:999px;padding:2px 8px;color:#333;}
+    .term-section{margin-bottom:18px;}
+    .term-header{font-weight:600;margin-bottom:6px;color:#24adb7;display:flex;justify-content:space-between;align-items:center;}
+    .doc-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px;border:1px solid #e6eaef;border-radius:10px;margin-bottom:8px;gap:12px;}
+    .doc-row .meta{font-size:13px;color:#666;margin-top:4px;}
+    .doc-actions{display:flex;gap:8px;}
+    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;}
+    .btn.secondary{background:#e9ecef;color:#222;}
+    .btn.danger{background:#d9534f;color:#fff;}
+    .muted{color:#888;font-size:14px;}
+    .empty{padding:30px;text-align:center;color:#777;}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:1000;}
+    .modal .dialog{background:#fff;border-radius:12px;width:520px;max-width:92vw;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.2);}
+    .modal .dialog h3{margin:0 0 12px 0;color:#24adb7;}
+    .modal .row{display:flex;gap:10px;margin:10px 0;align-items:center;}
+    .modal label{width:120px;font-weight:600;color:#444;}
+    .modal input[type=text], .modal textarea, .modal select{flex:1;padding:8px 10px;border:1px solid #d0d7de;border-radius:8px;}
+    .modal textarea{min-height:80px;}
+    .modal input[type=file]{flex:1;}
+    .error-text{color:#d9534f;font-size:13px;display:none;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header-bar">
+      <h2 style="margin:0;color:#24adb7;">Course Resources</h2>
+      <div class="header-actions">
+        <button id="addResourceBtn" class="btn"><i class="fas fa-cloud-upload-alt"></i> Add Resources</button>
+        <button id="addCategoryBtn" class="btn secondary"><i class="fas fa-plus"></i> Add Subject</button>
+        <a href="/administrator/" class="btn secondary"><i class="fas fa-arrow-left"></i> Back</a>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="card">
+        <h3 style="margin-top:0;color:#24adb7;">Subjects</h3>
+        <div id="categoryTiles" class="tiles"></div>
+      </div>
+      <div class="card" id="detailCard">
+        <div id="detailPlaceholder" class="empty">Select a subject to view its resources.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="uploadTitle">
+    <div class="dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 id="uploadTitle">Add Resources</h3>
+        <button id="closeUpload" class="btn secondary" type="button">Close</button>
+      </div>
+      <form id="uploadForm">
+        <div class="row"><label for="uploadCategory">Subject</label>
+          <select id="uploadCategory" name="category" required></select>
+        </div>
+        <div class="row"><label for="uploadTerm">Term</label>
+          <select id="uploadTerm" name="term" required></select>
+        </div>
+        <div class="row"><label for="uploadTitleInput">Title</label>
+          <input id="uploadTitleInput" name="title" type="text" placeholder="Optional shared title">
+        </div>
+        <div class="row"><label for="uploadDescription">Description</label>
+          <textarea id="uploadDescription" name="description" placeholder="Optional notes"></textarea>
+        </div>
+        <div class="row"><label for="uploadFiles">Files</label>
+          <input id="uploadFiles" name="files" type="file" accept="application/pdf" multiple required>
+        </div>
+        <div id="uploadError" class="error-text"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+          <button type="submit" class="btn">Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'js/api.js' %}"></script>
+  <script>
+    const state = {
+      categories: [],
+      terms: [],
+      current: null,
+    };
+
+    const tilesEl = document.getElementById('categoryTiles');
+    const detailCard = document.getElementById('detailCard');
+    const detailPlaceholder = document.getElementById('detailPlaceholder');
+    const uploadModal = document.getElementById('uploadModal');
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadCategorySelect = document.getElementById('uploadCategory');
+    const uploadTermSelect = document.getElementById('uploadTerm');
+    const uploadError = document.getElementById('uploadError');
+
+    function formatCount(count) {
+      return count === 1 ? '1 item' : `${count} items`;
+    }
+
+    function closeUploadModal() {
+      uploadModal.style.display = 'none';
+      uploadForm.reset();
+      uploadError.style.display = 'none';
+      uploadError.textContent = '';
+    }
+
+    function openUploadModal(categoryId) {
+      uploadCategorySelect.innerHTML = state.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      if (categoryId) {
+        uploadCategorySelect.value = String(categoryId);
+      }
+      uploadTermSelect.innerHTML = state.terms.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
+      uploadModal.style.display = 'flex';
+    }
+
+    function renderCategories() {
+      tilesEl.innerHTML = '';
+      if (!state.categories.length) {
+        tilesEl.innerHTML = '<div class="muted">No subjects yet. Add one to get started.</div>';
+        return;
+      }
+      state.categories.forEach(cat => {
+        const tile = document.createElement('div');
+        tile.className = 'tile' + (state.current && state.current.id === cat.id ? ' active' : '');
+        tile.setAttribute('data-id', cat.id);
+        tile.innerHTML = `
+          <div class="subject">${cat.name}</div>
+          <div class="totals">${formatCount(cat.total)}</div>
+          <div class="badge-row">
+            ${state.terms.map(t => `<span class="badge">${t.label}: ${cat.counts[t.value] || 0}</span>`).join('')}
+          </div>
+        `;
+        tile.addEventListener('click', () => loadCategory(cat.id));
+        tilesEl.appendChild(tile);
+      });
+    }
+
+    function renderDocuments(payload) {
+      state.current = payload.category;
+      detailCard.innerHTML = '';
+      const header = document.createElement('div');
+      header.style.display = 'flex';
+      header.style.justifyContent = 'space-between';
+      header.style.alignItems = 'center';
+      header.style.marginBottom = '12px';
+      header.innerHTML = `<div>
+        <h3 style="margin:0;color:#24adb7;">${payload.category.name}</h3>
+        ${payload.category.description ? `<div class="muted">${payload.category.description}</div>` : ''}
+      </div>
+      <button class="btn" type="button" id="detailUploadBtn"><i class="fas fa-cloud-upload-alt"></i> Add Resources</button>`;
+      detailCard.appendChild(header);
+      const detailUploadBtn = document.getElementById('detailUploadBtn');
+      if (detailUploadBtn) {
+        detailUploadBtn.addEventListener('click', () => openUploadModal(payload.category.id));
+      }
+      payload.terms.forEach(term => {
+        const section = document.createElement('div');
+        section.className = 'term-section';
+        const docs = payload.documents[term.value] || [];
+        section.innerHTML = `<div class="term-header">
+            <span>${term.label}</span>
+            <span class="muted">${formatCount(docs.length)}</span>
+          </div>`;
+        if (!docs.length) {
+          const empty = document.createElement('div');
+          empty.className = 'muted';
+          empty.textContent = 'No resources yet.';
+          section.appendChild(empty);
+        } else {
+          docs.forEach(doc => {
+            const row = document.createElement('div');
+            row.className = 'doc-row';
+            row.innerHTML = `
+              <div>
+                <a href="${doc.file}" target="_blank" rel="noopener" style="font-weight:600;">${doc.title}</a>
+                <div class="meta">${doc.description ? doc.description + ' • ' : ''}${doc.term_label} • Uploaded ${doc.uploaded_at.substring(0,10)}</div>
+              </div>
+              <div class="doc-actions">
+                <a class="btn secondary" href="${doc.file}" target="_blank" rel="noopener">Download</a>
+                <button class="btn danger" type="button" data-action="delete" data-id="${doc.id}" data-category="${payload.category.id}"><i class="fas fa-trash"></i></button>
+              </div>`;
+            section.appendChild(row);
+          });
+        }
+        detailCard.appendChild(section);
+      });
+    }
+
+    async function handleDocAction(event) {
+      const target = event.target.closest('button[data-action]');
+      if (!target) return;
+      const action = target.getAttribute('data-action');
+      if (action !== 'delete') return;
+      const docId = target.getAttribute('data-id');
+      if (!docId) return;
+      if (!confirm('Delete this resource?')) return;
+      try {
+        await api(`/api/admin/resource-documents/${docId}`, { method: 'DELETE' });
+        await fetchCategories();
+        if (state.current) {
+          await loadCategory(state.current.id);
+        }
+      } catch (err) {
+        alert(err?.error || 'Failed to delete resource');
+      }
+    }
+
+    async function fetchCategories() {
+      try {
+        const data = await api('/api/admin/resource-categories');
+        state.categories = data.results || [];
+        state.terms = data.terms || [];
+        if (!state.current && state.categories.length) {
+          state.current = state.categories[0];
+        }
+        renderCategories();
+      } catch (err) {
+        tilesEl.innerHTML = `<div class="muted">${err?.error || 'Failed to load subjects'}</div>`;
+      }
+    }
+
+    async function loadCategory(categoryId) {
+      try {
+        const params = new URLSearchParams({ category: categoryId });
+        const data = await api(`/api/admin/resource-documents?${params.toString()}`);
+        renderDocuments(data);
+        renderCategories();
+      } catch (err) {
+        detailCard.innerHTML = `<div class="muted">${err?.error || 'Failed to load resources'}</div>`;
+      }
+    }
+
+    async function addCategoryPrompt() {
+      const name = prompt('Subject name');
+      if (!name) return;
+      try {
+        await api('/api/admin/resource-categories', { method: 'POST', data: { name } });
+        await fetchCategories();
+      } catch (err) {
+        alert(err?.error || 'Could not create subject');
+      }
+    }
+
+    async function uploadResources(event) {
+      event.preventDefault();
+      uploadError.style.display = 'none';
+      uploadError.textContent = '';
+      const formData = new FormData(uploadForm);
+      if (!formData.getAll('files').length) {
+        uploadError.textContent = 'Select at least one file.';
+        uploadError.style.display = 'block';
+        return;
+      }
+      try {
+        const csrf = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+        const res = await fetch('/api/admin/resource-upload', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': csrf },
+          body: formData,
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) throw json;
+        closeUploadModal();
+        await fetchCategories();
+        const selected = formData.get('category');
+        if (selected) {
+          await loadCategory(selected);
+        }
+      } catch (err) {
+        uploadError.textContent = err?.error || 'Upload failed';
+        uploadError.style.display = 'block';
+      }
+    }
+
+    document.getElementById('addResourceBtn').addEventListener('click', () => {
+      const defaultCat = state.current ? state.current.id : (state.categories[0]?.id || null);
+      openUploadModal(defaultCat);
+    });
+    document.getElementById('addCategoryBtn').addEventListener('click', addCategoryPrompt);
+    document.getElementById('closeUpload').addEventListener('click', closeUploadModal);
+    uploadForm.addEventListener('submit', uploadResources);
+    uploadModal.addEventListener('click', (event) => {
+      if (event.target === uploadModal) closeUploadModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await fetchCategories();
+      if (state.current) {
+        await loadCategory(state.current.id);
+      }
+    });
+  </script>
+</body>
+</html>
+
+
