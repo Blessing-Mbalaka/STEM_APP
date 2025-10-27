@@ -1,0 +1,104 @@
+[
+  {
+    "query": "what is the sqr(16)",
+    "timestamp": "2025-10-27T23:45:35.761424+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "sqr(x) is squaroot ?",
+    "timestamp": "2025-10-27T23:46:22.346754+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "sqrt(16) is?",
+    "timestamp": "2025-10-27T23:46:53.530045+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  }
+]

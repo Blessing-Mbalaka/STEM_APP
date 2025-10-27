@@ -323,7 +323,7 @@ def api_game_submit(request, pk: int):
     points = 0
     if answered > 0:
         calc = round(g.max_points * (score / 100))
-        points = max(1, calc)
+        points = calc #0 if score == 0 else max(1, calc)
 
     GameScore.objects.create(
         user=request.user,

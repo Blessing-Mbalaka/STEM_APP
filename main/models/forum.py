@@ -5,7 +5,8 @@ from .user import CustomUser
 class ForumCategory(TimeStamped, Slugged):
     name = models.CharField(max_length=120, unique=True)
     description = models.CharField(max_length=250, blank=True)
-
+    image = models.ImageField(upload_to='forum_images/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     def _slug_source(self): return self.name
     def __str__(self): return self.name
 
@@ -30,6 +31,7 @@ class Post(TimeStamped):
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name="posts")
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="posts")
     body = models.TextField()
+    image = models.ImageField(upload_to='forum_images/', blank=True, null=True)  # Add this line
 
     class Meta:
         ordering = ["created_at"]

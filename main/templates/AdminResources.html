@@ -191,7 +191,7 @@
             row.innerHTML = `
               <div>
                 <a href="${doc.file}" target="_blank" rel="noopener" style="font-weight:600;">${doc.title}</a>
-                <div class="meta">${doc.description ? doc.description + ' • ' : ''}${doc.term_label} • Uploaded ${doc.uploaded_at.substring(0,10)}</div>
+                <div class="meta">${doc.description ? doc.description + '  ' : ''}${doc.term_label}  Uploaded ${doc.uploaded_at.substring(0,10)}</div>
               </div>
               <div class="doc-actions">
                 <a class="btn secondary" href="${doc.file}" target="_blank" rel="noopener">Download</a>

@@ -15,11 +15,30 @@ from main.views.courses import (
     api_course_sequence,
     api_course_poll_vote, 
 )
+
+from main.views.tutor import (
+    tutor_dashboard,
+    book_session,
+    confirm_session,
+    video_session,
+    complete_session,
+    cancel_session
+)
+
+
+from main.views.chatbotview import chatbot_api, internet_search_api, chatbot_history_api
+
+
+
+
+
+
 from main.views.resources import api_resources_library
 from main.views.messages import api_messages_list, api_messages_create, api_messages_read
 from main.views.messages import messages_page, api_messages_recipients
 from main.views.classes import api_tutor_classes, api_tutor_class_detail
 from main.views.chatbotview import chatbot_api
+from main.views.tutor import tutor_dashboard, book_session, cancel_session
 from main.views.adminui import (
     admin_users_page,
     api_admin_users,
@@ -36,6 +55,9 @@ from main.views.adminui import (
     api_admin_resource_documents,
     api_admin_resource_upload,
     api_admin_resource_document_detail,
+    
+    
+
 )
 
 urlpatterns = [
@@ -144,7 +166,21 @@ urlpatterns = [
     path('api/admin/courses/<int:pk>/approve', api_admin_course_approve, name='api_admin_course_approve'),
     path('api/admin/games/<int:pk>/approve', api_admin_game_approve, name='api_admin_game_approve'),
 
+    # Tutor session URLs
+    path('session/<int:session_id>/confirm/', confirm_session, name='confirm_session'),
+    path('session/<int:session_id>/video/', video_session, name='video_session'),
+    path('session/<int:session_id>/complete/', complete_session, name='complete_session'),
+    path('session/<int:session_id>/cancel/', cancel_session, name='cancel_session'),
+    path('tutor/dashboard/', tutor_dashboard, name='tutor_dashboard'),
+    path('tutor/book/<int:class_id>/', book_session, name='book_session'),
 
+
+
+
+
+    # Add to your main/urls.py
+path('api/chatbot/search/', internet_search_api, name='chatbot_search'),
+path('api/chatbot/history/', chatbot_history_api, name='chatbot_history'),
 
 ]
 
@@ -152,5 +188,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-    
-   
+
+

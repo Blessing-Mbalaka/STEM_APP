@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Session{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Confirm Tutoring Session</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{{ session.title }}</h5>
+                    <p><strong>Student:</strong> {{ session.student.get_full_name|default:session.student.email }}</p>
+                    <p><strong>Subject:</strong> {{ session.subject }}</p>
+                    <p><strong>Scheduled:</strong> {{ session.scheduled_time|date:"M d, Y" }} at {{ session.scheduled_time|time:"g:i A" }}</p>
+                    <p><strong>Duration:</strong> {{ session.duration_minutes }} minutes</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>What happens when you confirm:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>A video meeting link will be generated</li>
+                            <li>Both you and the student will receive email notifications</li>
+                            <li>The student can join the video session at the scheduled time</li>
+                        </ul>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Confirm Session
+                        </button>
+                        <a href="{% url 'tutor_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

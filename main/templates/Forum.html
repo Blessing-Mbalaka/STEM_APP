@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Forum with AI Tutor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
     <style>
         :root {
             --primary-blue: #530475;
@@ -589,6 +600,105 @@
             padding: 10px 15px;
             box-shadow: var(--card-shadow);
         }
+
+        .bot-message.is-loading {
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .bot-message.has-error {
+            border: 1px solid #f7d7db;
+            background-color: #fff5f6;
+            color: #8c2a2a;
+        }
+
+        .message-meta {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #765a8a;
+        }
+
+        .message-sources {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #e3d8f2;
+        }
+
+        .message-sources__title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #5b3a7a;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .message-sources ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message-sources li {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .message-source-link {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4f2c8d;
+            text-decoration: none;
+            word-break: break-word;
+        }
+
+        .message-source-link:hover {
+            text-decoration: underline;
+        }
+
+        .message-source-host {
+            font-size: 12px;
+            color: #7a6b94;
+        }
+
+        .message-source-excerpt {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #6f5a8b;
+            line-height: 1.3;
+        }
+        }
+
+        .message-action {
+            margin-top: 10px;
+            background-color: #5a2d89;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .message-action:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .message-action:hover:not(:disabled) {
+            background-color: #7c42b3;
+        }
+
+        .math-fragment {
+            font-family: 'Times New Roman', serif;
+            color: #3b2161;
+            padding: 0 2px;
+        }
         
         .user-message {
             align-self: flex-end;
@@ -702,7 +812,7 @@
             <h1>Student Forum with AI Tutor</h1>
             <p class="subtitle">Ask questions, get answers from tutors and our AI assistant</p>
         </header>
-        
+
         <div class="forum-container">
             <div class="forum-header">
                 <div class="search-bar-container">
@@ -1085,6 +1195,9 @@ function renderPostsInto(container, posts){
           <div class="question-time">${formatTimeISO(p.created_at)}</div>
         </div>
         <div class="answer-content">${(p.body||'').replace(/\n/g,'<br>')}</div>
+        ${p.image ? `<div class="post-image">
+            <img src="${p.image}" alt="Post image" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;">
+        </div>` : ''}
         <div class="answer-footer">
           <div class="action-btn ${liked ? 'liked':''}" onclick="togglePostLike('${p.id}')">
             <i class="far fa-thumbs-up"></i> ${liked ? 1 : 0}
@@ -1120,53 +1233,97 @@ async function submitAnswer(){
     alert('Please enter your answer');
     return;
   }
+
   try{
-    await api(`/api/forum/threads/${currentThreadSlug}/posts`, {
-      method: "POST",
-      data: { body: content }
+    // Create FormData to handle file uploads
+    const formData = new FormData();
+    formData.append('body', content);
+    
+    // Add image if selected
+    const imageFile = answerImage.files[0];
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    // Send FormData instead of JSON
+    const response = await fetch(`/api/forum/threads/${currentThreadSlug}/posts`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+        // Don't set Content-Type - let browser set it for FormData
+      },
+      body: formData
     });
-    // reset form
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || response.statusText);
+    }
+
+    // Reset form
     document.getElementById('answer-content').value = '';
     answerPreviewImage.style.display = 'none';
     answerPreviewImage.src = '';
     answerImage.value = '';
-
     answerModal.classList.remove('active');
 
-    // refresh the answers section
+    // Refresh answers
     const container = document.getElementById(`answers-${currentThreadSlug}`);
     if (container){
       const posts = await loadPostsForThread(currentThreadSlug);
       renderPostsInto(container, posts);
       container.style.display = 'block';
     }
-    // also refresh thread counts
     await loadThreads();
+
   }catch(e){
-    alert(e.message || "Failed to post answer (are you logged in?)");
+    alert(e.message || "Failed to post answer");
   }
 }
 
 async function submitQuestion(){
   const title = document.getElementById('question-title').value.trim();
   const content = document.getElementById('question-content').value.trim();
-  const tagsRaw = document.getElementById('question-tags').value; // not sent to backend (UI only)
+  
   if (!title || !content){
     alert('Please fill in all required fields');
     return;
   }
-  // pick a category: current tab if set; otherwise first category
+
   const category = currentCategorySlug || (categories[0]?.slug);
   if (!category){
     alert("No category available yet");
     return;
   }
+
   try{
-    await api("/api/forum/threads", {
-      method: "POST",
-      data: { category, title, body: content }
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('category', category);
+    formData.append('title', title);
+    formData.append('body', content);
+    
+    // Add image if selected
+    const imageFile = questionImage.files[0];
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    // Send FormData
+    const response = await fetch('/api/forum/threads', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      },
+      body: formData
     });
-    // reset form & close
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || response.statusText);
+    }
+
+    // Reset form
     document.getElementById('question-title').value = '';
     document.getElementById('question-content').value = '';
     document.getElementById('question-tags').value = '';
@@ -1175,57 +1332,332 @@ async function submitQuestion(){
     questionImage.value = '';
     newQuestionModal.classList.remove('active');
 
-    // reload thread list to include the new one
     await loadThreads();
+
   }catch(e){
-    alert(e.message || "Failed to create thread (are you logged in?)");
+    alert(e.message || "Failed to create thread");
   }
 }
 
-// ================ Bot (unchanged from your version) =================
-function sendBotMessage(){
+// ================ Chatbot Helpers =================
+const chatbotState = window.chatbotState = window.chatbotState || {
+  conversationId: null,
+  pendingSearchQuery: null
+};
+
+function escapeHtml(str = '') {
+  return str.replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[char] || char));
+}
+
+function linkifyHtml(html = '') {
+  return html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+
+function renderMath(element, attempt = 0) {
+  if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+    window.MathJax.typesetPromise([element]).catch(() => {});
+  } else if (attempt < 10) {
+    setTimeout(() => renderMath(element, attempt + 1), 200);
+  }
+}
+
+function wrapNumbersInElement(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const pattern = /sqrt\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)|√\s*([0-9]+(?:\.[0-9]+)?)|([0-9]+(?:\.[0-9]+)?)/gi;
+  const replacements = [];
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const parentElement = node.parentElement;
+    if (!parentElement) continue;
+    if (parentElement.closest('a, .math-fragment')) continue;
+    const text = node.textContent || '';
+    const matches = Array.from(text.matchAll(pattern));
+    if (!matches.length) continue;
+
+    const frag = document.createDocumentFragment();
+    let lastIndex = 0;
+    matches.forEach((match) => {
+      const index = match.index ?? 0;
+      const matched = match[0];
+      if (index > lastIndex) {
+        frag.appendChild(document.createTextNode(text.slice(lastIndex, index)));
+      }
+      const span = document.createElement('span');
+      span.className = 'math-fragment';
+      let tex;
+      if (match[1]) {
+        tex = `\\(\\sqrt{${match[1]}}\\)`;
+      } else if (match[2]) {
+        tex = `\\(\\sqrt{${match[2]}}\\)`;
+      } else if (match[3]) {
+        tex = `\\(${match[3]}\\)`;
+      } else {
+        tex = `\\(${matched}\\)`;
+      }
+      span.textContent = tex;
+      frag.appendChild(span);
+      lastIndex = index + matched.length;
+    });
+    if (lastIndex < text.length) {
+      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+    replacements.push({ node, frag });
+  }
+
+  replacements.forEach(({ node, frag }) => {
+    if (node.parentNode) {
+      node.parentNode.replaceChild(frag, node);
+    }
+  });
+}
+
+function setMessageContent(element, text) {
+  const html = linkifyHtml(escapeHtml(text)).replace(/\n/g, '<br>');
+  element.innerHTML = html;
+  wrapNumbersInElement(element);
+  renderMath(element);
+}
+
+function appendMeta(element, text) {
+  if (!text) return;
+  const meta = document.createElement('div');
+  meta.className = 'message-meta';
+  meta.textContent = text;
+  element.appendChild(meta);
+}
+
+function attachSources(element, sources, heading = 'Sources') {
+  if (!Array.isArray(sources) || !sources.length) return;
+  const container = document.createElement('div');
+  container.className = 'message-sources';
+
+  const title = document.createElement('span');
+  title.className = 'message-sources__title';
+  title.textContent = heading;
+  container.appendChild(title);
+
+  const list = document.createElement('ul');
+  sources.forEach((source) => {
+    const item = document.createElement('li');
+    if (source && source.url) {
+      const link = document.createElement('a');
+      link.className = 'message-source-link';
+      link.href = source.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = source.title || source.url;
+      item.appendChild(link);
+
+      try {
+        const parsed = new URL(source.url);
+        const host = parsed.hostname.replace(/^www\./, '');
+        if (!source.title && host) {
+          link.textContent = host;
+        }
+        if (host) {
+          const hostLabel = document.createElement('span');
+          hostLabel.className = 'message-source-host';
+          hostLabel.textContent = host;
+          item.appendChild(hostLabel);
+        }
+      } catch (e) {
+        // ignore invalid URL
+      }
+    } else if (source && source.title) {
+      const titleOnly = document.createElement('span');
+      titleOnly.className = 'message-source-link';
+      titleOnly.textContent = source.title;
+      item.appendChild(titleOnly);
+    } else if (typeof source === 'string') {
+      const textOnly = document.createElement('span');
+      textOnly.className = 'message-source-link';
+      textOnly.textContent = source;
+      item.appendChild(textOnly);
+    }
+
+    if (source && source.excerpt) {
+      const excerpt = document.createElement('div');
+      excerpt.className = 'message-source-excerpt';
+      excerpt.textContent = source.excerpt;
+      item.appendChild(excerpt);
+    }
+
+    list.appendChild(item);
+  });
+  container.appendChild(list);
+  element.appendChild(container);
+}
+
+async function getBotResponse(question) {
+  const res = await fetch('/api/chatbot/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken
+    },
+    body: JSON.stringify({
+      question,
+      conversation_id: chatbotState.conversationId
+    })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || data.response || 'The tutor is unavailable right now.');
+  }
+  return data;
+}
+
+async function requestInternetSearch(query, conversationId) {
+  const payload = { query };
+  if (conversationId) {
+    payload.conversation_id = conversationId;
+  }
+  const res = await fetch('/api/chatbot/search/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken
+    },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || 'Unable to fetch internet results right now.');
+  }
+  return data;
+}
+
+function appendUserMessage(text) {
+  const message = document.createElement('div');
+  message.className = 'message user-message';
+  message.textContent = text;
+  botMessages.appendChild(message);
+  botMessages.scrollTop = botMessages.scrollHeight;
+  return message;
+}
+
+function appendBotMessage(text, options = {}) {
+  const message = document.createElement('div');
+  message.className = 'message bot-message';
+  if (options.loading) {
+    message.classList.add('is-loading');
+  }
+  botMessages.appendChild(message);
+  setMessageContent(message, text);
+  botMessages.scrollTop = botMessages.scrollHeight;
+  return message;
+}
+
+async function performInternetSearch(query, conversationId, triggerButton) {
+  if (!query) return;
+  if (triggerButton) {
+    triggerButton.disabled = true;
+    triggerButton.textContent = 'Searching...';
+  }
+  chatbotState.pendingSearchQuery = null;
+  const loader = appendBotMessage('Searching online...', { loading: true });
+  try {
+    const data = await requestInternetSearch(query, conversationId);
+    loader.classList.remove('is-loading');
+    setMessageContent(loader, data.response || 'Here is what I found online.');
+    appendMeta(loader, 'Information gathered from the internet.');
+    if (Array.isArray(data.sources) && data.sources.length) {
+      attachSources(loader, data.sources);
+    }
+    if (Array.isArray(data.local_resources) && data.local_resources.length) {
+      attachSources(loader, data.local_resources, "Campus resources to review");
+    }
+    if (data.conversation_id) {
+      chatbotState.conversationId = data.conversation_id;
+    }
+  } catch (error) {
+    loader.classList.remove('is-loading');
+    loader.classList.add('has-error');
+    setMessageContent(loader, error.message || 'Internet search failed.');
+  } finally {
+    if (triggerButton) {
+      triggerButton.remove();
+    }
+  }
+}
+
+async function sendBotMessage(){
   const message = botInput.value.trim();
   if (!message) return;
 
-  const userMessage = document.createElement('div');
-  userMessage.className = 'message user-message';
-  userMessage.textContent = message;
-  botMessages.appendChild(userMessage);
-  botInput.value = '';
-  botMessages.scrollTop = botMessages.scrollHeight;
+  const normalized = message.toLowerCase();
+  if (chatbotState.pendingSearchQuery && /^(yes|y|sure|ok|please|search)/.test(normalized)) {
+    appendUserMessage(message);
+    botInput.value = '';
+    const query = chatbotState.pendingSearchQuery;
+    chatbotState.pendingSearchQuery = null;
+    await performInternetSearch(query, chatbotState.conversationId);
+    return;
+  }
 
-  setTimeout(() => {
-    const botResponse = getBotResponse(message);
-    const botMessage = document.createElement('div');
-    botMessage.className = 'message bot-message';
-    botMessage.textContent = botResponse;
-    botMessages.appendChild(botMessage);
+  appendUserMessage(message);
+  botInput.value = '';
+
+  const placeholder = appendBotMessage('Thinking...', { loading: true });
+
+  try{
+    const data = await getBotResponse(message);
+    placeholder.classList.remove('is-loading');
+    chatbotState.conversationId = data.conversation_id || chatbotState.conversationId;
+    chatbotState.pendingSearchQuery = null;
+
+    setMessageContent(placeholder, data.response || "I'm still learning, could you rephrase that?");
+
+    if (data.from_arithmetic) {
+      appendMeta(placeholder, 'Computed using built-in arithmetic.');
+    }
+    if (data.from_cache) {
+      appendMeta(placeholder, 'Answered from recent conversation history.');
+    }
+    if (data.from_internet) {
+      appendMeta(placeholder, 'Information gathered from the web.');
+    }
+
+    if (Array.isArray(data.sources) && data.sources.length) {
+      attachSources(placeholder, data.sources);
+    }
+    if (Array.isArray(data.local_resources) && data.local_resources.length) {
+      attachSources(placeholder, data.local_resources, "Campus resources to review");
+    }
+
+    if (data.needs_internet_search) {
+      chatbotState.pendingSearchQuery = data.search_query || message;
+      appendMeta(placeholder, 'I could not find this in the course materials.');
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'message-action';
+      action.textContent = 'Search the Internet';
+      action.addEventListener('click', () => {
+        chatbotState.pendingSearchQuery = null;
+        performInternetSearch(
+          data.search_query || message,
+          data.conversation_id || chatbotState.conversationId,
+          action
+        );
+      });
+      placeholder.appendChild(action);
+    }
+  }catch(error){
+    chatbotState.pendingSearchQuery = null;
+    placeholder.classList.remove('is-loading');
+    placeholder.classList.add('has-error');
+    setMessageContent(placeholder, error.message || 'The tutor is unavailable right now.');
+  }finally{
     botMessages.scrollTop = botMessages.scrollHeight;
-  }, 600);
-}
-function getBotResponse(message){
-  const lowerMessage = message.toLowerCase();
-  if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-    return "Hello! How can I help you with your studies today?";
-  } else if (lowerMessage.includes('math') || lowerMessage.includes('algebra') || lowerMessage.includes('calculus')) {
-    return "I can help with math topics! For algebra, remember the quadratic formula: x = [-b ± √(b² - 4ac)] / (2a). For calculus, the fundamental theorem relates differentiation and integration.";
-  } else if (lowerMessage.includes('science') || lowerMessage.includes('physics') || lowerMessage.includes('chemistry')) {
-    return "Science is fascinating! Newton's laws govern motion in physics. In chemistry, remember that elements in the same group have similar properties.";
-  } else if (lowerMessage.includes('literature') || lowerMessage.includes('book') || lowerMessage.includes('poem')) {
-    return "For literature, focus on themes, symbols, and character development. Look at how literary devices convey meaning.";
-  } else if (lowerMessage.includes('history')) {
-    return "With history, study both events and context. Causes/effects + primary sources are key.";
-  } else {
-    const responses = [
-      "I'm not sure I understand. Could you rephrase your question?",
-      "Interesting—could you provide more details so I can give you a better answer?",
-      "Which subject area does this relate to?",
-      "Happy to help. What specific aspect are you stuck on?"
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
   }
 }
-
 // ================ Events =================
 newQuestionBtn.addEventListener('click', () => newQuestionModal.classList.add('active'));
 closeQuestionModal.addEventListener('click', () => newQuestionModal.classList.remove('active'));
@@ -1320,3 +1752,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+

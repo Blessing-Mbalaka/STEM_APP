@@ -16,18 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from main.views import *
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path, include, re_path
-from main.views.pdf import pdf_embed
-from main.views.auth import login_page
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
-    re_path(r"^media-pdf/(?P<path>.+)$", pdf_embed, name="pdf_embed"),
 ]
+
+# Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

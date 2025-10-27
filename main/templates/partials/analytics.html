@@ -1,0 +1,792 @@
+{% comment %}
+Reusable analytics dashboard partial. Expects an `analytics` context dict matching
+`main.utils.analytics.collect_dashboard_metrics`.
+Optional context:
+- include_styles (default True) to toggle embedded styles (set False if you bundle styles elsewhere).
+{% endcomment %}
+{% with data=analytics|default_if_none:'' %}
+{% with include_styles=include_styles|default:'1' %}
+{% if data %}
+{% if include_styles %}
+<style>
+    .analytics-dashboard {
+      background: linear-gradient(135deg, #ffffff 0%, #f6f9ff 35%, #f2f3ff 100%);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 20px 45px rgba(44, 56, 126, 0.15);
+      margin-bottom: 40px;
+      border: 1px solid rgba(92, 103, 221, 0.12);
+    }
+    .analytics-dashboard h2 {
+      margin-bottom: 20px;
+      color: #2a2e7a;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .analytics-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .analytics-card {
+      border-radius: 18px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 120px;
+      position: relative;
+      overflow: hidden;
+      color: #1d1f4b;
+      background: linear-gradient(145deg, rgba(93, 108, 255, 0.17), rgba(37, 181, 199, 0.15));
+      border: 1px solid rgba(93, 108, 255, 0.12);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 12px 25px rgba(55, 65, 146, 0.08);
+      backdrop-filter: blur(4px);
+    }
+    .analytics-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.55), transparent 55%);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+    .analytics-card__label {
+      font-size: 0.82rem;
+      color: rgba(29, 31, 75, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+    .analytics-card__value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #141752;
+    }
+    .analytics-card__subtext {
+      font-size: 0.85rem;
+      color: rgba(29, 31, 75, 0.72);
+    }
+    .analytics-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .analytics-panel {
+      border: 1px solid rgba(82, 93, 226, 0.12);
+      border-radius: 16px;
+      padding: 18px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(240, 246, 255, 0.85));
+      box-shadow: 0 12px 24px rgba(48, 71, 146, 0.06);
+    }
+    .analytics-panel h3 {
+      font-size: 1rem;
+      color: #2e3384;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    .analytics-panel ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .analytics-panel li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.9rem;
+      border-bottom: 1px dashed rgba(82, 93, 226, 0.15);
+    }
+    .analytics-panel li:last-child {
+      border-bottom: none;
+    }
+    .analytics-history {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .analytics-history__list {
+      border: 1px solid rgba(98, 110, 255, 0.16);
+      border-radius: 16px;
+      padding: 18px;
+      background: linear-gradient(185deg, rgba(255, 255, 255, 0.9), rgba(238, 241, 255, 0.95));
+      max-height: 340px;
+      overflow-y: auto;
+      box-shadow: 0 16px 28px rgba(44, 56, 126, 0.08);
+    }
+    .analytics-history__item {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f3edf9;
+    }
+    .analytics-history__item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .analytics-history__item h4 {
+      font-size: 0.95rem;
+      color: #2a2e7a;
+      margin-bottom: 4px;
+    }
+    .analytics-history__item time {
+      display: block;
+      font-size: 0.75rem;
+      color: #8c8796;
+      margin-bottom: 6px;
+    }
+    .analytics-history__item p {
+      margin: 4px 0 0;
+      font-size: 0.85rem;
+      color: #504a5c;
+      line-height: 1.4;
+    }
+    .analytics-note {
+      margin: 0 0 20px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: linear-gradient(150deg, rgba(67, 206, 162, 0.25), rgba(24, 90, 219, 0.25));
+      border: 1px solid rgba(24, 90, 219, 0.18);
+      color: #124471;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .analytics-helper-text {
+      font-size: 0.8rem;
+      color: rgba(33, 37, 85, 0.7);
+      margin: 0;
+    }
+    .analytics-insights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .analytics-mini-card {
+      border: 1px solid rgba(72, 83, 230, 0.14);
+      border-radius: 18px;
+      background: linear-gradient(175deg, rgba(255, 255, 255, 0.92), rgba(229, 235, 255, 0.85));
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 280px;
+      box-shadow: 0 18px 35px rgba(50, 63, 160, 0.08);
+    }
+    .analytics-mini-card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: #20267a;
+      font-weight: 700;
+    }
+    .analytics-searches {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .analytics-searches__item {
+      padding: 12px;
+      border-radius: 12px;
+      background: linear-gradient(160deg, rgba(93, 108, 255, 0.12), rgba(45, 194, 203, 0.12));
+      border: 1px solid rgba(93, 108, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    }
+    .analytics-searches__term {
+      font-weight: 600;
+      color: #39145d;
+      margin-bottom: 6px;
+    }
+    .analytics-searches__meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #7e7a88;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .analytics-searches__badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: linear-gradient(135deg, rgba(37, 181, 199, 0.2), rgba(94, 109, 255, 0.2));
+      color: #245f73;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(37, 181, 199, 0.3);
+    }
+    .analytics-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .analytics-chart__item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .analytics-chart__label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #6e6a79;
+    }
+    .analytics-chart__track {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(41, 52, 204, 0.12);
+      overflow: hidden;
+      position: relative;
+    }
+    .analytics-chart__fill {
+      height: 100%;
+      background: linear-gradient(90deg, #5d6cff 0%, #24adb7 55%, #43cea2 100%);
+      width: 0;
+      transition: width 0.6s ease;
+      box-shadow: 0 6px 14px rgba(36, 173, 183, 0.3);
+    }
+    .analytics-chatbot {
+      position: relative;
+    }
+    .analytics-chatbot__messages {
+      flex: 1;
+      min-height: 200px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(229, 236, 255, 0.92));
+      border: 1px solid rgba(93, 108, 255, 0.16);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+    }
+    .analytics-chatbot__message {
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      box-shadow: 0 6px 18px rgba(53, 66, 150, 0.14);
+      max-width: 100%;
+      word-break: break-word;
+    }
+    .analytics-chatbot__message--user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #5d6cff, #24adb7);
+      color: #fff;
+    }
+    .analytics-chatbot__message--bot {
+      align-self: flex-start;
+      background: #fff;
+      border: 1px solid rgba(93, 108, 255, 0.2);
+      color: #2a2e7a;
+    }
+    .analytics-chatbot__message--error {
+      align-self: flex-start;
+      background: #fff5f5;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    .analytics-chatbot__list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .analytics-chatbot__form {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .analytics-chatbot__form input[type="text"] {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(82, 93, 226, 0.24);
+      font-size: 0.92rem;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: inset 0 2px 6px rgba(43, 54, 141, 0.08);
+    }
+    .analytics-chatbot__form button {
+      background: linear-gradient(135deg, #5d6cff, #24adb7);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 12px 18px rgba(45, 145, 167, 0.35);
+    }
+    .analytics-chatbot__form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 22px rgba(45, 145, 167, 0.42);
+    }
+    .analytics-chatbot__form.is-loading button {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    @media (max-width: 640px) {
+      .analytics-dashboard {
+        padding: 18px;
+      }
+      .analytics-insights {
+        grid-template-columns: 1fr;
+      }
+      .analytics-chatbot__messages {
+        max-height: 220px;
+      }
+    }
+  </style>
+{% endif %}
+<section class="analytics-dashboard">
+  <h2>Learning Analytics</h2>
+  <p class="analytics-note">
+    Student search insights are anonymised in line with POPIA guidelines. Names are masked and activity is aggregated for oversight.
+  </p>
+
+  <div class="analytics-summary">
+    <div class="analytics-card">
+      <span class="analytics-card__label">Students</span>
+      <span class="analytics-card__value">{{ data.counts.students|default:0 }}</span>
+      <span class="analytics-card__subtext">Active learners</span>
+    </div>
+    <div class="analytics-card">
+      <span class="analytics-card__label">Tutors</span>
+      <span class="analytics-card__value">{{ data.counts.tutors|default:0 }}</span>
+      <span class="analytics-card__subtext">Mentors supporting students</span>
+    </div>
+    <div class="analytics-card">
+      <span class="analytics-card__label">Sessions Booked</span>
+      <span class="analytics-card__value">{{ data.counts.sessions_total|default:0 }}</span>
+      <span class="analytics-card__subtext">{{ data.counts.sessions_upcoming|default:0 }} upcoming · {{ data.counts.sessions_completed|default:0 }} completed</span>
+    </div>
+    <div class="analytics-card">
+      <span class="analytics-card__label">Upcoming Classes</span>
+      <span class="analytics-card__value">{{ data.counts.classes_upcoming|default:0 }}</span>
+      <span class="analytics-card__subtext">Scheduled class sessions</span>
+    </div>
+    <div class="analytics-card">
+      <span class="analytics-card__label">Search Queries</span>
+      <span class="analytics-card__value">{{ data.search_summary.total_queries|default:0 }}</span>
+      <span class="analytics-card__subtext">Learner searches captured over time</span>
+    </div>
+  </div>
+
+  <div class="analytics-breakdown">
+    <div class="analytics-panel">
+      <h3>Sessions by Status</h3>
+      <ul>
+        {% for entry in data.sessions_by_status %}
+          <li><span>{{ entry.status|default:'-'|title }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No sessions found</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="analytics-panel">
+      <h3>Reservations</h3>
+      <ul>
+        {% for entry in data.reservations_by_status %}
+          <li><span>{{ entry.status|default:'-'|title }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No reservations</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="analytics-panel">
+      <h3>Enrollments</h3>
+      <ul>
+        {% for entry in data.enrollments %}
+          <li><span>{{ entry.status|default:'-'|title }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No enrollments</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="analytics-panel">
+      <h3>Courses by Level</h3>
+      <ul>
+        {% for entry in data.courses_by_level %}
+          <li><span>{{ entry.level|default:'(not set)'|title }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No courses</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="analytics-breakdown">
+    <div class="analytics-panel">
+      <h3>Learners by Grade</h3>
+      <ul>
+        {% for entry in data.grade_distribution %}
+          <li><span>Grade {{ entry.grade }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No grade data</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="analytics-panel">
+      <h3>Streams</h3>
+      <ul>
+        {% for entry in data.streams %}
+          <li><span>{{ entry.stream|default:'(not set)' }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No stream data</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="analytics-panel">
+      <h3>Top Schools</h3>
+      <ul>
+        {% for entry in data.top_schools %}
+          <li><span>{{ entry.school|default:'(unspecified)' }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No school data</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="analytics-panel">
+      <h3>Top Student Searches</h3>
+      <ul>
+        {% for entry in data.search_summary.top_terms %}
+          <li><span>{{ entry.term|default:'-' }}</span><span>{{ entry.total|default:0 }}</span></li>
+        {% empty %}
+          <li><span>No search data</span><span>0</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="analytics-history">
+    <div class="analytics-history__list">
+      <h3>Recent Forum Questions</h3>
+      {% for item in data.recent_forum_questions %}
+        <article class="analytics-history__item">
+          <h4>{{ item.title|default:'Untitled question' }}</h4>
+          <time>{{ item.created_at }}</time>
+          <p>{{ item.body|default:'(No description provided.)' }}</p>
+          {% if item.category %}
+            <p><strong>Category:</strong> {{ item.category.name }}</p>
+          {% endif %}
+          {% if item.author %}
+            <p><strong>Author:</strong> {{ item.author.display_name|default:item.author.username }}</p>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p>No forum questions have been logged yet.</p>
+      {% endfor %}
+    </div>
+
+    <div class="analytics-history__list">
+      <h3>Recent Chatbot Conversations</h3>
+      {% for item in data.recent_chatbot_interactions %}
+        <article class="analytics-history__item">
+          <h4>{{ item.question|truncatechars:80 }}</h4>
+          <time>{{ item.timestamp }}</time>
+          <p>{{ item.answer|truncatechars:160 }}</p>
+          {% if item.sources %}
+            <p><strong>Sources:</strong>
+              {% for source in item.sources %}
+                {% if source.url %}
+                  <a href="{{ source.url }}" target="_blank" rel="noopener">{{ source.title|default:source.url }}</a>{% if not forloop.last %}, {% endif %}
+                {% else %}
+                  {{ source.title|default:source|truncatechars:40 }}{% if not forloop.last %}, {% endif %}
+                {% endif %}
+              {% endfor %}
+            </p>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p>No chatbot conversations recorded yet.</p>
+      {% endfor %}
+    </div>
+
+    <div class="analytics-history__list">
+      <h3>Learning Resources</h3>
+      {% for item in data.resource_links|slice:":8" %}
+        <article class="analytics-history__item">
+          <h4>{{ item.title|default:'Untitled resource' }}</h4>
+          {% if item.course %}
+            <p><strong>Course:</strong> {{ item.course }}</p>
+          {% elif item.category %}
+            <p><strong>Category:</strong> {{ item.category }}</p>
+          {% endif %}
+          {% if item.url %}
+            <p><a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.url }}</a></p>
+          {% endif %}
+          {% if item.description %}
+            <p>{{ item.description|truncatechars:160 }}</p>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p>No resources available yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="analytics-insights">
+    <section class="analytics-mini-card">
+      <h3>Recent Student Searches</h3>
+      <p class="analytics-helper-text">Learner identifiers are anonymised for POPIA compliance.</p>
+      {% if data.student_searches %}
+        <ul class="analytics-searches">
+          {% for item in data.student_searches %}
+            <li class="analytics-searches__item">
+              <div class="analytics-searches__term">{{ item.query|default:'(no query)' }}</div>
+              <div class="analytics-searches__meta">
+                <span>{{ item.actor.label|default:'Learner' }}</span>
+                <span>{{ item.timestamp }}</span>
+              </div>
+              {% if item.source %}
+                <span class="analytics-searches__badge">{{ item.source|default:'unspecified'|title }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="analytics-helper-text">No learner search activity recorded yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="analytics-mini-card">
+      <h3>EdTech Trend Radar</h3>
+      <p class="analytics-helper-text">Hardcoded snapshot of emerging focus areas for 2024 planning.</p>
+      <div class="analytics-chart" data-analytics-chart>
+        <div class="analytics-chart__item" data-value="82">
+          <div class="analytics-chart__label">
+            <span>Gamification adoption</span>
+            <span class="analytics-chart__percent">82%</span>
+          </div>
+          <div class="analytics-chart__track">
+            <div class="analytics-chart__fill"></div>
+          </div>
+        </div>
+        <div class="analytics-chart__item" data-value="74">
+          <div class="analytics-chart__label">
+            <span>AI tutoring pilots</span>
+            <span class="analytics-chart__percent">74%</span>
+          </div>
+          <div class="analytics-chart__track">
+            <div class="analytics-chart__fill"></div>
+          </div>
+        </div>
+        <div class="analytics-chart__item" data-value="63">
+          <div class="analytics-chart__label">
+            <span>Immersive labs (XR)</span>
+            <span class="analytics-chart__percent">63%</span>
+          </div>
+          <div class="analytics-chart__track">
+            <div class="analytics-chart__fill"></div>
+          </div>
+        </div>
+        <div class="analytics-chart__item" data-value="55">
+          <div class="analytics-chart__label">
+            <span>Microlearning drops</span>
+            <span class="analytics-chart__percent">55%</span>
+          </div>
+          <div class="analytics-chart__track">
+            <div class="analytics-chart__fill"></div>
+          </div>
+        </div>
+        <div class="analytics-chart__item" data-value="48">
+          <div class="analytics-chart__label">
+            <span>Learning analytics</span>
+            <span class="analytics-chart__percent">48%</span>
+          </div>
+          <div class="analytics-chart__track">
+            <div class="analytics-chart__fill"></div>
+          </div>
+        </div>
+      </div>
+      <p class="analytics-helper-text">Values represent indicative momentum and can be adjusted as new data is gathered.</p>
+    </section>
+
+    <section class="analytics-mini-card analytics-chatbot" data-analytics-chatbot>
+      <h3>Admin Resource Assistant</h3>
+      <p class="analytics-helper-text">Ask for a topic to surface relevant resources for tutors.</p>
+      <div class="analytics-chatbot__messages" data-chatbot-log></div>
+      <form class="analytics-chatbot__form" data-chatbot-form>
+        <input type="text" placeholder="e.g. gamification case studies" data-chatbot-input required />
+        <button type="submit">Send</button>
+      </form>
+      <p class="analytics-helper-text">Responses draw from the curated resource library.</p>
+    </section>
+  </div>
+</section>
+<script>
+(function(){
+  if (window.__tutorAnalyticsInit) {
+    return;
+  }
+  window.__tutorAnalyticsInit = true;
+
+  const run = () => {
+    const chart = document.querySelector('[data-analytics-chart]');
+    if (chart) {
+      const items = chart.querySelectorAll('.analytics-chart__item');
+      requestAnimationFrame(() => {
+        items.forEach((item) => {
+          const value = Math.max(0, Math.min(parseInt(item.dataset.value || '0', 10), 100));
+          const fill = item.querySelector('.analytics-chart__fill');
+          const percent = item.querySelector('.analytics-chart__percent');
+          if (fill) {
+            fill.style.width = value + '%';
+          }
+          if (percent) {
+            percent.textContent = value + '%';
+          }
+        });
+      });
+    }
+
+    const chatbot = document.querySelector('[data-analytics-chatbot]');
+    if (!chatbot) {
+      return;
+    }
+    const messages = chatbot.querySelector('[data-chatbot-log]');
+    const form = chatbot.querySelector('[data-chatbot-form]');
+    const input = chatbot.querySelector('[data-chatbot-input]');
+    if (!messages || !form || !input) {
+      return;
+    }
+
+    let cachedResources = null;
+
+    const flattenResources = (payload) => {
+      if (!payload || !Array.isArray(payload.categories)) {
+        return [];
+      }
+      const flattened = [];
+      payload.categories.forEach((category) => {
+        const documents = category.documents || {};
+        Object.keys(documents).forEach((termKey) => {
+          const list = documents[termKey] || [];
+          list.forEach((doc) => {
+            flattened.push({
+              title: doc.title || '',
+              description: doc.description || '',
+              url: doc.file || '',
+              term: doc.term || termKey,
+              category: category.name || '',
+            });
+          });
+        });
+      });
+      return flattened;
+    };
+
+    const fetchResources = async () => {
+      if (cachedResources) {
+        return cachedResources;
+      }
+      const res = await fetch('/api/resources/library', {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin',
+      });
+      if (!res.ok) {
+        throw new Error('Unable to fetch resources');
+      }
+      const json = await res.json();
+      cachedResources = flattenResources(json);
+      return cachedResources;
+    };
+
+    const appendMessage = (role, content) => {
+      const node = document.createElement('div');
+      node.className = `analytics-chatbot__message analytics-chatbot__message--${role}`;
+      if (typeof content === 'string') {
+        node.textContent = content;
+      } else if (content instanceof Node) {
+        node.appendChild(content);
+      }
+      messages.appendChild(node);
+      messages.scrollTop = messages.scrollHeight;
+    };
+
+    appendMessage('bot', 'Hello! Ask for a topic and I will surface matching resources for your tutors.');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const query = (input.value || '').trim();
+      if (!query) {
+        return;
+      }
+      appendMessage('user', query);
+      input.value = '';
+      form.classList.add('is-loading');
+      try {
+        const resources = await fetchResources();
+        const lowerQuery = query.toLowerCase();
+        const matches = resources
+          .filter((res) => {
+            const haystack = `${res.title} ${res.description} ${res.category}`.toLowerCase();
+            return haystack.includes(lowerQuery);
+          })
+          .slice(0, 4);
+
+        if (matches.length) {
+          const frag = document.createDocumentFragment();
+          const intro = document.createElement('p');
+          intro.textContent = 'Here are some resources worth reviewing:';
+          const list = document.createElement('ul');
+          list.className = 'analytics-chatbot__list';
+          matches.forEach((res) => {
+            const item = document.createElement('li');
+            const title = res.title || 'Untitled resource';
+            if (res.url) {
+              const link = document.createElement('a');
+              link.href = res.url;
+              link.target = '_blank';
+              link.rel = 'noopener';
+              link.textContent = title;
+              item.appendChild(link);
+            } else {
+              item.textContent = title;
+            }
+            if (res.category) {
+              const meta = document.createElement('span');
+              meta.style.display = 'block';
+              meta.style.fontSize = '0.75rem';
+              meta.style.color = '#6e6a79';
+              meta.textContent = `Category: ${res.category}`;
+              item.appendChild(meta);
+            }
+            list.appendChild(item);
+          });
+          frag.appendChild(intro);
+          frag.appendChild(list);
+          appendMessage('bot', frag);
+        } else {
+          appendMessage('bot', 'I could not find a direct match. Try a broader topic or add new resources to the library.');
+        }
+      } catch (error) {
+        appendMessage('error', 'The resource assistant is unavailable right now.');
+      } finally {
+        form.classList.remove('is-loading');
+        input.focus();
+      }
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run, { once: true });
+  } else {
+    run();
+  }
+})();
+</script>
+{% endif %}
+{% endwith %}
+{% endwith %}

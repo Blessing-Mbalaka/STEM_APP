@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Video Session: {{ session.title }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .video-container {
+        position: relative;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .session-header {
+        background: linear-gradient(135deg, #24adb7 0%, #1e8e96 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .session-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .session-controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 0 0 12px 12px;
+    }
+    
+    .status-indicator {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .status-live { background: #28a745; color: white; }
+    .status-waiting { background: #ffc107; color: #333; }
+    .status-ended { background: #6c757d; color: white; }
+    
+    .meeting-frame {
+        width: 100%;
+        height: 600px;
+        border: none;
+    }
+    
+    @media (max-width: 768px) {
+        .meeting-frame { height: 400px; }
+        .session-controls { flex-direction: column; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            
+            <!-- Session Header -->
+            <div class="session-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-1">{{ session.title }}</h2>
+                        <p class="mb-2 opacity-90">
+                            Subject: {{ session.subject }} | Duration: {{ session.duration_minutes }} minutes
+                        </p>
+                        <p class="mb-0">
+                            {% if is_tutor %}
+                                <i class="fas fa-chalkboard-teacher me-2"></i>You are the tutor for this session
+                            {% else %}
+                                <i class="fas fa-user-graduate me-2"></i>Your tutor: {{ session.tutor.get_full_name|default:session.tutor.email }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <span class="status-indicator status-live">
+                            <i class="fas fa-circle me-1"></i>Session Active
+                        </span>
+                        <div class="mt-2">
+                            <small>{{ session.scheduled_time|date:"M d, Y" }} at {{ session.scheduled_time|time:"g:i A" }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session Info (if waiting) -->
+            {% if not can_start %}
+            <div class="session-info">
+                <div class="text-center py-4">
+                    <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                    <h4>Session Starting Soon</h4>
+                    <p class="mb-3">
+                        Your session is scheduled to start at {{ session_start|time:"g:i A" }}.<br>
+                        You can join up to 5 minutes before the scheduled time.
+                    </p>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="location.reload()">
+                            <i class="fas fa-refresh me-2"></i>Refresh Page
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Return to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            
+            <!-- Video Meeting Container -->
+            <div class="video-container">
+                <!-- Jitsi Meet Integration -->
+                <iframe 
+                    id="meeting-frame"
+                    class="meeting-frame"
+                    src="https://meet.jit.si/stem-session-{{ session.id }}-{{ session.tutor.id }}#config.prejoinPageEnabled=false&config.requireDisplayName=false"
+                    allow="camera; microphone; fullscreen; display-capture">
+                </iframe>
+                
+                <!-- Session Controls -->
+                <div class="session-controls">
+                    {% if is_tutor %}
+                        <button class="btn btn-success" onclick="markComplete()" id="complete-btn">
+                            <i class="fas fa-check me-2"></i>Mark Session Complete
+                        </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-info" onclick="openFullscreen()">
+                        <i class="fas fa-expand me-2"></i>Fullscreen
+                    </button>
+                    
+                    <button class="btn btn-warning" onclick="refreshMeeting()">
+                        <i class="fas fa-refresh me-2"></i>Refresh Meeting
+                    </button>
+                    
+                    <button class="btn btn-outline-danger" onclick="leaveSession()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Leave Session
+                    </button>
+                </div>
+            </div>
+            
+            {% endif %}
+            
+            <!-- Technical Support -->
+            <div class="mt-4 p-3 bg-light rounded">
+                <h6><i class="fas fa-question-circle me-2"></i>Need Help?</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small>
+                            <strong>Camera/Mic Issues:</strong><br>
+                            • Allow browser permissions<br>
+                            • Check device settings<br>
+                            • Try refreshing the page
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small>
+                            <strong>Connection Problems:</strong><br>
+                            • Check internet connection<br>
+                            • Close other video apps<br>
+                            • Use Chrome or Firefox browser
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function markComplete() {
+    if (confirm('Mark this session as complete? This cannot be undone.')) {
+        fetch('{% url "complete_session" session.id %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Session marked as complete!');
+                window.location.href = data.redirect || '{% url "tutor_dashboard" %}';
+            } else {
+                alert('Error: ' + (data.error || 'Could not complete session'));
+            }
+        })
+        .catch(error => {
+            alert('Error completing session. Please try again.');
+        });
+    }
+}
+
+function openFullscreen() {
+    const frame = document.getElementById('meeting-frame');
+    if (frame.requestFullscreen) {
+        frame.requestFullscreen();
+    } else if (frame.webkitRequestFullscreen) {
+        frame.webkitRequestFullscreen();
+    } else if (frame.msRequestFullscreen) {
+        frame.msRequestFullscreen();
+    }
+}
+
+function refreshMeeting() {
+    const frame = document.getElementById('meeting-frame');
+    frame.src = frame.src;
+}
+
+function leaveSession() {
+    if (confirm('Are you sure you want to leave the session?')) {
+        window.location.href = '{% url "dashboard" %}';
+    }
+}
+
+// Auto-refresh for waiting state
+{% if not can_start %}
+setTimeout(() => {
+    location.reload();
+}, 60000); // Refresh every minute
+{% endif %}
+</script>
+{% endblock %}

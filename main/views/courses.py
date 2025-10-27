@@ -8,6 +8,8 @@ from django.db import transaction
 from django.db.models import Max, Q
 from django.conf import settings
 
+from main.utils.analytics import collect_dashboard_metrics
+
 def user_can_manage_tutor_admin(user):
     """Return True when the user should access tutor/admin tooling."""
     if not getattr(user, "is_authenticated", False):
@@ -85,7 +87,8 @@ def api_courses(request):
 def tutor_admin(request):
     if not user_can_manage_tutor_admin(request.user):
         return HttpResponseForbidden("Forbidden")
-    return render(request, "TutorAdmin.html")
+    analytics = collect_dashboard_metrics()
+    return render(request, "TutorAdmin.html", {"analytics": analytics})
 
 
 # ---------- Tutor Admin APIs ----------

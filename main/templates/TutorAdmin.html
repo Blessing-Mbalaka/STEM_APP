@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,36 +9,134 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="{% static 'js/api.js' %}"></script>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; background:#f7f7f9; color:#222; }
-    .wrap { max-width: 1200px; margin: 20px auto; padding: 16px; }
-    .grid { display:grid; grid-template-columns: 1fr 2fr; gap: 16px; }
-    .card { background:#fff; border-radius:12px; padding:16px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
-    .row { display:flex; gap:10px; align-items:center; margin:8px 0; }
-    label { width:110px; font-weight:600; color:#444; }
-    input[type=text], textarea, select { width:100%; padding:8px 10px; border:1px solid #d0d7de; border-radius:8px; }
-    textarea { min-height: 80px; }
-    .btn { background:#24adb7; color:#fff; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; }
-    .btn.secondary { background:#e9ecef; color:#222; }
-    .btn-lg { padding:14px 18px; font-size:16px; width:100%; }
-    .list { display:flex; flex-direction:column; gap:8px; }
-    .item { padding:10px; border:1px solid #e6eaef; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
-    .muted { color:#666; font-size:13px; }
-    .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; margin-left:8px; }
-    .badge.published { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
-    .badge.draft { background:#fff8e1; color:#ef6c00; border:1px solid #ffe0b2; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+      background: #f7f7f9;
+      color: #222;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    label {
+      width: 110px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input[type=text],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+    }
+
+    textarea {
+      min-height: 80px;
+    }
+
+    .btn {
+      background: #24adb7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: #e9ecef;
+      color: #222;
+    }
+
+    .btn-lg {
+      padding: 14px 18px;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item {
+      padding: 10px;
+      border: 1px solid #e6eaef;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .badge.published {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+
+    .badge.draft {
+      background: #fff8e1;
+      color: #ef6c00;
+      border: 1px solid #ffe0b2;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <!-- Top bar -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <h2 id="dashboardTitle" style="margin:0; color:#24adb7;">Tutor Dashboard</h2>
       <div style="display:flex; gap:8px; align-items:center;">
-        <button id="openScheduler" class="btn" type="button" title="Schedule Class"><i class="fas fa-calendar-plus"></i></button>
+        <button id="openScheduler" class="btn" type="button" title="Schedule Class"><i
+            class="fas fa-calendar-plus"></i></button>
         <span id="whoami" class="muted"></span>
         <button id="logoutBtn" class="btn secondary" type="button"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </div>
+
+    {% include "partials/analytics.html" with analytics=analytics %}
 
     <!-- Layout: sidebar + main content -->
     <div style="display:grid; grid-template-columns: 240px 1fr; gap: 16px; align-items:start;">
@@ -63,34 +162,10 @@
           <div id="courses" class="list"></div>
           <hr style="margin:12px 0;">
           <h4>Create Course</h4>
-        <div class="row"><label>Title</label><input id="c-title" type="text"></div>
-        <div class="row"><label>Subject</label><input id="c-subj" type="text" placeholder="e.g. Life Sciences"></div>
-        <div class="row"><label>Category</label>
-          <select id="c-class">
-            <option value="">(none)</option>
-            <option value="stem">STEM</option>
-            <option value="steam">STEAM</option>
-            <option value="general">General</option>
-          </select>
-        </div>
-        <div class="row"><label>Level</label>
-          <select id="c-level"><option value="">(none)</option><option value="intro">Introductory</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
-        </div>
-        <div class="row"><label>Summary</label><input id="c-sum" type="text"></div>
-        <div class="row"><label>Description</label><textarea id="c-desc"></textarea></div>
-        <div class="row" style="justify-content:flex-end;"><button id="createCourse" class="btn">Create</button></div>
-      </div>
-
-      <div class="card">
-        <h3 id="builderTitle" style="margin-top:0;">Builder</h3>
-        <div id="builderEmpty" class="muted">Select a course from the left to edit</div>
-        <div id="builder" style="display:none;">
-          <!-- Edit Course Meta -->
-          <h4 style="margin:6px 0 8px 0;">Edit Course</h4>
-          <div class="row"><label>Title</label><input id="e-title" type="text"></div>
-          <div class="row"><label>Subject</label><input id="e-subj" type="text"></div>
+          <div class="row"><label>Title</label><input id="c-title" type="text"></div>
+          <div class="row"><label>Subject</label><input id="c-subj" type="text" placeholder="e.g. Life Sciences"></div>
           <div class="row"><label>Category</label>
-            <select id="e-class">
+            <select id="c-class">
               <option value="">(none)</option>
               <option value="stem">STEM</option>
               <option value="steam">STEAM</option>
@@ -98,52 +173,95 @@
             </select>
           </div>
           <div class="row"><label>Level</label>
-            <select id="e-level"><option value="">(none)</option><option value="intro">Introductory</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
-          </div>
-          <div class="row"><label>Summary</label><input id="e-sum" type="text"></div>
-          <div class="row"><label>Description</label><textarea id="e-desc"></textarea></div>
-          <div class="row" style="justify-content:flex-end; gap:8px;"><button id="saveEdits" class="btn" type="button">Save Edits</button></div>
-
-          <!-- Thumbnail upload -->
-          <div class="row"><label>Thumbnail</label><input id="c-thumb" type="file"><button id="uploadThumb" class="btn">Upload</button></div>
-          <div class="list" id="resourceList"></div>
-          <hr style="margin:12px 0;">
-          <h4>Add Section</h4>
-          <div class="row"><label>Title</label><input id="r-title" type="text"></div>
-          <div class="row"><label>Type</label>
-            <select id="r-type">
-              <option value="video">Video</option>
-              <option value="youtube">YouTube</option>
-              <option value="audio">Audio</option>
-              <option value="document">Document</option>
-              <option value="link">Link</option>
-              <option value="quiz">Quiz</option>
-              <option value="poll">Poll</option>
+            <select id="c-level">
+              <option value="">(none)</option>
+              <option value="intro">Introductory</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
             </select>
           </div>
-          <div class="row" id="r-quiz-row" style="display:none;"><label>Quiz</label>
-            <select id="r-game"></select>
-          </div>
-          <div id="poll-section" style="display:none;">
-            <div class="row"><label>Question</label><input id="p-question" type="text"></div>
-            <div class="row"><label>Options</label>
-              <div style="flex:1;">
-                <div id="p-options" class="list"></div>
-                <div class="row"><input id="p-new" type="text" placeholder="Add option"><button id="p-add" class="btn" type="button">+</button></div>
-                <label style="display:flex; align-items:center; gap:8px; margin-top:6px;"><input id="p-multi" type="checkbox"> Allow multiple selections</label>
+          <div class="row"><label>Summary</label><input id="c-sum" type="text"></div>
+          <div class="row"><label>Description</label><textarea id="c-desc"></textarea></div>
+          <div class="row" style="justify-content:flex-end;"><button id="createCourse" class="btn">Create</button></div>
+        </div>
+
+        <div class="card">
+          <h3 id="builderTitle" style="margin-top:0;">Builder</h3>
+          <div id="builderEmpty" class="muted">Select a course from the left to edit</div>
+          <div id="builder" style="display:none;">
+            <!-- Edit Course Meta -->
+            <h4 style="margin:6px 0 8px 0;">Edit Course</h4>
+            <div class="row"><label>Title</label><input id="e-title" type="text"></div>
+            <div class="row"><label>Subject</label><input id="e-subj" type="text"></div>
+            <div class="row"><label>Category</label>
+              <select id="e-class">
+                <option value="">(none)</option>
+                <option value="stem">STEM</option>
+                <option value="steam">STEAM</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+            <div class="row"><label>Level</label>
+              <select id="e-level">
+                <option value="">(none)</option>
+                <option value="intro">Introductory</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div class="row"><label>Summary</label><input id="e-sum" type="text"></div>
+            <div class="row"><label>Description</label><textarea id="e-desc"></textarea></div>
+            <div class="row" style="justify-content:flex-end; gap:8px;"><button id="saveEdits" class="btn"
+                type="button">Save Edits</button></div>
+
+            <!-- Thumbnail upload -->
+            <div class="row"><label>Thumbnail</label><input id="c-thumb" type="file"><button id="uploadThumb"
+                class="btn">Upload</button></div>
+            <div class="list" id="resourceList"></div>
+            <hr style="margin:12px 0;">
+            <h4>Add Section</h4>
+            <div class="row"><label>Title</label><input id="r-title" type="text"></div>
+            <div class="row"><label>Type</label>
+              <select id="r-type">
+                <option value="video">Video</option>
+                <option value="youtube">YouTube</option>
+                <option value="audio">Audio</option>
+                <option value="document">Document</option>
+                <option value="link">Link</option>
+                <option value="quiz">Quiz</option>
+                <option value="poll">Poll</option>
+              </select>
+            </div>
+            <div class="row" id="r-quiz-row" style="display:none;"><label>Quiz</label>
+              <select id="r-game"></select>
+            </div>
+            <div id="poll-section" style="display:none;">
+              <div class="row"><label>Question</label><input id="p-question" type="text"></div>
+              <div class="row"><label>Options</label>
+                <div style="flex:1;">
+                  <div id="p-options" class="list"></div>
+                  <div class="row"><input id="p-new" type="text" placeholder="Add option"><button id="p-add" class="btn"
+                      type="button">+</button></div>
+                  <label style="display:flex; align-items:center; gap:8px; margin-top:6px;"><input id="p-multi"
+                      type="checkbox"> Allow multiple selections</label>
+                </div>
               </div>
             </div>
+            <!-- Publish button moved to bottom dynamically -->
+            <div class="row"><label>Style</label>
+              <select id="r-style">
+                <option value="visual">Visual</option>
+                <option value="auditory">Auditory</option>
+                <option value="readwrite">Read/Write</option>
+              </select>
+            </div>
+            <div class="row"><label>URL</label><input id="r-url" type="text" placeholder="YouTube/link (optional)">
+            </div>
+            <div class="row"><label>File</label><input id="r-file" type="file" /></div>
+            <div class="row"><label>Description</label><textarea id="r-desc"></textarea></div>
+            <div class="row" style="justify-content:flex-end;"><button id="addResource" class="btn">Add</button></div>
           </div>
-          <!-- Publish button moved to bottom dynamically -->
-          <div class="row"><label>Style</label>
-            <select id="r-style"><option value="visual">Visual</option><option value="auditory">Auditory</option><option value="readwrite">Read/Write</option></select>
-          </div>
-          <div class="row"><label>URL</label><input id="r-url" type="text" placeholder="YouTube/link (optional)"></div>
-          <div class="row"><label>File</label><input id="r-file" type="file" /></div>
-          <div class="row"><label>Description</label><textarea id="r-desc"></textarea></div>
-          <div class="row" style="justify-content:flex-end;"><button id="addResource" class="btn">Add</button></div>
         </div>
-      </div>
       </div>
     </div>
   </div>
@@ -152,9 +270,9 @@
   <script>
     let state = { courses: [], current: null };
     let currentUser = null;
-    function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+    function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
 
-    async function hydrateUserHeader(){
+    async function hydrateUserHeader() {
       try {
         const me = await api('/api/me');
         currentUser = me;
@@ -185,17 +303,17 @@
       }
     }
 
-    async function loadCourses(){
+    async function loadCourses() {
       const mine = document.getElementById('filterMine')?.checked ? '?mine=true' : '';
       const data = await api('/api/tutor/courses' + mine);
       state.courses = data.results || [];
       renderCourses();
     }
-    function renderCourses(){
+    function renderCourses() {
       const list = document.getElementById('courses'); list.innerHTML = '';
       state.courses.forEach(c => {
-        const item = el('div','item');
-        const left = el('div','', `<div style="font-weight:600;">${c.title}</div><div class="muted">${c.subject || ''} ${c.level||''}</div>`);
+        const item = el('div', 'item');
+        const left = el('div', '', `<div style="font-weight:600;">${c.title}</div><div class="muted">${c.subject || ''} ${c.level || ''}</div>`);
         // Append status badge after title
         try {
           const badge = document.createElement('span');
@@ -203,58 +321,58 @@
           badge.textContent = c.is_active ? 'Published' : 'Draft';
           const firstDiv = left.querySelector('div');
           if (firstDiv) { firstDiv.appendChild(document.createTextNode(' ')); firstDiv.appendChild(badge); }
-        } catch(e) {}
+        } catch (e) { }
         const right = el('div');
-        const btn = el('button','btn secondary','Edit'); btn.onclick = ()=> selectCourse(c.id);
-        right.appendChild(btn); item.append(left,right); list.appendChild(item);
+        const btn = el('button', 'btn secondary', 'Edit'); btn.onclick = () => selectCourse(c.id);
+        right.appendChild(btn); item.append(left, right); list.appendChild(item);
       });
     }
-    function selectCourse(id){
-      const c = state.courses.find(x => x.id === id); if(!c) return;
-      state.current = c; document.getElementById('builderEmpty').style.display='none';
-      document.getElementById('builder').style.display='block';
+    function selectCourse(id) {
+      const c = state.courses.find(x => x.id === id); if (!c) return;
+      state.current = c; document.getElementById('builderEmpty').style.display = 'none';
+      document.getElementById('builder').style.display = 'block';
       document.getElementById('builderTitle').textContent = `Builder — ${c.title}`;
       renderResources();
       // Prefill edit fields
       document.getElementById('e-title').value = c.title || '';
       document.getElementById('e-subj').value = c.subject || '';
       document.getElementById('e-level').value = c.level || '';
-      const eClass = document.getElementById('e-class'); if (eClass) eClass.value = (c.classification||'').toLowerCase();
+      const eClass = document.getElementById('e-class'); if (eClass) eClass.value = (c.classification || '').toLowerCase();
       document.getElementById('e-sum').value = c.summary || '';
       document.getElementById('e-desc').value = c.description || '';
       // Update publish button label if present
       const pubBtn = document.getElementById('publishToggle');
       if (pubBtn) pubBtn.textContent = c.is_active ? 'Unpublish' : 'Publish';
     }
-    function renderResources(){
+    function renderResources() {
       const list = document.getElementById('resourceList'); list.innerHTML = '';
-      const c = state.current; if(!c) return;
-      (c.resources||[]).forEach((r,idx) => {
-        const item = el('div','item');
-        item.append(el('div','', `<div style="font-weight:600;">${r.title}</div><div class="muted">${r.resource_type} • ${r.learning_style}</div>`));
+      const c = state.current; if (!c) return;
+      (c.resources || []).forEach((r, idx) => {
+        const item = el('div', 'item');
+        item.append(el('div', '', `<div style="font-weight:600;">${r.title}</div><div class="muted">${r.resource_type} • ${r.learning_style}</div>`));
         const act = el('div');
-        const up = el('button','btn secondary','↑'); up.onclick = ()=> moveResource(idx, -1);
-        const down = el('button','btn secondary','↓'); down.onclick = ()=> moveResource(idx, +1);
-        const del = el('button','btn secondary','Delete'); del.onclick = async ()=>{ await api(`/api/tutor/resources/${r.id}`,{ method:'DELETE' }); await refreshCourse(c.id); };
+        const up = el('button', 'btn secondary', '↑'); up.onclick = () => moveResource(idx, -1);
+        const down = el('button', 'btn secondary', '↓'); down.onclick = () => moveResource(idx, +1);
+        const del = el('button', 'btn secondary', 'Delete'); del.onclick = async () => { await api(`/api/tutor/resources/${r.id}`, { method: 'DELETE' }); await refreshCourse(c.id); };
         act.append(up, down, del); item.appendChild(act); list.appendChild(item);
       });
     }
-    async function moveResource(idx, delta){
-      const c = state.current; if(!c) return;
-      const arr = (c.resources||[]).slice();
-      const j = idx + delta; if (j<0 || j>=arr.length) return;
+    async function moveResource(idx, delta) {
+      const c = state.current; if (!c) return;
+      const arr = (c.resources || []).slice();
+      const j = idx + delta; if (j < 0 || j >= arr.length) return;
       const tmp = arr[idx]; arr[idx] = arr[j]; arr[j] = tmp;
       // Persist order
-      await api(`/api/tutor/courses/${c.id}/reorder`, { method:'POST', data: { order: arr.map(x=>x.id) } });
+      await api(`/api/tutor/courses/${c.id}/reorder`, { method: 'POST', data: { order: arr.map(x => x.id) } });
       await refreshCourse(c.id);
     }
-    async function refreshCourse(id){
+    async function refreshCourse(id) {
       // simple refresh by reload list and reselect
       await loadCourses(); selectCourse(id);
     }
 
     // Create course
-    document.getElementById('createCourse').addEventListener('click', async ()=>{
+    document.getElementById('createCourse').addEventListener('click', async () => {
       const payload = {
         title: document.getElementById('c-title').value.trim(),
         subject: document.getElementById('c-subj').value.trim(),
@@ -263,34 +381,34 @@
         summary: document.getElementById('c-sum').value,
         description: document.getElementById('c-desc').value
       };
-      if(!payload.title){ alert('Title required'); return; }
-      await api('/api/tutor/courses',{ method:'POST', data: payload });
-      document.getElementById('c-title').value=''; document.getElementById('c-subj').value=''; document.getElementById('c-level').value='';
-      document.getElementById('c-sum').value=''; document.getElementById('c-desc').value='';
+      if (!payload.title) { alert('Title required'); return; }
+      await api('/api/tutor/courses', { method: 'POST', data: payload });
+      document.getElementById('c-title').value = ''; document.getElementById('c-subj').value = ''; document.getElementById('c-level').value = '';
+      document.getElementById('c-sum').value = ''; document.getElementById('c-desc').value = '';
       loadCourses();
     });
 
     // Add resource
     const poll = { options: [] };
-    function renderPollOptions(){
-      const list = document.getElementById('p-options'); list.innerHTML='';
-      poll.options.forEach((t,i)=>{
-        const d = el('div','item');
-        d.append(el('div','', t));
-        const rm = el('button','btn secondary','Remove'); rm.onclick = ()=>{ poll.options.splice(i,1); renderPollOptions(); };
+    function renderPollOptions() {
+      const list = document.getElementById('p-options'); list.innerHTML = '';
+      poll.options.forEach((t, i) => {
+        const d = el('div', 'item');
+        d.append(el('div', '', t));
+        const rm = el('button', 'btn secondary', 'Remove'); rm.onclick = () => { poll.options.splice(i, 1); renderPollOptions(); };
         const act = el('div'); act.appendChild(rm); d.appendChild(act); list.appendChild(d);
       });
     }
-    document.getElementById('p-add').addEventListener('click', ()=>{
-      const v = document.getElementById('p-new').value.trim(); if(!v) return; poll.options.push(v); document.getElementById('p-new').value=''; renderPollOptions();
+    document.getElementById('p-add').addEventListener('click', () => {
+      const v = document.getElementById('p-new').value.trim(); if (!v) return; poll.options.push(v); document.getElementById('p-new').value = ''; renderPollOptions();
     });
 
-    document.getElementById('addResource').addEventListener('click', async ()=>{
-      if(!state.current){ alert('Select a course'); return; }
+    document.getElementById('addResource').addEventListener('click', async () => {
+      if (!state.current) { alert('Select a course'); return; }
       const id = state.current.id;
       const rtype = document.getElementById('r-type').value;
       const title = document.getElementById('r-title').value.trim();
-      if (rtype === 'poll'){
+      if (rtype === 'poll') {
         const payload = {
           title,
           resource_type: 'poll',
@@ -301,7 +419,7 @@
           url: document.getElementById('r-url').value.trim(),
           description: document.getElementById('r-desc').value
         };
-        const json = await api(`/api/tutor/courses/${id}/resources`, { method:'POST', data: payload });
+        const json = await api(`/api/tutor/courses/${id}/resources`, { method: 'POST', data: payload });
       } else {
         const fd = new FormData();
         fd.append('title', title);
@@ -309,33 +427,33 @@
         fd.append('learning_style', document.getElementById('r-style').value);
         fd.append('url', document.getElementById('r-url').value.trim());
         fd.append('description', document.getElementById('r-desc').value);
-        if (rtype === 'quiz'){
+        if (rtype === 'quiz') {
           const gid = document.getElementById('r-game').value;
-          if (!gid){ alert('Choose a quiz'); return; }
+          if (!gid) { alert('Choose a quiz'); return; }
           fd.append('game_id', gid);
         }
         const f = document.getElementById('r-file').files[0]; if (f) fd.append('file', f);
-        const res = await fetch(`/api/tutor/courses/${id}/resources`, { method:'POST', headers:{ 'X-CSRFToken': getCookie('csrftoken') }, body: fd });
-        const json = await res.json(); if(!res.ok){ alert(json.error||'Failed'); return; }
+        const res = await fetch(`/api/tutor/courses/${id}/resources`, { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }, body: fd });
+        const json = await res.json(); if (!res.ok) { alert(json.error || 'Failed'); return; }
       }
-      document.getElementById('r-title').value=''; document.getElementById('r-url').value=''; document.getElementById('r-desc').value=''; document.getElementById('r-file').value='';
-      document.getElementById('p-question').value=''; poll.options=[]; renderPollOptions(); document.getElementById('p-multi').checked=false;
+      document.getElementById('r-title').value = ''; document.getElementById('r-url').value = ''; document.getElementById('r-desc').value = ''; document.getElementById('r-file').value = '';
+      document.getElementById('p-question').value = ''; poll.options = []; renderPollOptions(); document.getElementById('p-multi').checked = false;
       await refreshCourse(id);
     });
 
     // Upload course thumbnail
-    document.getElementById('uploadThumb').addEventListener('click', async ()=>{
-      if(!state.current){ alert('Select a course'); return; }
-      const f = document.getElementById('c-thumb').files[0]; if(!f){ alert('Choose a file'); return; }
+    document.getElementById('uploadThumb').addEventListener('click', async () => {
+      if (!state.current) { alert('Select a course'); return; }
+      const f = document.getElementById('c-thumb').files[0]; if (!f) { alert('Choose a file'); return; }
       const fd = new FormData(); fd.append('thumbnail', f);
-      const res = await fetch(`/api/tutor/courses/${state.current.id}/thumbnail`, { method:'POST', headers:{ 'X-CSRFToken': getCookie('csrftoken') }, body: fd });
-      const json = await res.json(); if(!res.ok){ alert(json.error||'Failed'); return; }
+      const res = await fetch(`/api/tutor/courses/${state.current.id}/thumbnail`, { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }, body: fd });
+      const json = await res.json(); if (!res.ok) { alert(json.error || 'Failed'); return; }
       alert('Thumbnail updated');
     });
 
     // Save course edits
-    document.getElementById('saveEdits').addEventListener('click', async ()=>{
-      if(!state.current){ alert('Select a course'); return; }
+    document.getElementById('saveEdits').addEventListener('click', async () => {
+      if (!state.current) { alert('Select a course'); return; }
       const id = state.current.id;
       const payload = {
         title: document.getElementById('e-title').value.trim(),
@@ -345,48 +463,48 @@
         summary: document.getElementById('e-sum').value,
         description: document.getElementById('e-desc').value
       };
-      if (!payload.title){ alert('Title is required'); return; }
-      await api(`/api/tutor/courses/${id}`, { method:'PATCH', data: payload });
+      if (!payload.title) { alert('Title is required'); return; }
+      await api(`/api/tutor/courses/${id}`, { method: 'PATCH', data: payload });
       await loadCourses(); selectCourse(id);
       alert('Course updated');
     });
 
     // Type toggle show/hide quiz selector
-    document.getElementById('r-type').addEventListener('change', ()=>{
+    document.getElementById('r-type').addEventListener('change', () => {
       const v = document.getElementById('r-type').value;
-      document.getElementById('r-quiz-row').style.display = (v==='quiz')? 'flex' : 'none';
-      document.getElementById('poll-section').style.display = (v==='poll')? 'block':'none';
+      document.getElementById('r-quiz-row').style.display = (v === 'quiz') ? 'flex' : 'none';
+      document.getElementById('poll-section').style.display = (v === 'poll') ? 'block' : 'none';
     });
 
     // Load games for quiz selector
-    async function loadGames(){
-      try{
+    async function loadGames() {
+      try {
         const mine = document.getElementById('filterMine')?.checked ? '?mine=true' : '';
         const data = await api('/api/games/' + mine);
         const sel = document.getElementById('r-game');
-        sel.innerHTML = '<option value="">Select...</option>' + (data.results||[]).map(g=>`<option value="${g.id}">${g.title}${g.is_active? '' : ' (Draft)'}</option>`).join('');
-      }catch(e){}
+        sel.innerHTML = '<option value="">Select...</option>' + (data.results || []).map(g => `<option value="${g.id}">${g.title}${g.is_active ? '' : ' (Draft)'}</option>`).join('');
+      } catch (e) { }
     }
 
     // init
     // Publish toggle
     // old inline publish handler removed; using handlePublish instead
 
-    document.addEventListener('DOMContentLoaded', async ()=>{ 
+    document.addEventListener('DOMContentLoaded', async () => {
       await hydrateUserHeader();
       loadCourses(); loadGames(); renderPollOptions();
       const filterMine = document.getElementById('filterMine');
       const refreshBtn = document.getElementById('refreshCourses');
       if (filterMine) {
-        filterMine.addEventListener('change', ()=>{ loadCourses(); loadGames(); });
+        filterMine.addEventListener('change', () => { loadCourses(); loadGames(); });
       }
       if (refreshBtn) {
-        refreshBtn.addEventListener('click', ()=>{ loadCourses(); loadGames(); });
+        refreshBtn.addEventListener('click', () => { loadCourses(); loadGames(); });
       }
       const logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {
-        logoutBtn.addEventListener('click', async ()=>{
-          try { await api('/api/auth/logout', { method:'POST' }); } catch(e){}
+        logoutBtn.addEventListener('click', async () => {
+          try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { }
           location.href = '/login/';
         });
       }
@@ -394,56 +512,58 @@
       const openBtn = document.getElementById('openScheduler');
       const modal = document.getElementById('sc-modal');
       const closeBtn = document.getElementById('sc-close');
-      if (openBtn && modal && closeBtn){
+      if (openBtn && modal && closeBtn) {
         openBtn.addEventListener('click', () => {
           const sel = document.getElementById('msc-course');
-          if (sel){
+          if (sel) {
             const arr = (typeof state !== 'undefined' && Array.isArray(state.courses)) ? state.courses : [];
             sel.innerHTML = arr.map(c => `<option value="${c.id}">${c.title}</option>`).join('') || '<option value="">No courses</option>';
-            if (state && state.current){ sel.value = String(state.current.id); }
+            if (state && state.current) { sel.value = String(state.current.id); }
           }
           modal.style.display = 'flex';
         });
-        closeBtn.addEventListener('click', ()=> modal.style.display='none');
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
       }
       const createBtn = document.getElementById('msc-create');
-      if (createBtn){
-        createBtn.addEventListener('click', async ()=>{
+      if (createBtn) {
+        createBtn.addEventListener('click', async () => {
           const payload = {
             course_id: document.getElementById('msc-course').value,
             title: document.getElementById('msc-title').value,
-            starts_at: (document.getElementById('msc-start').value||'').replace('T',' '),
-            ends_at: (document.getElementById('msc-end').value||'').replace('T',' '),
+            starts_at: (document.getElementById('msc-start').value || '').replace('T', ' '),
+            ends_at: (document.getElementById('msc-end').value || '').replace('T', ' '),
             location: document.getElementById('msc-link').value,
-            capacity: parseInt(document.getElementById('msc-cap').value||'0',10)||0,
+            capacity: parseInt(document.getElementById('msc-cap').value || '0', 10) || 0,
             description: document.getElementById('msc-desc').value
           };
-          if (!payload.course_id || !payload.starts_at || !payload.ends_at){ alert('Course, start, end are required'); return; }
-          try{
-            await api('/api/tutor/classes', { method:'POST', data: payload });
+          if (!payload.course_id || !payload.starts_at || !payload.ends_at) { alert('Course, start, end are required'); return; }
+          try {
+            await api('/api/tutor/classes', { method: 'POST', data: payload });
             alert('Class scheduled');
-            modal.style.display='none';
-          }catch(e){ alert(e?.json?.error || 'Failed to schedule'); }
+            modal.style.display = 'none';
+          } catch (e) { alert(e?.json?.error || 'Failed to schedule'); }
         });
       }
     });
   </script>
 
   <script src="{% static 'js/translation.js' %}"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    setupLanguageToggle();
-    const lang = localStorage.getItem('preferredLanguage') || 'en';
-    applyTranslations(lang);
-    // Optionally, set the active toggle button
-    document.querySelectorAll('.language-toggle-btn').forEach(btn => {
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      setupLanguageToggle();
+      const lang = localStorage.getItem('preferredLanguage') || 'en';
+      applyTranslations(lang);
+      // Optionally, set the active toggle button
+      document.querySelectorAll('.language-toggle-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
     });
-});
-</script>
+  </script>
   <!-- Class Scheduler Modal -->
-  <div id="sc-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1000;">
-    <div style="background:#fff; width: 520px; max-width: 92vw; border-radius:12px; padding:16px; box-shadow:0 8px 20px rgba(0,0,0,.2);">
+  <div id="sc-modal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1000;">
+    <div
+      style="background:#fff; width: 520px; max-width: 92vw; border-radius:12px; padding:16px; box-shadow:0 8px 20px rgba(0,0,0,.2);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <h3 style="margin:0; color:#24adb7;">Schedule Class</h3>
         <button id="sc-close" class="btn secondary" type="button">Close</button>
@@ -461,4 +581,5 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
   </div>
 </body>
+
 </html>

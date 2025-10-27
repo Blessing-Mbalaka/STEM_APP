@@ -1,0 +1,424 @@
+[
+  {
+    "title": "Test video",
+    "description": "test script",
+    "resource_type": "youtube",
+    "course": "Grade 12 physics",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+  },
+  {
+    "title": "Solve for X",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathametics Paper 1| Everything You need to know",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+  },
+  {
+    "title": "Term 1| The Nucleus & DNA",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Learn Xtra Live – Motion (Whole Show)",
+    "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Mindset Learn – English Literature / Poetry Live Show",
+    "description": "Live show episodes on literature and poetry analysis",
+    "resource_type": "youtube",
+    "course": "English Home Language Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/playlist?list=PL…"
+  },
+  {
+    "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+    "description": "Analise van gedigte volgens NSC kriteria",
+    "resource_type": "youtube",
+    "course": "Afrikaans Huistaal Graad 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=…"
+  },
+  {
+    "title": "History Grade 11 / 12 – Context & Themes Review",
+    "description": "Overview of major historical themes (useful as bridging content)",
+    "resource_type": "youtube",
+    "course": "History Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+  },
+  {
+    "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+    "description": "Mindset Live show on physical geography topics",
+    "resource_type": "youtube",
+    "course": "Geography Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+  },
+  {
+    "title": "Gr 12 Business Studies: Business Management (Live)",
+    "description": "Mindset Live show on business management functions",
+    "resource_type": "youtube",
+    "course": "Business Studies Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
+  },
+  {
+    "title": "Gr 12 Economics: Macro & Micro (Live)",
+    "description": "Mindset Live show on macro- and microeconomics",
+    "resource_type": "youtube",
+    "course": "Economics Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
+  },
+  {
+    "title": "Life Orientation – Study / Learning Styles (Grade 8-12)",
+    "description": "Video covering study skills, learning styles relevant for LO",
+    "resource_type": "youtube",
+    "course": "Life Orientation Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=d67d8DkBU2c"
+  },
+  {
+    "title": "Grade 12 Number Patterns| Sequences And Series| Exam Questions",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathametics Paper 1| Everything You need to know",
+    "learning_style": "visual",
+    "url": "https://youtu.be/sXwkDJw8izM"
+  },
+  {
+    "title": "Protein Synthesis & DNA Fingerprinting",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/l_keFeVOOUk?si=hhgzNu-CVz709rNL"
+  },
+  {
+    "title": "Vertical Projectile Motion (Mindset / LearnXtra)",
+    "description": "Video on vertical projectile motion (displacement, velocity, acceleration graphs)",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=fQ1qK5pkOws"
+  },
+  {
+    "title": "English Home Language – Essay Writing (Mindset)",
+    "description": "Tips & strategies for NSC English essay writing",
+    "resource_type": "youtube",
+    "course": "English Home Language Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=…"
+  },
+  {
+    "title": "History Grade 12 Live – Mindset Learn",
+    "description": "Live show episodes on history topics for NSC",
+    "resource_type": "youtube",
+    "course": "History Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/playlist?list=PL…"
+  },
+  {
+    "title": "Gr 12 Economics: Exam Questions Live",
+    "description": "Worked exam questions for Economics NSC",
+    "resource_type": "youtube",
+    "course": "Economics Grade 12 (NSC)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=c-LKNUdqyc4"
+  },
+  {
+    "title": "Grade 12 Functions",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathametics Paper 1| Everything You need to know",
+    "learning_style": "visual",
+    "url": "https://youtu.be/VrBt9aKyLJA"
+  },
+  {
+    "title": "Cell Division: Mitosis & Meiosis",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/fiqdfTQoOn4?si=PYbRXadGo-etaYIw"
+  },
+  {
+    "title": "Work, Energy & Power (Grade 11 & 12)",
+    "description": "Covers work, energy, power relationships, conservative vs nonconservative forces",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=N9_aOJKdjq0"
+  },
+  {
+    "title": "Sample PDF",
+    "description": "Sample Audio",
+    "resource_type": "document",
+    "course": "Grade 12 physics",
+    "learning_style": "readwrite",
+    "url": "/media/course_resources/Information_Systems_Assignement_Semester_2_1.pdf"
+  },
+  {
+    "title": "Grade 12 Calculus",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathametics Paper 1| Everything You need to know",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?si=YBOEoZVtuVq-D17O&v=iN7C4X4xwnM&feature=youtube"
+  },
+  {
+    "title": "Strategies for Reproduction",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/BXTumF5-0bo?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Work done by Non-Conservative Forces – Practice",
+    "description": "Worked example for work done by nonconservative forces",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=5mhEvh5kG90"
+  },
+  {
+    "title": "Grade 12 Probability",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathametics Paper 1| Everything You need to know",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?si=jXQAteRuCz0UfkuH&v=1IpyhSJvKiY&feature=youtu.be"
+  },
+  {
+    "title": "The Human Reproductive System: Male & Female Systems",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "The Human Reproductive System: Male & Female Systems"
+  },
+  {
+    "title": "Momentum & Impulse (Mindset / LearnXtra)",
+    "description": "Impulse, momentum conservation, collisions",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=GrjMbTN_DVU"
+  },
+  {
+    "title": "Grade 12 Finance",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathametics Paper 1| Everything You need to know",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?si=mKf45rGyAk3mRZxg&v=JMnkUxtHJU8&feature=youtu.be"
+  },
+  {
+    "title": "Gametogenesis, Hormone Control Systems & Menopause",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ee-cNlRDc-w?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Gr 12 Physics: Term 1 Revision (Mindset)",
+    "description": "Revision of mechanics & kinematics topics – exam style questions",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=T2DWu6uIL3o"
+  },
+  {
+    "title": "Human Reproduction Part I",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Q2d-DiFAR94?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Electronics / Basics (New curriculum physics Unit 5)",
+    "description": "Introduction to electronics / circuits (currents, voltages) – for Grade 12 physics",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=Mu00LxeuH64"
+  },
+  {
+    "title": "Human Reproduction Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/akUXTf9h7Og?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Meter Bridge / Current Electricity",
+    "description": "Construction & working of meter bridge and principles of current electricity",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=GFsvaCnLtzA"
+  },
+  {
+    "title": "Genetics: Inheritance & Terminology",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/AXQiN-boIzA?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Physics Exam Questions – Mindset / LearnXtra (Mechanics Section)",
+    "description": "Worked exam questions on mechanics & motion",
+    "resource_type": "youtube",
+    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=tEV7O8ojZ6Y"
+  },
+  {
+    "title": "Genetics: Mendel's Law",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/osV9taMkS48?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Genetics: Sex Determination, Blood Groups, Genetic Variation & Genetic Engineering",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/BN_xkuewHgU?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "The Nervous System",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/FwcDH5qIJhE?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "The Eye & Ear",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=qn5OvdG4jrM&list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY&index=13"
+  },
+  {
+    "title": "Plant Responses to the Environment",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=09ffEn_k8Fg&list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY&index=14"
+  },
+  {
+    "title": "Biodiversity Part I",
+    "description": "Biodiversity and Speciation",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=mb_b7sJrFSE&list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY&index=15"
+  },
+  {
+    "title": "Biodiversity Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/fPLrORbgbGk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "The Endocrine System",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/jRv2u6pTGIE?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "2023 Grades 10-12 Mathematics ATP Mediation",
+    "description": "",
+    "category": "Math",
+    "term": "atp",
+    "url": "/media/resources/math/3d14ac4693ca4775835db0e7ddc8611b.pptx"
+  },
+  {
+    "title": "2023-2024 Annual Teaching Plan",
+    "description": "",
+    "category": "English",
+    "term": "term1",
+    "url": "/media/resources/english/6beab3fb70b145b9823078b5839f283c.pdf"
+  },
+  {
+    "title": "2025 March Past Paper",
+    "description": "",
+    "category": "Math",
+    "term": "past_papers",
+    "url": "/media/resources/math/b7aca2023fa14ecfaf23e090d6417583.pdf"
+  },
+  {
+    "title": "Beginning and Intermediate Algebra   Tyler Wallace",
+    "description": "A helpful Guide to grasping the fundamentals of Matths",
+    "category": "Math",
+    "term": "term1",
+    "url": "/media/resources/math/8ebb7476400a48568e12b19b8e8c769e.pdf"
+  },
+  {
+    "title": "Gr12-Geography-Study-Guide LR",
+    "description": "",
+    "category": "Geography",
+    "term": "atp",
+    "url": "/media/resources/geography/eee53e29527744f68422808331c7f919.pdf"
+  },
+  {
+    "title": "Grade 12 Math Textbook",
+    "description": "Gr12 Mathematics Learner Eng is available to view and download in PDF format on EduCoast. This resource is suitable for students, educators, and self-learners seeking to enhance their study or teaching materials. It can be previewed online or downloaded for offline access.",
+    "category": "Math",
+    "term": "term1",
+    "url": "/media/resources/math/33eaa17a0318485c882bfe9850216b94.pdf"
+  },
+  {
+    "title": "Life Sciences Grade 12 Textbook",
+    "description": "",
+    "category": "Life Science",
+    "term": "term1",
+    "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
+  },
+  {
+    "title": "September 2025 Past Paper",
+    "description": "",
+    "category": "Math",
+    "term": "past_papers",
+    "url": "/media/resources/math/921a77ca4dff477d9e24b59c307d5b09.pdf"
+  },
+  {
+    "title": "Study Guide",
+    "description": "",
+    "category": "History",
+    "term": "term1",
+    "url": "/media/resources/history/edc3268c059b41e1ad4bc557f1284603.pdf"
+  },
+  {
+    "title": "TextBook",
+    "description": "Open-source Textbook written by volunteers from https://www.siyavula.com/downloads/books/science/Gr12_PhysicalSciences_Learner_Eng.pdf",
+    "category": "Physics",
+    "term": "term1",
+    "url": "/media/resources/physics/4274184d34c34020ac42b5c1625992a9.pdf"
+  }
+]
