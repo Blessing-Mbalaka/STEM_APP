@@ -47,7 +47,9 @@ def api_messages_list(request):
 @login_required
 def api_messages_recipients(request):
     """Return a simple list of tutors/staff that can receive messages."""
-    users = CustomUser.objects.filter(is_active=True).filter(models.Q(is_tutor=True) | models.Q(is_staff=True)).order_by('username')
+    users = CustomUser.objects.filter(is_active=True).filter(
+        models.Q(is_tutor=True) | models.Q(is_staff=True) | models.Q(is_superuser=True)
+    ).order_by('username')
     data = [{
         "id": u.id,
         "name": (getattr(u, 'display_name', '') or '').strip() or (f"{getattr(u,'first_name','')} {getattr(u,'last_name','')}".strip()) or u.username,

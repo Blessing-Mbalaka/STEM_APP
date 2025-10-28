@@ -1,131 +1,660 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Learning Resources</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    body{margin:0;font-family:'Poppins',sans-serif;background:#f7f7f9;color:#222;}
-    .wrap{max-width:1100px;margin:40px auto;padding:0 20px 60px;}
-    .header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
-    .header h1{margin:0;color:#24adb7;}
-    .header p{margin:0;color:#555;max-width:600px;}
-    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:10px 16px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;}
-    .btn.secondary{background:#e9ecef;color:#222;}
-    .resources-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}
-    .resource-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:12px;min-height:220px;}
-    .resource-card-header{display:flex;gap:12px;align-items:center;}
-    .resource-icon{font-size:2.4rem;}
-    .resource-card-header h4{margin:0;font-size:1.15rem;color:#1f4b4f;}
-    .resource-card-header .resource-meta{margin:4px 0;font-size:0.85rem;color:#666;}
-    .resource-total{margin-top:6px;font-size:0.85rem;color:#666;}
-    .resource-card-body details{background:rgba(245,245,245,0.9);border-radius:12px;padding:10px;margin-bottom:8px;}
-    .resource-card-body summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;color:#1f4b4f;gap:8px;}
-    .resource-count{background:rgba(36,173,183,0.18);color:#0f5d63;border-radius:999px;padding:2px 8px;font-size:0.75rem;margin-left:auto;}
-    .resource-list{list-style:none;padding-left:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px;}
-    .resource-list a{color:#1f4b4f;font-weight:600;text-decoration:none;}
-    .resource-list a:hover{text-decoration:underline;}
-    .resource-meta{display:block;font-size:0.75rem;color:#666;margin-top:2px;}
-    .resource-placeholder{padding:28px;text-align:center;color:#777;background:rgba(255,255,255,0.78);border-radius:12px;width:100%;}
-    @media (max-width:600px){.header{gap:12px;} .header h1{font-size:1.6rem;} .btn{width:100%;justify-content:center;}}
+    :root {
+      --primary-orange: rgb(184, 67, 0);
+      --secondary-orange: rgb(128, 49, 3);
+      --accent-yellow: #FBBC05;
+      --accent-red: #EA4335;
+      --accent-green: #34A853;
+      --accent-blue: #4285F4;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #333333;
+      --text-light: #666666;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --panel-radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f9f9f9;
+      color: var(--dark-gray);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-image: linear-gradient(180deg, #fcfcfcf0, #f6f6f6);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      padding: 24px 0 30px;
+      background-image: linear-gradient(180deg, #f4e2ce9d, #f6f6f6), url("{% static 'images/wallpaper7.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      color: var(--secondary-orange);
+      border-radius: var(--panel-radius);
+      box-shadow: var(--card-shadow);
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 16px;
+      opacity: 0.9;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .page-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .category-sidebar {
+      background: #fff;
+      border-radius: var(--panel-radius);
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--medium-gray);
+      position: sticky;
+      top: 30px;
+    }
+
+    .sidebar-heading {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--secondary-orange);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-subtitle {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 18px;
+    }
+
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid rgba(184, 67, 0, 0.15);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-align: left;
+      color: var(--secondary-orange);
+    }
+
+    .sidebar-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(184, 67, 0, 0.18);
+    }
+
+    .sidebar-item.active {
+      background: var(--primary-orange);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 10px 22px rgba(184, 67, 0, 0.3);
+    }
+
+    .sidebar-item.active .sidebar-meta {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .sidebar-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(184, 67, 0, 0.12);
+      font-size: 18px;
+    }
+
+    .sidebar-item.active .sidebar-icon {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .sidebar-label {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sidebar-title {
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .sidebar-meta {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .sidebar-count {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(184, 67, 0, 0.15);
+      color: var(--secondary-orange);
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+
+    .sidebar-item.active .sidebar-count {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .content-panel {
+      background: #fff;
+      border-radius: var(--panel-radius);
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--medium-gray);
+      padding: 28px;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .content-title {
+      font-size: 24px;
+      color: var(--secondary-orange);
+    }
+
+    .content-description {
+      font-size: 14px;
+      color: var(--text-light);
+      max-width: 520px;
+      margin-top: 6px;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stats-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(184, 67, 0, 0.12);
+      color: var(--secondary-orange);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .category-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .term-block {
+      background: #fff7f2;
+      border-radius: 16px;
+      border: 1px solid rgba(184, 67, 0, 0.18);
+      padding: 18px 20px;
+      box-shadow: 0 8px 18px rgba(184, 67, 0, 0.08);
+    }
+
+    .term-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .term-heading h3 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--secondary-orange);
+    }
+
+    .term-count {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(184, 67, 0, 0.15);
+      color: var(--secondary-orange);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    .resource-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .resource-item {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border: 1px solid rgba(184, 67, 0, 0.12);
+      box-shadow: 0 4px 8px rgba(184, 67, 0, 0.08);
+    }
+
+    .resource-item .file-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--secondary-orange);
+      background: rgba(184, 67, 0, 0.12);
+    }
+
+    .resource-item .file-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .resource-item .file-title {
+      font-weight: 600;
+      color: var(--secondary-orange);
+      text-decoration: none;
+      font-size: 15px;
+      word-break: break-word;
+    }
+
+    .resource-item .file-title:hover {
+      text-decoration: underline;
+    }
+
+    .resource-item .file-meta {
+      font-size: 13px;
+      color: var(--text-light);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .resource-item .file-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .resource-placeholder {
+      padding: 32px;
+      text-align: center;
+      color: var(--text-light);
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 16px;
+      border: 1px dashed rgba(184, 67, 0, 0.25);
+      width: 100%;
+      font-size: 15px;
+    }
+
+    .back-to-dashboard {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      padding: 8px 15px;
+      background-color: white;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: var(--card-shadow);
+      border: 2px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--primary-orange);
+    }
+
+    .back-to-dashboard:hover {
+      background-color: var(--light-gray);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 992px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .category-sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      header p {
+        font-size: 14px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .content-panel {
+        padding: 22px;
+      }
+
+      .term-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .resource-item {
+        flex-direction: column;
+      }
+
+      .resource-item .file-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+
+      .resource-item .file-info {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .back-to-dashboard {
+        position: static;
+        margin-bottom: 15px;
+        justify-content: center;
+      }
+
+      .sidebar-item {
+        padding: 12px;
+      }
+
+      .sidebar-meta {
+        display: none;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="header">
-      <div>
-        <h1>Learning Resources</h1>
-        <p>Browse subject notes, annual teaching plans, and past papers prepared by our administrators.</p>
-      </div>
-      <a href="{% url 'index' %}" class="btn secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-    </div>
-    <div id="resourcesGrid" class="resources-grid">
-      <div class="resource-placeholder">Resources loading...</div>
+  <div class="container">
+    <header>
+      <a href="{% url 'index' %}" class="back-to-dashboard">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+      <h1>Learning Resources</h1>
+      <p>Browse subject notes, annual teaching plans, and past papers curated by our team.</p>
+    </header>
+
+    <div class="page-layout">
+      <aside class="category-sidebar">
+        <div class="sidebar-heading">
+          <i class="fas fa-layer-group"></i> Resource Collections
+        </div>
+        <p class="sidebar-subtitle">Choose a subject or grade to view its available files.</p>
+        <div id="categoryList" class="category-list">
+          <div class="resource-placeholder">Loading categories...</div>
+        </div>
+      </aside>
+
+      <main class="content-panel">
+        <div class="content-header">
+          <div>
+            <div class="content-title" id="categoryTitle">Select a resource collection</div>
+            <p class="content-description" id="categoryDescription">Pick a category on the left to view files, notes, and past papers.</p>
+          </div>
+          <div class="stats-row" id="categoryStats"></div>
+        </div>
+        <div id="categoryContent" class="category-content">
+          <div class="resource-placeholder">Resources loading...</div>
+        </div>
+      </main>
     </div>
   </div>
 
   <script src="{% static 'js/api.js' %}"></script>
   <script>
-    const resourcesGrid = document.getElementById('resourcesGrid');
-    const resourceIcons = ['📘','📗','📙','📕','📓','📒','📚','📄'];
+    const categoryListEl = document.getElementById('categoryList');
+    const categoryContentEl = document.getElementById('categoryContent');
+    const categoryTitleEl = document.getElementById('categoryTitle');
+    const categoryDescriptionEl = document.getElementById('categoryDescription');
+    const categoryStatsEl = document.getElementById('categoryStats');
 
-    function chooseResourceIcon(index){
-      return resourceIcons[index % resourceIcons.length];
+    const state = {
+      categories: [],
+      terms: [],
+      activeId: null
+    };
+
+    const sidebarIcons = [
+      'fa-book',
+      'fa-flask',
+      'fa-microscope',
+      'fa-globe-africa',
+      'fa-laptop-code',
+      'fa-leaf',
+      'fa-user-graduate',
+      'fa-chart-line'
+    ];
+
+    function pickSidebarIcon(index) {
+      return sidebarIcons[index % sidebarIcons.length];
     }
 
-    function formatResourceDate(iso){
-      if(!iso) return '';
+    function setSidebarPlaceholder(message) {
+      categoryListEl.innerHTML = `<div class="resource-placeholder">${message}</div>`;
+    }
+
+    function setContentPlaceholder(message) {
+      categoryContentEl.innerHTML = `<div class="resource-placeholder">${message}</div>`;
+    }
+
+    function formatResourceDate(iso) {
+      if (!iso) return '';
       const date = new Date(iso);
-      if(Number.isNaN(date.getTime())) return '';
+      if (Number.isNaN(date.getTime())) return '';
       return date.toLocaleDateString();
     }
 
-    function setResourcePlaceholder(message){
-      if(!resourcesGrid) return;
-      resourcesGrid.innerHTML = '';
-      const box = document.createElement('div');
-      box.className = 'resource-placeholder';
-      box.textContent = message;
-      resourcesGrid.appendChild(box);
+    function resourceIconForFile(url) {
+      if (!url) return 'fa-file-alt';
+      const lower = url.toLowerCase();
+      if (lower.endsWith('.pdf')) return 'fa-file-pdf';
+      if (lower.endsWith('.epub')) return 'fa-book';
+      if (lower.match(/\.(mp3|m4a|aac|wav|ogg)$/)) return 'fa-headphones';
+      if (lower.match(/\.(mp4|webm|mov)$/)) return 'fa-play-circle';
+      if (lower.match(/\.(ppt|pptx)$/)) return 'fa-file-powerpoint';
+      if (lower.match(/\.(xls|xlsx|csv)$/)) return 'fa-file-excel';
+      if (lower.match(/\.(doc|docx)$/)) return 'fa-file-word';
+      return 'fa-file-alt';
     }
 
-    function createResourceCard(category, terms, index){
-      const card = document.createElement('div');
-      card.className = 'resource-card';
+    function decorateCategories(rawCategories) {
+      return (rawCategories || []).map((cat, index) => ({
+        ...cat,
+        _clientId: cat.id ?? `${cat.name || 'category'}-${index}`
+      }));
+    }
 
-      const header = document.createElement('div');
-      header.className = 'resource-card-header';
-      const icon = document.createElement('div');
-      icon.className = 'resource-icon';
-      icon.textContent = chooseResourceIcon(index);
-      header.appendChild(icon);
-
-      const heading = document.createElement('div');
-      const title = document.createElement('h4');
-      title.textContent = category.name || 'Resources';
-      heading.appendChild(title);
-      if(category.description){
-        const desc = document.createElement('p');
-        desc.className = 'resource-meta';
-        desc.textContent = category.description;
-        heading.appendChild(desc);
+    function renderSidebar() {
+      if (!state.categories.length) {
+        setSidebarPlaceholder('Resources will be published soon.');
+        return;
       }
-      const total = document.createElement('p');
-      total.className = 'resource-total';
-      const count = category.total_documents || 0;
-      total.textContent = count === 1 ? '1 file available' : `${count} files available`;
-      heading.appendChild(total);
+      categoryListEl.innerHTML = '';
 
-      header.appendChild(heading);
-      card.appendChild(header);
+      state.categories.forEach((category, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `sidebar-item${category._clientId === state.activeId ? ' active' : ''}`;
+        button.dataset.id = category._clientId;
 
-      const body = document.createElement('div');
-      body.className = 'resource-card-body';
-      let hasDocs = false;
+        const iconWrap = document.createElement('span');
+        iconWrap.className = 'sidebar-icon';
+        iconWrap.innerHTML = `<i class="fas ${pickSidebarIcon(index)}"></i>`;
+        button.appendChild(iconWrap);
 
-      (terms || []).forEach((term) => {
+        const labelWrap = document.createElement('span');
+        labelWrap.className = 'sidebar-label';
+        const title = document.createElement('span');
+        title.className = 'sidebar-title';
+        title.textContent = category.name || 'Resources';
+        labelWrap.appendChild(title);
+        if (category.description) {
+          const meta = document.createElement('span');
+          meta.className = 'sidebar-meta';
+          meta.textContent = category.description;
+          labelWrap.appendChild(meta);
+        }
+        button.appendChild(labelWrap);
+
+        const count = document.createElement('span');
+        count.className = 'sidebar-count';
+        count.textContent = category.total_documents || 0;
+        button.appendChild(count);
+
+        button.addEventListener('click', () => {
+          if (state.activeId === category._clientId) return;
+          state.activeId = category._clientId;
+          renderSidebar();
+          renderActiveCategory();
+        });
+
+        categoryListEl.appendChild(button);
+      });
+    }
+
+    function renderActiveCategory() {
+      const category = state.categories.find((cat) => cat._clientId === state.activeId);
+      if (!category) {
+        categoryTitleEl.textContent = 'Select a resource collection';
+        categoryDescriptionEl.textContent = 'Pick a category on the left to view files, notes, and past papers.';
+        categoryStatsEl.innerHTML = '';
+        setContentPlaceholder('Select a resource collection from the left to begin.');
+        return;
+      }
+
+      categoryTitleEl.textContent = category.name || 'Resources';
+      categoryDescriptionEl.textContent = category.description || 'Files curated for this resource collection.';
+
+      const total = category.total_documents || 0;
+      categoryStatsEl.innerHTML = `<span class="stats-pill"><i class="fas fa-file-alt"></i> ${total} file${total === 1 ? '' : 's'}</span>`;
+
+      const terms = Array.isArray(state.terms) ? state.terms : [];
+      const hasDocs = terms.some((term) => (category.documents?.[term.value] || []).length);
+      if (!hasDocs) {
+        setContentPlaceholder('Files coming soon for this category.');
+        return;
+      }
+
+      categoryContentEl.innerHTML = '';
+
+      terms.forEach((term) => {
         const docs = (category.documents && category.documents[term.value]) || [];
-        if(!docs.length) return;
-        hasDocs = true;
-        const details = document.createElement('details');
-        if(term.value === 'term1'){ details.open = true; }
-        const summary = document.createElement('summary');
-        summary.textContent = term.label;
-        const badge = document.createElement('span');
-        badge.className = 'resource-count';
-        badge.textContent = docs.length;
-        summary.appendChild(badge);
-        details.appendChild(summary);
+        if (!docs.length) return;
+
+        const block = document.createElement('section');
+        block.className = 'term-block';
+        block.innerHTML = `
+          <div class="term-heading">
+            <h3>${term.label}</h3>
+            <span class="term-count">${docs.length} file${docs.length !== 1 ? 's' : ''}</span>
+          </div>
+        `;
 
         const list = document.createElement('ul');
         list.className = 'resource-list';
+
         docs.forEach((doc) => {
           const item = document.createElement('li');
+          item.className = 'resource-item';
+
+          const icon = document.createElement('span');
+          icon.className = 'file-icon';
+          icon.innerHTML = `<i class="fas ${resourceIconForFile(doc.file || doc.url || '')}"></i>`;
+          item.appendChild(icon);
+
+          const info = document.createElement('div');
+          info.className = 'file-info';
+
           const link = document.createElement('a');
+          link.className = 'file-title';
           link.textContent = doc.title || doc.original_filename || 'Download';
-          if(doc.file){
+          if (doc.file) {
             link.href = doc.file;
             link.target = '_blank';
             link.rel = 'noopener';
@@ -133,55 +662,56 @@
             link.href = '#';
             link.setAttribute('aria-disabled', 'true');
           }
-          item.appendChild(link);
+          info.appendChild(link);
+
           const metaBits = [];
-          if(doc.description){ metaBits.push(doc.description); }
+          if (doc.description) metaBits.push(`<span><i class="fas fa-align-left"></i> ${doc.description}</span>`);
           const formatted = formatResourceDate(doc.uploaded_at);
-          if(formatted){ metaBits.push(formatted); }
-          if(metaBits.length){
-            const meta = document.createElement('span');
-            meta.className = 'resource-meta';
-            meta.textContent = metaBits.join(' • ');
-            item.appendChild(meta);
+          if (formatted) metaBits.push(`<span><i class="fas fa-calendar-day"></i> ${formatted}</span>`);
+          if (doc.term_label) metaBits.push(`<span><i class="fas fa-bookmark"></i> ${doc.term_label}</span>`);
+
+          if (metaBits.length) {
+            const meta = document.createElement('div');
+            meta.className = 'file-meta';
+            meta.innerHTML = metaBits.join(' ');
+            info.appendChild(meta);
           }
+
+          item.appendChild(info);
           list.appendChild(item);
         });
-        details.appendChild(list);
-        body.appendChild(details);
+
+        block.appendChild(list);
+        categoryContentEl.appendChild(block);
       });
 
-      if(!hasDocs){
-        const empty = document.createElement('div');
-        empty.className = 'resource-placeholder';
-        empty.textContent = 'Files coming soon.';
-        body.appendChild(empty);
+      if (!categoryContentEl.children.length) {
+        setContentPlaceholder('Files coming soon for this category.');
       }
-
-      card.appendChild(body);
-      return card;
     }
 
-    async function loadResources(){
-      setResourcePlaceholder('Resources loading...');
-      try{
+    async function loadResources() {
+      setSidebarPlaceholder('Loading categories...');
+      setContentPlaceholder('Resources loading...');
+      try {
         const data = await api('/api/resources/library');
-        const categories = data.categories || [];
-        const terms = data.terms || [];
-        if(!categories.length){
-          setResourcePlaceholder('Resources will be published soon.');
-          return;
-        }
-        resourcesGrid.innerHTML = '';
-        categories.forEach((category, index) => {
-          resourcesGrid.appendChild(createResourceCard(category, terms, index));
-        });
-      } catch(err){
+        state.categories = decorateCategories(data.categories || []);
+        state.terms = Array.isArray(data.terms) ? data.terms : [];
+        state.activeId = state.categories.length ? state.categories[0]._clientId : null;
+        renderSidebar();
+        renderActiveCategory();
+      } catch (err) {
         const message = (err && err.error) || 'Unable to load resources at this time.';
-        setResourcePlaceholder(message);
+        setSidebarPlaceholder(message);
+        setContentPlaceholder(message);
+        categoryTitleEl.textContent = 'Resources Unavailable';
+        categoryDescriptionEl.textContent = 'Please try again later or contact an administrator.';
+        categoryStatsEl.innerHTML = '';
       }
     }
 
     document.addEventListener('DOMContentLoaded', loadResources);
   </script>
 </body>
+
 </html>

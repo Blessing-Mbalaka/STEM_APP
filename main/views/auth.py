@@ -13,7 +13,12 @@ from django.views.decorators.http import require_http_methods
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from main.views.courses import user_can_manage_tutor_admin
+from main.utils.roles import (
+    get_primary_role,
+    get_user_roles,
+    ROLE_ADMIN,
+    ROLE_TUTOR,
+)
 
 User = get_user_model()
 
@@ -23,9 +28,13 @@ def login_page(request: HttpRequest):
     """Render the custom login page and set csrftoken cookie. Redirect if already logged in."""
     from django.shortcuts import render, redirect
     if request.user.is_authenticated:
-        target = "/index/"
-        if user_can_manage_tutor_admin(request.user):
+        role = get_primary_role(request.user)
+        if role == ROLE_ADMIN:
+            target = "/administrator/"
+        elif role == ROLE_TUTOR:
             target = "/tutor/admin/"
+        else:
+            target = "/index/"
         return redirect(target)
     return render(request, "Login.html")
 
@@ -64,11 +73,14 @@ def api_login(request: HttpRequest):
         return JsonResponse({"error": "Account pending activation by an administrator"}, status=403)
 
     login(request, user)
-    # Role-based redirect target (students -> index dashboard)
-    target = "/index/"
-    if user_can_manage_tutor_admin(user):
+    role = get_primary_role(user)
+    if role == ROLE_ADMIN:
+        target = "/administrator/"
+    elif role == ROLE_TUTOR:
         target = "/tutor/admin/"
-    return JsonResponse({"ok": True, "redirect": target})
+    else:
+        target = "/index/"
+    return JsonResponse({"ok": True, "redirect": target, "role": role})
 
 
 @require_http_methods(["POST"])
@@ -126,16 +138,27 @@ def api_register(request: HttpRequest):
         if hasattr(user, 'is_tutor'):
             user.is_tutor = True
         user.is_active = False
-        pending_msg = "Registration successful. Your tutor account is pending admin approval."
         user.save()
-        return JsonResponse({"ok": True, "message": pending_msg})
+        pending_msg = "Registration successful. Your tutor account is pending admin approval."
+        return JsonResponse({
+            "ok": True,
+            "message": pending_msg,
+            "role": get_primary_role(user),
+        })
     else:
         # Default: student
         user.is_active = True
         user.save()
         # Optionally auto-login students
         login(request, user)
-        return JsonResponse({"ok": True, "redirect": "/index/"})
+        role_name = get_primary_role(user)
+        if role_name == ROLE_ADMIN:
+            redirect_to = "/administrator/"
+        elif role_name == ROLE_TUTOR:
+            redirect_to = "/tutor/admin/"
+        else:
+            redirect_to = "/index/"
+        return JsonResponse({"ok": True, "redirect": redirect_to, "role": role_name})
 
 
 @require_http_methods(["POST"])
@@ -196,10 +219,14 @@ def api_change_password(request: HttpRequest):
     # Re-login to keep session
     login(request, user)
     # Role-based redirect target
-    target = "/index/"
-    if user_can_manage_tutor_admin(user):
+    role = get_primary_role(user)
+    if role == ROLE_ADMIN:
+        target = "/administrator/"
+    elif role == ROLE_TUTOR:
         target = "/tutor/admin/"
-    return JsonResponse({"ok": True, "redirect": target})
+    else:
+        target = "/index/"
+    return JsonResponse({"ok": True, "redirect": target, "role": role})
 
 
 # ---- Forgot/Reset password (unauthenticated flow) ----
@@ -409,12 +436,17 @@ def api_me(request: HttpRequest):
     # Ensure profile exists and include extended fields
     profile, _ = Profile.objects.get_or_create(user=user)
 
+    roles = sorted(get_user_roles(user))
+    primary_role = get_primary_role(user)
+
     data = {
         "authenticated": True,
         "id": user.id,
         "username": user.username,
         "is_staff": bool(getattr(user, "is_staff", False)),
         "is_tutor": bool(getattr(user, "is_tutor", False)),
+        "role": primary_role,
+        "roles": roles,
         "first_name": getattr(user, "first_name", "") or "",
         "last_name": getattr(user, "last_name", "") or "",
         # camelCase copies for frontend compatibility

@@ -9445,5 +9445,1221 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2025-10-28T08:46:21.355429+00:00",
+    "user": {
+      "id": 10,
+      "username": "fake2Doe@gmail.com"
+    },
+    "question": "What is the chemical formula for water?",
+    "answer": "The chemical formula for water is H₂O. This indicates that each water molecule consists of two hydrogen atoms and one oxygen atom.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=What+is+the+chemical+formula+for+water%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "What is the chemical formula for water? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T08:47:45.496339+00:00",
+    "user": {
+      "id": 10,
+      "username": "fake2Doe@gmail.com"
+    },
+    "question": "sqrt(sintheter)",
+    "answer": "The expression $\\sqrt{\\sin(\\theta)}$ is defined only when $\\sin(\\theta) \\geq 0$. This occurs when $\\theta$ lies in the intervals $[2n\\pi, (2n+1)\\pi]$ for any integer $n$.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=sqrt%28sintheter%29",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "sqrt(sintheter) at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T08:50:49.797230+00:00",
+    "user": {
+      "id": 10,
+      "username": "fake2Doe@gmail.com"
+    },
+    "question": "find me a video of math variables",
+    "answer": "I cannot access external websites or specific files online, including YouTube. To find videos about math variables, try searching on YouTube or a similar platform using keywords like \"algebra variables,\" \"understanding variables in math,\" or \"what is a variable?\"",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=find+me+a+video+of+math+variables",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "find me a video of math variables at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T10:05:25.898502+00:00",
+    "user": {
+      "id": 10,
+      "username": "fake2Doe@gmail.com"
+    },
+    "question": "what is 6^3+x=0",
+    "answer": "To solve 6^3 + x = 0, first calculate 6 cubed (6*6*6), which equals 216. Then, subtract 216 from both sides of the equation to isolate x, giving you x = -216.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=what+is+6%5E3%2Bx%3D0",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "what is 6^3+x=0 at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T10:06:04.375180+00:00",
+    "user": {
+      "id": 10,
+      "username": "fake2Doe@gmail.com"
+    },
+    "question": "6 cubed +9",
+    "answer": "6 cubed (6 x 6 x 6) is 216. Therefore, 6 cubed + 9 = 225.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=6+cubed+%2B9",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "6 cubed +9 at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T11:24:48.874155+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "s squared plus 68",
+    "answer": "\"s squared plus 68\" is an expression, not an equation, and therefore cannot be solved. It can be written as s² + 68.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=s+squared+plus+68",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "s squared plus 68 at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T11:39:56.277570+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "the chemical formula for water?",
+    "answer": "The chemical formula for water is H₂O, indicating that each water molecule consists of two hydrogen atoms and one oxygen atom. This arrangement gives water its unique properties.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=the+chemical+formula+for+water%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "the chemical formula for water? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T11:42:44.560107+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "3x+x^2=0",
+    "answer": "To solve 3x + x^2 = 0, factor out an x to get x(3 + x) = 0. Therefore, the solutions are x = 0 and x = -3.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=3x%2Bx%5E2%3D0",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "3x+x^2=0 at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T16:06:52.620090+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "sqrt(49)? what is thi all about?",
+    "answer": "sqrt(49) asks: \"What number, when multiplied by itself, equals 49?\" The answer is 7 because 7 * 7 = 49.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=sqrt%2849%29%3F+what+is+thi+all+about%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "sqrt(49)? what is thi all about? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T16:09:16.100571+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "simplify",
+    "answer": "Based on the search results, \"simplification\" can refer to the simplification of Chinese characters, the state or quality of being simple, or text simplification in natural language processing. Text simplification in NLP is an operation used to change, enhance, or classify text.",
+    "sources": [
+      {
+        "title": "Simplification of Chinese characters Simplified Chinese characters are one of two standardized character sets widely use",
+        "url": "https://duckduckgo.com/Simplified_Chinese_characters",
+        "snippet": "Simplification of Chinese characters Simplified Chinese characters are one of two standardized character sets widely used to write the...",
+        "excerpt": "Simplification of Chinese characters Simplified Chinese characters are one of two standardized character sets widely used to write the..."
+      },
+      {
+        "title": "Simplicity The state or quality of being simple.",
+        "url": "https://duckduckgo.com/Simplicity",
+        "snippet": "Simplicity The state or quality of being simple.",
+        "excerpt": "Simplicity at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      },
+      {
+        "title": "Text simplification An operation used in natural language processing to change, enhance, classify, or otherwise...",
+        "url": "https://duckduckgo.com/Text_simplification",
+        "snippet": "Text simplification An operation used in natural language processing to change, enhance, classify, or otherwise...",
+        "excerpt": "Text simplification An operation used in natural language processing to change, enhance, classify, or otherwise..."
+      },
+      {
+        "title": "Approximation Anything that is intentionally similar but not exactly equal to something else.",
+        "url": "https://duckduckgo.com/Approximation",
+        "snippet": "Approximation Anything that is intentionally similar but not exactly equal to something else.",
+        "excerpt": "Approximation Anything that is intentionally similar but not exactly equal to something else."
+      },
+      {
+        "title": "Simplified (band) A North American rock, island vibe, and reggae rock band based in Charlotte, North Carolina.",
+        "url": "https://duckduckgo.com/Simplified_(band)",
+        "snippet": "Simplified (band) A North American rock, island vibe, and reggae rock band based in Charlotte, North Carolina.",
+        "excerpt": "Simplified (band) A North American rock, island vibe, and reggae rock band based in Charlotte, North Carolina."
+      },
+      {
+        "title": "Simplified (album) The ninth studio album by Simply Red, released in October 2005.",
+        "url": "https://duckduckgo.com/Simplified_(album)",
+        "snippet": "Simplified (album) The ninth studio album by Simply Red, released in October 2005.",
+        "excerpt": "Simplified (album) The ninth studio album by Simply Red, released in October 2005."
+      },
+      {
+        "title": "Muntzing The practice and technique of reducing the components inside an electronic appliance to the...",
+        "url": "https://duckduckgo.com/Muntzing",
+        "snippet": "Muntzing The practice and technique of reducing the components inside an electronic appliance to the...",
+        "excerpt": "Muntzing The practice and technique of reducing the components inside an electronic appliance to the..."
+      },
+      {
+        "title": "Reduction (mathematics) In mathematics, reduction refers to the rewriting of an expression into a simpler form.",
+        "url": "https://duckduckgo.com/Reduction_(mathematics)",
+        "snippet": "Reduction (mathematics) In mathematics, reduction refers to the rewriting of an expression into a simpler form.",
+        "excerpt": "Reduction (mathematics) In mathematics, reduction refers to the rewriting of an expression into a simpler form."
+      },
+      {
+        "title": "Oversimplification An informal fallacy of questionable cause that occurs when it is assumed that there is a single...",
+        "url": "https://duckduckgo.com/Fallacy_of_the_single_cause",
+        "snippet": "Oversimplification An informal fallacy of questionable cause that occurs when it is assumed that there is a single...",
+        "excerpt": "Oversimplification An informal fallacy of questionable cause that occurs when it is assumed that there is a single..."
+      },
+      {
+        "title": "Dumbing down The deliberate oversimplification of intellectual content in education, literature, cinema, news...",
+        "url": "https://duckduckgo.com/Dumbing_down",
+        "snippet": "Dumbing down The deliberate oversimplification of intellectual content in education, literature, cinema, news...",
+        "excerpt": "Dumbing down The deliberate oversimplification of intellectual content in education, literature, cinema, news..."
+      },
+      {
+        "title": "Simplified English See related meanings for the phrase 'Simplified English'.",
+        "url": "https://duckduckgo.com/d/Simplified_English",
+        "snippet": "Simplified English See related meanings for the phrase 'Simplified English'.",
+        "excerpt": "Simplified English See related meanings for the phrase 'Simplified English'."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T16:10:25.175060+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "simplify my math question",
+    "answer": "Please provide the math question you would like me to simplify. I need the question to give you a simplified answer.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=simplify+my+math+question",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "simplify my math question at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T16:11:35.505685+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "987*56x+9858484",
+    "answer": "I can't solve for x because the equation is incomplete. To solve for x, I need to know what the expression 987*56x + 9858484 is equal to.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=987%2A56x%2B9858484",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "987*56x+9858484 at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T16:12:19.552429+00:00",
+    "user": {
+      "id": 11,
+      "username": "Blessing"
+    },
+    "question": "equate it to zero",
+    "answer": "Setting an expression or equation equal to zero is a fundamental step in finding its roots or solutions. These roots represent the values that make the expression or equation true when substituted for the variable.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=equate+it+to+zero",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "equate it to zero at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
   }
 ]

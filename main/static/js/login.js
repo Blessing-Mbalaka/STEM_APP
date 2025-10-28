@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Always login as student for this page
       try {
         const res = await api("/api/auth/login", { method: "POST", data: { username: email, password } });
-        const redirect = res && res.redirect ? res.redirect : "/profiles/";
+        const redirect = res && res.redirect ? res.redirect : "/index/";
         location.href = redirect;
       } catch (e) {
         const status = e.status || 0;

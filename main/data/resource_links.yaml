@@ -88,6 +88,14 @@
     "url": "https://www.youtube.com/watch?v=d67d8DkBU2c"
   },
   {
+    "title": "sample",
+    "description": "",
+    "resource_type": "video",
+    "course": "Sample",
+    "learning_style": "visual",
+    "url": "www.google.com"
+  },
+  {
     "title": "Grade 12 Number Patterns| Sequences And Series| Exam Questions",
     "description": "",
     "resource_type": "video",
@@ -373,11 +381,74 @@
     "url": "/media/resources/math/b7aca2023fa14ecfaf23e090d6417583.pdf"
   },
   {
+    "title": "Annual Teaching plan",
+    "description": "",
+    "category": "History",
+    "term": "atp",
+    "url": "/media/resources/history/bff6499bb7bf4f55b0f4c1aef41cd95d.pdf"
+  },
+  {
+    "title": "Annual teaching plan",
+    "description": "",
+    "category": "Life Science",
+    "term": "atp",
+    "url": "/media/resources/life-science/43570ebc7ee84531ba669148db6a4300.pdf"
+  },
+  {
     "title": "Beginning and Intermediate Algebra   Tyler Wallace",
     "description": "A helpful Guide to grasping the fundamentals of Matths",
     "category": "Math",
     "term": "term1",
     "url": "/media/resources/math/8ebb7476400a48568e12b19b8e8c769e.pdf"
+  },
+  {
+    "title": "Charles Dickens",
+    "description": "",
+    "category": "English",
+    "term": "other",
+    "url": "/media/resources/english/533d94079e794c5f916fc5b637eb32ad.pdf"
+  },
+  {
+    "title": "Critical Theory",
+    "description": "Additional resources, useful for the analysis of Nazi Germany.",
+    "category": "History",
+    "term": "other",
+    "url": "/media/resources/history/edd12c05e469409eb9858a981004d113.pdf"
+  },
+  {
+    "title": "Eastern Cape",
+    "description": "English Grade 12 Eastern Cape.",
+    "category": "English",
+    "term": "past_papers",
+    "url": "/media/resources/english/de18d4767ce34958894e1988e8ec1cdb.pdf"
+  },
+  {
+    "title": "Eastern Cape",
+    "description": "Eastern Cape Grade 12",
+    "category": "English",
+    "term": "past_papers",
+    "url": "/media/resources/english/41d0fc8544bc45128bd4ca73b8877b6c.pdf"
+  },
+  {
+    "title": "English",
+    "description": "English Theatre",
+    "category": "English",
+    "term": "term3",
+    "url": "/media/resources/english/b7aff92ba2be457bb11825a3273dbe6f.pdf"
+  },
+  {
+    "title": "English Memo",
+    "description": "English Memo, Grade 12.",
+    "category": "English",
+    "term": "term1",
+    "url": "/media/resources/english/ea01976269f548de9bbaaa738bba6474.pdf"
+  },
+  {
+    "title": "Geography past paper",
+    "description": "",
+    "category": "Geography",
+    "term": "past_papers",
+    "url": "/media/resources/geography/49c29fd38de24bb59c4bf21168f5cfc7.pdf"
   },
   {
     "title": "Gr12-Geography-Study-Guide LR",
@@ -394,11 +465,53 @@
     "url": "/media/resources/math/33eaa17a0318485c882bfe9850216b94.pdf"
   },
   {
+    "title": "June Past Exam Western Cape",
+    "description": "",
+    "category": "History",
+    "term": "past_papers",
+    "url": "/media/resources/history/5dcca220be94418c9efff558cbc7d05d.pdf"
+  },
+  {
+    "title": "Life Science Past Paper",
+    "description": "",
+    "category": "Life Science",
+    "term": "past_papers",
+    "url": "/media/resources/life-science/30e17a50ab5d45be8cf8561a886b6d44.pdf"
+  },
+  {
     "title": "Life Sciences Grade 12 Textbook",
     "description": "",
     "category": "Life Science",
     "term": "term1",
     "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
+  },
+  {
+    "title": "Life-Sciences-Grade-12-NSC-P1-QP-September-2025-Northern-Cape",
+    "description": "",
+    "category": "Life Science",
+    "term": "other",
+    "url": "/media/resources/life-science/75629fc4dbcc495a833b738b51319e7a.pdf"
+  },
+  {
+    "title": "Past paper Term 4",
+    "description": "",
+    "category": "English",
+    "term": "term4",
+    "url": "/media/resources/english/1d4519a8821746199772ce4af9a3c894.pdf"
+  },
+  {
+    "title": "Physics Novemeber Past paper",
+    "description": "",
+    "category": "Physics",
+    "term": "past_papers",
+    "url": "/media/resources/physics/461f2c575a994dd1ad23d03f8308db96.pdf"
+  },
+  {
+    "title": "Real Life Uses of Physics",
+    "description": "Hardcoded snapshot of emerging focus areas for 2024 planning.",
+    "category": "Physics",
+    "term": "other",
+    "url": "/media/resources/physics/afb8993616ae440aa06bf39eccf78409.pdf"
   },
   {
     "title": "September 2025 Past Paper",
@@ -413,6 +526,13 @@
     "category": "History",
     "term": "term1",
     "url": "/media/resources/history/edc3268c059b41e1ad4bc557f1284603.pdf"
+  },
+  {
+    "title": "Term Novel",
+    "description": "The Great Gatsby",
+    "category": "English",
+    "term": "term2",
+    "url": "/media/resources/english/2eacf86ffa174e75a60b3708e4aab59c.pdf"
   },
   {
     "title": "TextBook",

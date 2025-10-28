@@ -7,6 +7,8 @@ from ..models import Game, GameQuestion, GameScore
 from django.db.models import Max
 import json
 
+from main.utils.roles import user_has_role, ROLE_ADMIN
+
 def games(request):
     return render(request, "Games.html")
 
@@ -53,7 +55,7 @@ def api_games_list(request):
         except Exception:
             max_points = 10
         # Enforce approval workflow: only staff can control activation
-        is_active = bool(data.get("is_active")) if request.user.is_staff else False
+        is_active = bool(data.get("is_active")) if user_has_role(request.user, ROLE_ADMIN) else False
 
         g = Game.objects.create(
             title=title,
@@ -93,7 +95,7 @@ def api_games_list(request):
         qs = qs.filter(difficulty__iexact=difficulty)
     mine = (request.GET.get("mine") or "").strip().lower() == 'true'
     # Only staff may view inactive entries in general; allow tutors to view their own drafts with ?mine=true
-    if request.user.is_authenticated and request.user.is_staff:
+    if request.user.is_authenticated and user_has_role(request.user, ROLE_ADMIN):
         if active in {"true","false"}:
             qs = qs.filter(is_active=(active == "true"))
         if mine:
@@ -198,7 +200,7 @@ def api_game_detail(request, pk: int):
             changed = True
         if "is_active" in data:
             # Only staff can change activation state
-            if request.user.is_staff:
+            if user_has_role(request.user, ROLE_ADMIN):
                 g.is_active = bool(data.get("is_active")); changed = True
 
         if changed:

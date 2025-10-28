@@ -42,6 +42,47 @@
     `;
   }
 
+  const ENTITY_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" };
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ENTITY_MAP[ch]);
+  }
+
+  function normalizeResourceUrl(raw) {
+    if (!raw) return "";
+    const value = String(raw).trim();
+    if (!value) return "";
+    if (value === "#" || value.startsWith("#")) return value;
+    if (/^(blob:|data:|mailto:|tel:|sms:)/i.test(value)) return value;
+    if (/^(https?:)?\/\//i.test(value)) {
+      return value.startsWith("//") ? "https:" + value : value;
+    }
+    if (value.startsWith("/")) return value;
+    if (/^\w[\w.-]+(\.[\w.-]+)+/i.test(value)) {
+      return "https://" + value.replace(/^\/*/, "");
+    }
+    if (/\.(mp4|webm|ogg|mp3|m4a|aac|wav|pdf|epub)(\?.*)?$/i.test(value)) {
+      return "/" + value.replace(/^\/*/, "");
+    }
+    return value;
+  }
+
+  function tryParseUrl(raw) {
+    if (!raw) return null;
+    try {
+      return new URL(raw, window.location.origin);
+    } catch {
+      try {
+        const normalized = normalizeResourceUrl(raw);
+        if (normalized) {
+          return new URL(normalized, window.location.origin);
+        }
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
   const api = async (path, { method = "GET", data } = {}) => {
     const csrftoken = getCookie("csrftoken");
     const opts = { method, headers: {} };
@@ -88,17 +129,23 @@
   /* =============== Type detection & thumbs =============== */
 
   function extractYouTubeId(u) {
-    try {
-      const url = new URL(u);
-      if (url.hostname.includes("youtu.be")) return url.pathname.slice(1);
-      if (url.hostname.includes("youtube.com")) {
-        const v = url.searchParams.get("v");
-        if (v) return v;
-        const parts = url.pathname.split("/");
-        const i = parts.findIndex(p => p === "embed" || p === "shorts");
-        if (i !== -1 && parts[i + 1]) return parts[i + 1];
+    const url = tryParseUrl(u);
+    if (!url) return null;
+    const host = (url.hostname || "").toLowerCase();
+    if (host.includes("youtu.be")) {
+      return url.pathname.replace(/^\/+/, "").split(/[?#]/)[0] || null;
+    }
+    if (host.includes("youtube.com")) {
+      const v = url.searchParams.get("v");
+      if (v) return v;
+      const parts = url.pathname.split("/").filter(Boolean);
+      const embedIdx = parts.findIndex(p => p === "embed" || p === "shorts" || p === "live");
+      if (embedIdx !== -1 && parts[embedIdx + 1]) return parts[embedIdx + 1];
+      if (parts.length) {
+        const last = parts[parts.length - 1];
+        if (last && last !== "watch") return last;
       }
-    } catch { /* ignore */ }
+    }
     return null;
   }
 
@@ -109,50 +156,178 @@
 
   function videoThumbnailFor(res) {
     if (res.thumbnail) return res.thumbnail;
-    const url = res.url || "";
-    const isYT = /(?:youtube\.com|youtu\.be)/i.test(url);
+    const source = res.url || res.file || "";
+    const isYT = /(?:youtube\.com|youtu\.be)/i.test(source);
     if (res.resource_type === "youtube" || isYT) {
-      const id = extractYouTubeId(url);
+      const id = extractYouTubeId(source);
       if (id) return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
     }
     return null;
   }
 
+  const YOUTUBE_ERROR_MESSAGES = {
+    "2": "The video link has invalid parameters.",
+    "5": "This browser cannot play the supplied video format.",
+    "101": "The video owner disabled playback on other websites.",
+    "150": "The video owner disabled playback on other websites.",
+    "151": "Playback is restricted for this video.",
+    "153": "Playback is restricted for this video."
+  };
+
+  const youtubePlayers = {};
+  let youtubeListenerAttached = false;
+
+  function ensureYouTubeListener() {
+    if (youtubeListenerAttached) return;
+    youtubeListenerAttached = true;
+    window.addEventListener("message", handleYouTubeIframeMessage, false);
+  }
+
+  function registerYouTubePlayer(id, meta) {
+    youtubePlayers[id] = meta;
+    ensureYouTubeListener();
+  }
+
+  function clearYouTubePlayer(id) {
+    if (!id) return;
+    delete youtubePlayers[id];
+  }
+
+  function handleYouTubeIframeMessage(event) {
+    if (!event || !event.data) return;
+    const origin = event.origin || "";
+    if (origin) {
+      try {
+        const hostname = new URL(origin).hostname.replace(/^www\./, "");
+        const allowed =
+          /(^|\.)youtube\.com$/i.test(hostname) ||
+          /(^|\.)youtube-nocookie\.com$/i.test(hostname);
+        if (!allowed) return;
+      } catch {
+        return;
+      }
+    }
+    let payload = event.data;
+    if (typeof payload === "string") {
+      const trimmed = payload.trim();
+      if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) return;
+      try {
+        payload = JSON.parse(trimmed);
+      } catch {
+        return;
+      }
+    }
+    if (!payload || typeof payload !== "object") return;
+    if (payload.event !== "onError") return;
+
+    const playerId = payload.id || (payload?.info && payload.info.id) || null;
+    let code = payload.info;
+    if (Array.isArray(code)) code = code[0];
+    if (typeof code !== "number" && typeof code !== "string") {
+      code = payload.errorCode;
+    }
+    renderYouTubeError(playerId, code);
+  }
+
+  function renderYouTubeError(playerId, code) {
+    if (!playerId) return;
+    const meta = youtubePlayers[playerId];
+    if (!meta || !meta.container) return;
+    clearYouTubePlayer(playerId);
+
+    const friendly = YOUTUBE_ERROR_MESSAGES[String(code)] || "This video can only be opened on YouTube.";
+    const friendlyHtml = escapeHtml(friendly);
+    const titleHtml = meta.title || "Video";
+    const hrefHtml = meta.href || "";
+    const bannerTitle = meta.title ? meta.title : "This video";
+    showBanner(`${bannerTitle} can only be viewed directly on YouTube.`);
+    meta.container.dataset.mounted = "error";
+    meta.container.innerHTML = `
+      <div class="video-error" style="display:flex;flex-direction:column;gap:8px;justify-content:center;height:150px;padding:12px;border-radius:8px;background:#fff3cd;border:1px solid #ffe8a1;color:#6b4f00;">
+        <div style="font-weight:600;">${titleHtml} can't play here.</div>
+        <div style="font-size:13px;line-height:1.4;">${friendlyHtml}${code ? ` (Error ${escapeHtml(String(code))})` : ""}</div>
+        ${hrefHtml ? `<a href="${hrefHtml}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#0c5460;font-weight:600;text-decoration:underline;">Watch on YouTube</a>` : ""}
+      </div>
+    `;
+  }
+
   function buildYouTubeEmbedSrc(url) {
     const id = extractYouTubeId(url);
     if (!id) return null;
-    return `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
+    try {
+      const params = new URLSearchParams({
+        rel: "0",
+        modestbranding: "1",
+        playsinline: "1",
+        enablejsapi: "1",
+        origin: window.location.origin
+      });
+      return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+    } catch {
+      return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`;
+    }
   }
 
   /* =============== Inline players (video) =============== */
 
   function mountInlinePlayer(container) {
-    if (!container || container.dataset.mounted === "1") return;
+    if (!container) return;
 
-    const kind = container.dataset.kind;               // 'youtube' | 'file'
+    if (container.dataset.playerId) {
+      clearYouTubePlayer(container.dataset.playerId);
+      delete container.dataset.playerId;
+    }
+
+    const kind = container.dataset.kind || "external";   // 'youtube' | 'file' | 'external'
     const src  = container.dataset.src || "";
     const poster = container.dataset.poster || "";
+    const href = container.dataset.href || "";
+
+    if (container.dataset.mounted === "1" && (kind === "youtube" || kind === "file")) {
+      return;
+    }
 
     if (kind === "youtube" && src) {
+      const autoplaySrc = src.includes("?") ? `${src}&autoplay=1` : `${src}?autoplay=1`;
+      const playerId = `yt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      registerYouTubePlayer(playerId, {
+        container,
+        href,
+        title: container.dataset.title || ""
+      });
       container.innerHTML = `
         <iframe
-          src="${src}&autoplay=1"
+          id="${playerId}"
+          src="${escapeHtml(autoplaySrc)}"
           title="YouTube video"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
           style="width:100%;height:150px;display:block;border:0;border-radius:8px"
         ></iframe>`;
-    } else if (kind === "file" && src) {
+      container.dataset.mounted = "1";
+      container.dataset.playerId = playerId;
+      return;
+    }
+
+    if (kind === "file" && src) {
       container.innerHTML = `
         <video
-          src="${src}"
-          ${poster ? `poster="${poster}"` : ""}
+          src="${escapeHtml(src)}"
+          ${poster ? `poster="${escapeHtml(poster)}"` : ""}
           controls autoplay playsinline
           style="width:100%;height:150px;display:block;object-fit:cover;border-radius:8px"
         ></video>`;
+      container.dataset.mounted = "1";
+      return;
     }
-    container.dataset.mounted = "1";
+
+    if (href && href !== "#") {
+      window.open(href, "_blank", "noopener");
+    } else {
+      showBanner("Unable to play this video inside the browser. The link might be unavailable.");
+    }
   }
 
   /* =============== EPUB Reader (overlay) =============== */
@@ -431,26 +606,40 @@
     if (videoGrid) {
       videoGrid.innerHTML = "";
       (subject.visual || []).forEach(v => {
-        const href = v.url || v.file || "#";
+        const rawUrl = v.url || v.file || "";
+        const href = normalizeResourceUrl(rawUrl) || "#";
         const thumb = videoThumbnailFor(v);
 
-        let kind = "file";
+        const isYouTube = v.resource_type === "youtube" || /(?:youtube\.com|youtu\.be)/i.test(rawUrl || "");
+        let kind = "external";
         let embedSrc = "";
-        if (v.resource_type === "youtube" || /(?:youtube\.com|youtu\.be)/i.test(v.url || "")) {
-          kind = "youtube";
-          embedSrc = buildYouTubeEmbedSrc(v.url || "") || "";
-        } else if (isVideoFile(v.file || v.url)) {
-          kind = "file";
+        if (isYouTube) {
+          embedSrc = buildYouTubeEmbedSrc(rawUrl) || "";
+          if (embedSrc) kind = "youtube";
+        } else if (isVideoFile(rawUrl) || isVideoFile(href)) {
           embedSrc = href;
+          kind = embedSrc ? "file" : "external";
         }
+
+        if (!embedSrc && kind !== "external" && href && href !== "#") {
+          kind = "external";
+        }
+
+        const safeKind = escapeHtml(kind);
+        const safeEmbed = escapeHtml(embedSrc);
+        const safePoster = escapeHtml(thumb || "");
+        const safeHref = escapeHtml(href);
+        const safeTitle = escapeHtml(v.title || "");
+        const safeDuration = escapeHtml(v.duration || "");
+        const hasLink = href && href !== "#";
 
         videoGrid.insertAdjacentHTML("beforeend", `
           <div class="video-card">
-            <div class="video-embed" data-kind="${kind}" data-src="${embedSrc}" data-poster="${thumb || ""}" style="position:relative;">
+            <div class="video-embed" data-kind="${safeKind}" data-src="${safeEmbed}" data-href="${safeHref}" data-poster="${safePoster}" data-title="${safeTitle}" style="position:relative;">
               <div class="video-thumbnail js-play-video" role="button" tabindex="0" aria-label="Play video"
                    style="cursor:pointer; ${thumb ? "background:none;padding:0" : ""}">
                 ${ thumb
-                    ? `<img src="${thumb}" alt="Video thumbnail"
+                    ? `<img src="${safePoster}" alt="Video thumbnail"
                            style="display:block;width:100%;height:150px;object-fit:cover;border:0;border-radius:8px"/>`
                     : `<i class="fas fa-play"></i>` }
                 <div class="play-overlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
@@ -463,8 +652,9 @@
               </div>
             </div>
             <div class="video-info">
-              <div class="video-title">${v.title || ""}</div>
-              <div class="video-duration">${v.duration || ""}</div>
+              <div class="video-title">${safeTitle}</div>
+              <div class="video-duration">${safeDuration}</div>
+              ${ hasLink ? `<div class="video-actions" style="margin-top:6px;"><a href="${safeHref}" target="_blank" rel="noopener">Open in new tab</a></div>` : "" }
             </div>
           </div>
         `);

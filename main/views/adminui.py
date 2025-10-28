@@ -1,19 +1,45 @@
 from __future__ import annotations
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse, HttpRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
 
+from main.utils.roles import (
+    get_primary_role,
+    get_user_roles,
+    user_has_role,
+    ROLE_ADMIN,
+)
+
 User = get_user_model()
+
+
+def _serialize_user(u):
+    return {
+        'id': u.id,
+        'username': u.username,
+        'first_name': u.first_name or '',
+        'last_name': u.last_name or '',
+        'email': u.email or '',
+        'display_name': getattr(u, 'display_name', '') or '',
+        'is_active': bool(u.is_active),
+        'is_staff': bool(u.is_staff),
+        'is_superuser': bool(u.is_superuser),
+        'is_tutor': bool(getattr(u, 'is_tutor', False)),
+        'role': get_primary_role(u),
+        'roles': sorted(get_user_roles(u)),
+        'joined': getattr(u, 'date_joined', None).isoformat() if getattr(u, 'date_joined', None) else ''
+    }
 
 
 def _require_admin(request: HttpRequest):
     if not request.user.is_authenticated:
         return False
     # Allow superusers and staff to access admin UI
-    return bool(getattr(request.user, 'is_superuser', False) or getattr(request.user, 'is_staff', False))
+    return user_has_role(request.user, ROLE_ADMIN)
 
 
 @login_required
@@ -33,28 +59,24 @@ def api_admin_users(request: HttpRequest):
     status = (request.GET.get('status') or '').strip().lower()  # active|inactive|all
     qs = User.objects.all().order_by('-date_joined')
     if q:
-        qs = qs.filter(username__icontains=q) | qs.filter(email__icontains=q)
+        qs = qs.filter(
+            Q(username__icontains=q)
+            | Q(email__icontains=q)
+            | Q(display_name__icontains=q)
+            | Q(first_name__icontains=q)
+            | Q(last_name__icontains=q)
+        )
     if role == 'tutor':
         qs = qs.filter(is_tutor=True)
-    elif role == 'staff':
-        qs = qs.filter(is_staff=True)
+    elif role in {'admin', 'staff'}:
+        qs = qs.filter(Q(is_staff=True) | Q(is_superuser=True))
     elif role == 'student':
-        qs = qs.filter(is_tutor=False, is_staff=False)
+        qs = qs.filter(is_tutor=False, is_staff=False, is_superuser=False)
     if status == 'active':
         qs = qs.filter(is_active=True)
     elif status == 'inactive':
         qs = qs.filter(is_active=False)
-    data = [{
-        'id': u.id,
-        'username': u.username,
-        'email': u.email or '',
-        'display_name': getattr(u, 'display_name', '') or '',
-        'is_active': bool(u.is_active),
-        'is_staff': bool(u.is_staff),
-        'is_superuser': bool(u.is_superuser),
-        'is_tutor': bool(getattr(u, 'is_tutor', False)),
-        'joined': getattr(u, 'date_joined', None).isoformat() if getattr(u, 'date_joined', None) else ''
-    } for u in qs[:500]]
+    data = [_serialize_user(u) for u in qs[:500]]
     return JsonResponse({"results": data})
 
 
@@ -73,7 +95,51 @@ def api_admin_user_update(request: HttpRequest, pk: int):
     if 'is_active' in payload:
         u.is_active = bool(payload.get('is_active')); changed = True
     if 'is_tutor' in payload and hasattr(u, 'is_tutor'):
-        u.is_tutor = bool(payload.get('is_tutor')); changed = True
+        new_tutor = bool(payload.get('is_tutor'))
+        u.is_tutor = new_tutor; changed = True
+    if 'display_name' in payload and hasattr(u, 'display_name'):
+        new_display = (payload.get('display_name') or '').strip()
+        if len(new_display) > 150:
+            return JsonResponse({"error": "Display name too long"}, status=400)
+        u.display_name = new_display
+        changed = True
+    if 'first_name' in payload:
+        u.first_name = (payload.get('first_name') or '').strip()
+        changed = True
+    if 'last_name' in payload:
+        u.last_name = (payload.get('last_name') or '').strip()
+        changed = True
+    if 'username' in payload:
+        new_username = (payload.get('username') or '').strip()
+        if not new_username:
+            return JsonResponse({"error": "Username cannot be blank"}, status=400)
+        if new_username != u.username and User.objects.exclude(pk=u.pk).filter(username=new_username).exists():
+            return JsonResponse({"error": "Username already exists"}, status=400)
+        u.username = new_username
+        changed = True
+    if 'role' in payload:
+        new_role = (payload.get('role') or '').strip().lower()
+        if getattr(u, 'is_superuser', False) and new_role not in {'admin', 'staff', ''}:
+            return JsonResponse({"error": "Cannot downgrade a superuser role"}, status=400)
+        if new_role not in {'', 'student', 'tutor', 'admin', 'staff'}:
+            return JsonResponse({"error": "Invalid role"}, status=400)
+        if new_role in {'admin', 'staff'}:
+            if not getattr(request.user, 'is_superuser', False):
+                return JsonResponse({"error": "Only superusers may assign the admin role"}, status=403)
+            if not getattr(u, 'is_superuser', False):
+                u.is_staff = True
+            u.is_tutor = False
+            changed = True
+        elif new_role == 'tutor':
+            u.is_tutor = True
+            if getattr(request.user, 'is_superuser', False) and not getattr(u, 'is_superuser', False):
+                u.is_staff = False
+            changed = True
+        elif new_role == 'student':
+            u.is_tutor = False
+            if getattr(request.user, 'is_superuser', False) and not getattr(u, 'is_superuser', False):
+                u.is_staff = False
+            changed = True
     # Only superusers may toggle staff
     if 'is_staff' in payload and getattr(request.user, 'is_superuser', False):
         u.is_staff = bool(payload.get('is_staff')); changed = True
@@ -83,7 +149,7 @@ def api_admin_user_update(request: HttpRequest, pk: int):
             u.set_password(newp); changed = True
     if changed:
         u.save()
-    return JsonResponse({"ok": True})
+    return JsonResponse({"ok": True, "user": _serialize_user(u)})
 
 
 @login_required

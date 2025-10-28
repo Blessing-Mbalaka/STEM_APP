@@ -8,6 +8,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from datetime import timedelta, datetime
 from django.contrib.auth import get_user_model
+from django.db.models import Q
+
+from main.utils.roles import user_has_role, ROLE_ADMIN, ROLE_TUTOR
 
 # Import models (with fallback if they don't exist yet)
 try:
@@ -124,7 +127,7 @@ def confirm_session(request, session_id):
     session = get_object_or_404(TutorSession, id=session_id)
     
     # Only tutor or admin can confirm
-    if request.user != session.tutor and not request.user.is_staff:
+    if request.user != session.tutor and not user_has_role(request.user, ROLE_ADMIN):
         return HttpResponseForbidden()
     
     if request.method == 'POST' and session.status == 'pending':
@@ -239,12 +242,12 @@ def tutor_dashboard(request):
         # Fallback if model doesn't exist
         return render(request, 'main/tutor_dashboard.html', {
             'sessions': [],
-            'is_tutor': request.user.is_staff,
+            'is_tutor': user_has_role(request.user, ROLE_TUTOR, ROLE_ADMIN),
             'error': 'Tutor session model not available. Please run migrations.'
         })
     
     # Check if user is tutor (staff) or student
-    if request.user.is_staff or request.user.is_superuser:
+    if user_has_role(request.user, ROLE_TUTOR, ROLE_ADMIN):
         # Tutor view - show sessions they're tutoring
         sessions = TutorSession.objects.filter(tutor=request.user).order_by('-scheduled_time')
         is_tutor = True
@@ -274,7 +277,7 @@ def book_session(request):
         form = SessionBookingForm(request.POST)
         if form.is_valid():
             # Get available tutors (staff users)
-            tutors = User.objects.filter(is_staff=True)
+            tutors = User.objects.filter(Q(is_staff=True) | Q(is_tutor=True) | Q(is_superuser=True))
             if not tutors.exists():
                 messages.error(request, 'No tutors available at the moment.')
                 return redirect('book_session')
@@ -299,7 +302,7 @@ def book_session(request):
         form = SessionBookingForm()
     
     # Get available tutors for display
-    tutors = User.objects.filter(is_staff=True)
+    tutors = User.objects.filter(Q(is_staff=True) | Q(is_tutor=True) | Q(is_superuser=True))
     subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Engineering', 'Other']
     
     context = {
@@ -332,27 +335,26 @@ def send_message(request):
 @login_required
 def tutor_admin(request):
     """Tutor admin panel for managing courses and materials"""
-    if not request.user.is_staff:
-        messages.error(request, 'Access denied. Tutor privileges required.')
-        return redirect('dashboard')
-    
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
+        return HttpResponseForbidden("Forbidden")
+
     # Get courses managed by this tutor
     try:
         from main.models import Course
         courses = Course.objects.filter(instructor=request.user)
-    except:
+    except Exception:
         courses = []
-    
+
     context = {
         'courses': courses,
         'tutor': request.user,
     }
-    return render(request, 'main/tutor_admin.html', context)
+    return render(request, 'TutorAdmin.html', context)
 
 @login_required
 def api_tutor_courses(request):
     """API endpoint for tutor's courses"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -375,7 +377,7 @@ def api_tutor_courses(request):
 @login_required
 def api_tutor_course_detail(request, course_id):
     """API endpoint for specific course details"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -404,7 +406,7 @@ def api_tutor_course_detail(request, course_id):
 @login_required
 def api_tutor_course_add_resource(request, course_id):
     """API endpoint to add resources to a course"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -447,7 +449,7 @@ def api_tutor_course_add_resource(request, course_id):
 @login_required
 def api_tutor_resource_detail(request, resource_id):
     """API endpoint for specific resource details"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -470,7 +472,7 @@ def api_tutor_resource_detail(request, resource_id):
 @login_required
 def api_tutor_course_thumbnail(request, course_id):
     """API endpoint to update course thumbnail"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -497,7 +499,7 @@ def api_tutor_course_thumbnail(request, course_id):
 @login_required
 def api_tutor_course_reorder(request, course_id):
     """API endpoint to reorder course resources"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -526,7 +528,7 @@ def api_tutor_course_reorder(request, course_id):
 @login_required
 def api_course_sequence(request, course_id):
     """API endpoint for course learning sequence"""
-    if not request.user.is_staff:
+    if not user_has_role(request.user, ROLE_ADMIN, ROLE_TUTOR):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:

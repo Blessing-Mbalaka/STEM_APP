@@ -9,158 +9,435 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="{% static 'js/api.js' %}"></script>
   <style>
+    :root {
+      --primary-orange: rgb(184, 67, 0);
+      --secondary-orange: rgb(128, 49, 3);
+      --accent-yellow: #FBBC05;
+      --accent-red: #EA4335;
+      --accent-green: #34A853;
+      --accent-blue: #4285F4;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #333333;
+      --text-light: #666666;
+      --panel-radius: 16px;
+      --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
-      background: #f7f7f9;
-      color: #222;
+      background-color: #f9f9f9;
+      color: var(--dark-gray);
+      line-height: 1.6;
     }
 
     .wrap {
       max-width: 1200px;
-      margin: 20px auto;
-      padding: 16px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(245, 245, 245, 0.88));
     }
 
-    .grid {
+    .hero {
+      background-image: linear-gradient(180deg, rgba(244, 226, 206, 0.74), rgba(246, 246, 246, 0.95)), url("{% static 'images/wallpaper7.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      border-radius: var(--panel-radius);
+      box-shadow: var(--card-shadow);
+      padding: 32px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: var(--secondary-orange);
+    }
+
+    .hero h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+      color: var(--secondary-orange);
+    }
+
+    .hero p {
+      max-width: 520px;
+      font-size: 15px;
+      color: rgba(0, 0, 0, 0.72);
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-actions .whoami {
+      font-size: 14px;
+      color: var(--secondary-orange);
+      background: rgba(255, 255, 255, 0.7);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(184, 67, 0, 0.2);
+    }
+
+    .btn {
+      background: var(--primary-orange);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-shadow: 0 4px 10px rgba(184, 67, 0, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(184, 67, 0, 0.25);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--secondary-orange);
+      border: 1px solid rgba(184, 67, 0, 0.25);
+      box-shadow: none;
+    }
+
+    .btn.secondary:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .btn.icon-only {
+      padding: 12px;
+      width: 44px;
+      height: 44px;
       display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 16px;
+      place-items: center;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--secondary-orange);
+      border: 1px solid rgba(184, 67, 0, 0.25);
+      box-shadow: none;
+    }
+
+    .btn.icon-only:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: flex-start;
     }
 
     .card {
       background: #fff;
+      border-radius: var(--panel-radius);
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-card {
+      position: sticky;
+      top: 24px;
+      background: #fffdfa;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--secondary-orange);
+      margin-bottom: 14px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
       border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+      border: 1px solid rgba(184, 67, 0, 0.18);
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--secondary-orange);
+      background: rgba(255, 255, 255, 0.85);
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .nav-link i {
+      font-size: 14px;
+      color: rgba(128, 49, 3, 0.72);
+    }
+
+    .nav-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(184, 67, 0, 0.15);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    .nav-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .nav-actions .btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
     }
 
     .row {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
-      margin: 8px 0;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .row.gap-sm {
+      gap: 8px;
     }
 
     label {
-      width: 110px;
+      width: 120px;
       font-weight: 600;
-      color: #444;
+      color: var(--secondary-orange);
     }
 
     input[type=text],
+    input[type=number],
+    input[type=datetime-local],
     textarea,
     select {
       width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #d0d7de;
-      border-radius: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--medium-gray);
+      background: #fff;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary-orange);
+      box-shadow: 0 0 0 3px rgba(184, 67, 0, 0.18);
     }
 
     textarea {
-      min-height: 80px;
+      min-height: 100px;
+      resize: vertical;
     }
 
-    .btn {
-      background: #24adb7;
-      color: #fff;
+    .section-divider {
       border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
+      border-top: 1px dashed rgba(0, 0, 0, 0.08);
+      margin: 18px 0;
     }
 
-    .btn.secondary {
-      background: #e9ecef;
-      color: #222;
-    }
-
-    .btn-lg {
-      padding: 14px 18px;
-      font-size: 16px;
-      width: 100%;
+    .muted {
+      color: var(--text-light);
+      font-size: 14px;
     }
 
     .list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
 
     .item {
-      padding: 10px;
-      border: 1px solid #e6eaef;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .muted {
-      color: #666;
-      font-size: 13px;
+      background: #fffdfa;
     }
 
     .badge {
-      display: inline-block;
-      padding: 2px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 600;
-      margin-left: 8px;
     }
 
     .badge.published {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #c8e6c9;
+      background: rgba(52, 168, 83, 0.12);
+      color: #1b7f3a;
+      border: 1px solid rgba(52, 168, 83, 0.2);
     }
 
     .badge.draft {
-      background: #fff8e1;
-      color: #ef6c00;
-      border: 1px solid #ffe0b2;
+      background: rgba(251, 188, 5, 0.18);
+      color: #924c00;
+      border: 1px solid rgba(251, 188, 5, 0.3);
+    }
+
+    .row-end {
+      justify-content: flex-end;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .checkbox-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .card h3,
+    .card h4 {
+      color: var(--secondary-orange);
+      margin-bottom: 12px;
+    }
+
+    .empty-state {
+      padding: 18px;
+      border: 1px dashed rgba(184, 67, 0, 0.25);
+      border-radius: 12px;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: #fffdfa;
+      width: 520px;
+      max-width: 92vw;
+      border-radius: var(--panel-radius);
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--secondary-orange);
+    }
+
+    @media (max-width: 960px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-card {
+        position: static;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 24px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <!-- Top bar -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h2 id="dashboardTitle" style="margin:0; color:#24adb7;">Tutor Dashboard</h2>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <button id="openScheduler" class="btn" type="button" title="Schedule Class"><i
-            class="fas fa-calendar-plus"></i></button>
-        <span id="whoami" class="muted"></span>
-        <button id="logoutBtn" class="btn secondary" type="button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <header class="hero">
+      <div>
+        <h1 id="dashboardTitle">Tutor Dashboard</h1>
+        <p id="dashboardTagline">Plan sessions, build courses, and keep your learners engaged from one workspace.</p>
       </div>
-    </div>
+      <div class="hero-actions">
+        <button id="openScheduler" class="btn icon-only" type="button" title="Schedule Class" aria-label="Schedule a class">
+          <i class="fas fa-calendar-plus"></i>
+        </button>
+        <span id="whoami" class="whoami">Loading profile...</span>
+        <button id="logoutBtn" class="btn secondary" type="button">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
 
     {% include "partials/analytics.html" with analytics=analytics %}
 
-    <!-- Layout: sidebar + main content -->
-    <div style="display:grid; grid-template-columns: 240px 1fr; gap: 16px; align-items:start;">
-      <!-- Sidebar styled similar to student profile sidebar -->
-      <div class="card" style="padding:16px; position:sticky; top:16px; height:fit-content;">
-        <div style="font-weight:700; color:#24adb7; margin-bottom:8px;">Navigation</div>
-        <div class="list">
-          <a href="#" id="navCourses" class="btn secondary" style="text-align:left;">Courses</a>
-          <a href="#" id="navSchedule" class="btn secondary" style="text-align:left;">Schedule</a>
-          <a href="#" id="navMessages" class="btn secondary" style="text-align:left;">Messages</a>
-          <a href="/messages/" class="btn secondary" style="text-align:left;">Open Messages</a>
-          <label style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-            <input id="filterMine" type="checkbox"> Show My Drafts Only
-          </label>
+    <div class="dashboard-layout">
+      <aside class="card nav-card">
+        <div class="sidebar-title">Navigation</div>
+        <div class="nav-links">
+          <a href="#" role="button" id="navCourses" class="nav-link">Courses <i class="fas fa-arrow-right"></i></a>
+          <a href="#" role="button" id="navSchedule" class="nav-link">Schedule <i class="fas fa-calendar-week"></i></a>
+          <a href="#" role="button" id="navMessages" class="nav-link">Inbox <i class="fas fa-envelope-open-text"></i></a>
+          <a href="/messages/" class="nav-link" target="_blank" rel="noopener">Open Messages <i class="fas fa-external-link-alt"></i></a>
+        </div>
+        <label class="filter-row">
+          <input id="filterMine" type="checkbox"> Show my drafts only
+        </label>
+        <div class="nav-actions">
           <button id="refreshCourses" class="btn secondary" type="button">Refresh</button>
         </div>
-      </div>
+      </aside>
 
-      <!-- Main content area -->
-      <div class="grid">
+      <div class="content-grid">
         <div class="card">
-          <h3 style="margin-top:0;">Courses</h3>
+          <h3>Courses</h3>
           <div id="courses" class="list"></div>
-          <hr style="margin:12px 0;">
+          <hr class="section-divider">
           <h4>Create Course</h4>
           <div class="row"><label>Title</label><input id="c-title" type="text"></div>
           <div class="row"><label>Subject</label><input id="c-subj" type="text" placeholder="e.g. Life Sciences"></div>
@@ -182,15 +459,15 @@
           </div>
           <div class="row"><label>Summary</label><input id="c-sum" type="text"></div>
           <div class="row"><label>Description</label><textarea id="c-desc"></textarea></div>
-          <div class="row" style="justify-content:flex-end;"><button id="createCourse" class="btn">Create</button></div>
+          <div class="row row-end"><button id="createCourse" class="btn">Create</button></div>
         </div>
 
         <div class="card">
-          <h3 id="builderTitle" style="margin-top:0;">Builder</h3>
+          <h3 id="builderTitle">Builder</h3>
           <div id="builderEmpty" class="muted">Select a course from the left to edit</div>
           <div id="builder" style="display:none;">
             <!-- Edit Course Meta -->
-            <h4 style="margin:6px 0 8px 0;">Edit Course</h4>
+            <h4>Edit Course</h4>
             <div class="row"><label>Title</label><input id="e-title" type="text"></div>
             <div class="row"><label>Subject</label><input id="e-subj" type="text"></div>
             <div class="row"><label>Category</label>
@@ -211,14 +488,14 @@
             </div>
             <div class="row"><label>Summary</label><input id="e-sum" type="text"></div>
             <div class="row"><label>Description</label><textarea id="e-desc"></textarea></div>
-            <div class="row" style="justify-content:flex-end; gap:8px;"><button id="saveEdits" class="btn"
+            <div class="row row-end gap-sm"><button id="saveEdits" class="btn"
                 type="button">Save Edits</button></div>
 
             <!-- Thumbnail upload -->
             <div class="row"><label>Thumbnail</label><input id="c-thumb" type="file"><button id="uploadThumb"
                 class="btn">Upload</button></div>
             <div class="list" id="resourceList"></div>
-            <hr style="margin:12px 0;">
+            <hr class="section-divider">
             <h4>Add Section</h4>
             <div class="row"><label>Title</label><input id="r-title" type="text"></div>
             <div class="row"><label>Type</label>
@@ -238,11 +515,11 @@
             <div id="poll-section" style="display:none;">
               <div class="row"><label>Question</label><input id="p-question" type="text"></div>
               <div class="row"><label>Options</label>
-                <div style="flex:1;">
+                <div class="flex-1">
                   <div id="p-options" class="list"></div>
                   <div class="row"><input id="p-new" type="text" placeholder="Add option"><button id="p-add" class="btn"
                       type="button">+</button></div>
-                  <label style="display:flex; align-items:center; gap:8px; margin-top:6px;"><input id="p-multi"
+                  <label class="checkbox-inline"><input id="p-multi"
                       type="checkbox"> Allow multiple selections</label>
                 </div>
               </div>
@@ -259,7 +536,7 @@
             </div>
             <div class="row"><label>File</label><input id="r-file" type="file" /></div>
             <div class="row"><label>Description</label><textarea id="r-desc"></textarea></div>
-            <div class="row" style="justify-content:flex-end;"><button id="addResource" class="btn">Add</button></div>
+            <div class="row row-end"><button id="addResource" class="btn">Add</button></div>
           </div>
         </div>
       </div>
@@ -286,17 +563,19 @@
         const isAdminRole = Boolean(me.is_superuser || me.is_staff);
         const who = document.getElementById('whoami');
         if (who) {
-          if (isAdminRole) {
-            const adminName = name || 'Administrator';
-            who.textContent = 'Administrator: ' + adminName;
-          } else {
-            who.textContent = name;
-          }
+          const label = isAdminRole ? 'Administrator' : 'Tutor';
+          const displayName = name || (isAdminRole ? 'Administrator' : 'Tutor');
+          who.textContent = `${label}: ${displayName}`;
         }
         const title = document.getElementById('dashboardTitle');
         if (title) {
-          title.textContent = 'Tutor Dashboard';
-          title.style.visibility = isAdminRole ? 'hidden' : 'visible';
+          title.textContent = isAdminRole ? 'Admin Workspace' : 'Tutor Dashboard';
+        }
+        const tagline = document.getElementById('dashboardTagline');
+        if (tagline) {
+          tagline.textContent = isAdminRole
+            ? 'Oversee tutors, approve content, and keep the learning experience consistent.'
+            : 'Plan sessions, build courses, and keep your learners engaged from one workspace.';
         }
       } catch (err) {
         console.warn('Failed to load current user for Tutor Admin', err);
@@ -560,12 +839,10 @@
     });
   </script>
   <!-- Class Scheduler Modal -->
-  <div id="sc-modal"
-    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1000;">
-    <div
-      style="background:#fff; width: 520px; max-width: 92vw; border-radius:12px; padding:16px; box-shadow:0 8px 20px rgba(0,0,0,.2);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h3 style="margin:0; color:#24adb7;">Schedule Class</h3>
+  <div id="sc-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Schedule Class</h3>
         <button id="sc-close" class="btn secondary" type="button">Close</button>
       </div>
       <div class="row"><label>Course</label><select id="msc-course" required></select></div>
@@ -575,7 +852,7 @@
       <div class="row"><label>Link</label><input id="msc-link" type="text" placeholder="Teams/Zoom/YouTube Live"></div>
       <div class="row"><label>Capacity</label><input id="msc-cap" type="number" value="0"></div>
       <div class="row"><label>Description</label><textarea id="msc-desc"></textarea></div>
-      <div class="row" style="justify-content:flex-end;">
+      <div class="row row-end">
         <button id="msc-create" class="btn">Create</button>
       </div>
     </div>

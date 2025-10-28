@@ -100,5 +100,447 @@
         }
       ]
     }
+  },
+  {
+    "query": "What is the chemical formula for water?",
+    "timestamp": "2025-10-28T08:46:04.618719+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "sqrt(sintheter)",
+    "timestamp": "2025-10-28T08:47:29.172132+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "find me a video of math variables",
+    "timestamp": "2025-10-28T08:50:37.744512+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "what is 6^3+x=0",
+    "timestamp": "2025-10-28T10:05:14.097944+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "6 cubed +9",
+    "timestamp": "2025-10-28T10:05:53.500414+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-19F07F5B",
+      "role": "tutor"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "s squared plus 68",
+    "timestamp": "2025-10-28T11:24:34.325435+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "the chemical formula for water?",
+    "timestamp": "2025-10-28T11:39:35.691667+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "3x+x^2=0",
+    "timestamp": "2025-10-28T11:42:24.277387+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "sqrt(49)? what is thi all about?",
+    "timestamp": "2025-10-28T16:06:32.064767+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "simplify",
+    "timestamp": "2025-10-28T16:08:39.186695+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "simplify my math question",
+    "timestamp": "2025-10-28T16:09:51.711987+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "987*56x+9858484",
+    "timestamp": "2025-10-28T16:11:14.973242+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "equate it to zero",
+    "timestamp": "2025-10-28T16:12:00.674461+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-2D8E3459",
+      "role": "superuser"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
   }
 ]

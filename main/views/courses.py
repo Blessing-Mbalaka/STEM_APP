@@ -9,31 +9,24 @@ from django.db.models import Max, Q
 from django.conf import settings
 
 from main.utils.analytics import collect_dashboard_metrics
+from main.utils.roles import user_has_role, ROLE_ADMIN, ROLE_TUTOR
+
 
 def user_can_manage_tutor_admin(user):
     """Return True when the user should access tutor/admin tooling."""
     if not getattr(user, "is_authenticated", False):
         return False
-    if getattr(user, "is_superuser", False):
+
+    if user_has_role(user, ROLE_ADMIN, ROLE_TUTOR):
         return True
+
     group_name = getattr(settings, "ADMINISTRATOR_GROUP_NAME", "Administrator")
-    in_admin_group = False
-    if group_name:
-        try:
-            in_admin_group = user.groups.filter(name__iexact=group_name).exists()
-        except Exception:
-            in_admin_group = False
-    require_staff = getattr(settings, "TUTOR_ADMIN_REQUIRE_STAFF", True)
-    require_tutor = getattr(settings, "TUTOR_ADMIN_REQUIRE_TUTOR", False)
-    if require_staff:
-        if getattr(user, "is_staff", False) or in_admin_group:
-            return True
+    if not group_name:
         return False
-    if getattr(user, "is_staff", False):
-        return True
-    if require_tutor and getattr(user, "is_tutor", False):
-        return True
-    return in_admin_group
+    try:
+        return user.groups.filter(name__iexact=group_name).exists()
+    except Exception:
+        return False
 
 def courses(request):
     return render(request, "Courses.html")
@@ -158,7 +151,7 @@ def api_tutor_courses(request):
         subject=_subject,
         classification=_CLASS,
         level=(payload.get("level") or "").strip() if (payload.get("level") or "") in dict(LEVEL) else "",
-        is_active=(bool(payload.get("is_active")) if request.user.is_staff else False),
+        is_active=(bool(payload.get("is_active")) if user_has_role(request.user, ROLE_ADMIN) else False),
         created_by=request.user if request.user.is_authenticated else None,
     )
     return JsonResponse({"id": c.id, "title": c.title})
@@ -179,7 +172,7 @@ def api_tutor_course_detail(request, pk: int):
     changed = False
     for f in ["title", "summary", "description", "subject", "level", "classification", "is_active"]:
         if f in payload:
-            if f == "is_active" and not request.user.is_staff:
+            if f == "is_active" and not user_has_role(request.user, ROLE_ADMIN):
                 # Only staff may toggle activation; enforce False for non-staff updates
                 c.is_active = False
             elif f == "classification":

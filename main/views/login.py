@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 
 import json
 
+from main.utils.roles import get_primary_role, ROLE_ADMIN, ROLE_TUTOR
+
 User = get_user_model()
 
 # -------- Helpers --------
@@ -18,6 +20,15 @@ def _parse_request_data(request):
         except Exception:
             return {}
     return request.POST
+
+def _redirect_for_user(user):
+    """Return the preferred landing page for a user based on their role."""
+    role = get_primary_role(user)
+    if role == ROLE_ADMIN:
+        return "/administrator/"
+    if role == ROLE_TUTOR:
+        return "/tutor/admin/"
+    return "/index/"
 
 # -------- Page view --------
 def login_page(request):
@@ -94,7 +105,7 @@ def api_register(request):
         user.save(update_fields=["display_name"])
 
     login(request, user)
-    return JsonResponse({"ok": True, "username": user.username})
+    return JsonResponse({"ok": True, "username": user.username, "redirect": _redirect_for_user(user)})
 
 @require_POST
 def api_login(request):
@@ -108,7 +119,7 @@ def api_login(request):
         return JsonResponse({"error": "Invalid credentials"}, status=401)
 
     login(request, user)
-    return JsonResponse({"ok": True, "username": user.username})
+    return JsonResponse({"ok": True, "username": user.username, "redirect": _redirect_for_user(user)})
 
 @require_POST
 def api_logout(request):

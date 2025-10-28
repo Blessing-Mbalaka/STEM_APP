@@ -13,6 +13,7 @@ except ImportError:  # pragma: no cover - fallback when PyYAML is unavailable
     yaml = None  # type: ignore
 
 from .privacy import anonymize_user_label
+from .roles import get_primary_role
 
 
 DATA_DIR = Path(settings.BASE_DIR) / "main" / "data"
@@ -102,15 +103,7 @@ def write_yaml_records(path: Path, records: MutableSequence[Any]) -> None:
 
 
 def _infer_user_role(user: Any) -> str:
-    if getattr(user, "is_superuser", False):
-        return "superuser"
-    if getattr(user, "is_staff", False):
-        return "staff"
-    if getattr(user, "is_tutor", False):
-        return "tutor"
-    if getattr(user, "is_authenticated", False):
-        return "student"
-    return "anonymous"
+    return get_primary_role(user)
 
 
 def _sanitize_metadata(metadata: Dict[str, Any] | None) -> Dict[str, Any]:

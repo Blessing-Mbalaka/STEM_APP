@@ -7,32 +7,209 @@
   <title>Administrator</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;background:#f7f7f9;color:#222}
-    .wrap{max-width:1100px;margin:20px auto;padding:16px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-    .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    .tile{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.06);display:flex;gap:12px;align-items:center;cursor:pointer;border:1px solid #e6eaef}
-    .tile i{font-size:22px;color:#24adb7}
-    .btn{background:#24adb7;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer}
-    .btn.secondary{background:#e9ecef;color:#222}
+    :root {
+      --primary-orange: rgb(184, 67, 0);
+      --secondary-orange: rgb(128, 49, 3);
+      --accent-yellow: #FBBC05;
+      --accent-red: #EA4335;
+      --accent-green: #34A853;
+      --accent-blue: #4285F4;
+      --light-gray: #F5F5F5;
+      --medium-gray: #E0E0E0;
+      --dark-gray: #333333;
+      --text-light: #666666;
+      --panel-radius: 16px;
+      --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f9f9f9;
+      color: var(--dark-gray);
+      line-height: 1.6;
+    }
+
+    .page-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(245, 245, 245, 0.88));
+    }
+
+    .hero {
+      background-image: linear-gradient(180deg, rgba(244, 226, 206, 0.74), rgba(246, 246, 246, 0.95)), url("{% static 'images/wallpaper7.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      border-radius: var(--panel-radius);
+      box-shadow: var(--card-shadow);
+      padding: 32px;
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: var(--secondary-orange);
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: var(--secondary-orange);
+    }
+
+    .hero p {
+      max-width: 520px;
+      color: rgba(0, 0, 0, 0.72);
+      font-size: 15px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--primary-orange);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-shadow: 0 4px 10px rgba(184, 67, 0, 0.2);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(184, 67, 0, 0.25);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--secondary-orange);
+      border: 1px solid rgba(184, 67, 0, 0.25);
+      box-shadow: none;
+    }
+
+    .btn.secondary:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .card-grid {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .tile {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: #fff;
+      padding: 22px;
+      border-radius: var(--panel-radius);
+      text-decoration: none;
+      color: var(--dark-gray);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 32px rgba(184, 67, 0, 0.18);
+    }
+
+    .tile-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(184, 67, 0, 0.12);
+      color: var(--primary-orange);
+      font-size: 20px;
+    }
+
+    .tile-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--secondary-orange);
+      margin-bottom: 6px;
+    }
+
+    .tile-subtitle {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        padding: 24px;
+      }
+
+      .card-grid {
+        gap: 18px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <h2 style="margin:0;color:#24adb7;">Administrator Dashboard</h2>
+  <div class="page-shell">
+    <header class="hero">
       <div>
-        <a href="/admin/" class="btn secondary">Django Admin</a>
-        <button id="logoutBtn" class="btn secondary"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <h1>Administrator Dashboard</h1>
+        <p>Curate content, manage tutors, and keep the STEM platform running smoothly.</p>
       </div>
-    </div>
+      <div class="hero-actions">
+        <a href="/admin/" class="btn"><i class="fas fa-toolbox"></i> Django Admin</a>
+        <button id="logoutBtn" class="btn secondary" type="button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </header>
 
-    <div class="grid">
-      <a class="tile" href="/administrator/users/"><i class="fas fa-users-cog"></i><div><div style="font-weight:700">Users</div><div style="color:#666">Activate, tutor/staff roles</div></div></a>
-      <a class="tile" href="/administrator/approvals/"><i class="fas fa-check-circle"></i><div><div style="font-weight:700">Approvals</div><div style="color:#666">Publish courses and games</div></div></a>
-      <a class="tile" href="/tutor/admin/"><i class="fas fa-tools"></i><div><div style="font-weight:700">Tutor Builder</div><div style="color:#666">Create courses and quizzes</div></div></a>
-      <a class="tile" href="/administrator/resources/"><i class="fas fa-folder-open"></i><div><div style="font-weight:700">Resources</div><div style="color:#666">Bulk upload subject material</div></div></a>
-    </div>
+    <section class="card-grid">
+      <a class="tile" href="/administrator/users/">
+        <span class="tile-icon"><i class="fas fa-users-cog"></i></span>
+        <div>
+          <div class="tile-title">Users</div>
+          <p class="tile-subtitle">Activate accounts and assign tutor/admin roles</p>
+        </div>
+      </a>
+      <a class="tile" href="/administrator/approvals/">
+        <span class="tile-icon"><i class="fas fa-check-circle"></i></span>
+        <div>
+          <div class="tile-title">Approvals</div>
+          <p class="tile-subtitle">Review content and publish courses or games</p>
+        </div>
+      </a>
+      <a class="tile" href="/tutor/admin/">
+        <span class="tile-icon"><i class="fas fa-tools"></i></span>
+        <div>
+          <div class="tile-title">Tutor Builder</div>
+          <p class="tile-subtitle">Design courses, quizzes, and session resources</p>
+        </div>
+      </a>
+      <a class="tile" href="/administrator/resources/">
+        <span class="tile-icon"><i class="fas fa-folder-open"></i></span>
+        <div>
+          <div class="tile-title">Resources</div>
+          <p class="tile-subtitle">Bulk upload subject material for classrooms</p>
+        </div>
+      </a>
+    </section>
   </div>
   <script>
     async function api(path,{method='GET',data,headers={}}={}){
