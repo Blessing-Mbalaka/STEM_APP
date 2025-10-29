@@ -10661,5 +10661,361 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2025-10-28T18:51:20.933024+00:00",
+    "user": {
+      "id": 15,
+      "username": "sarahlazuko@gmail.com"
+    },
+    "question": "90 is a number?",
+    "answer": "Yes, 90 is a number. More specifically, it is an integer, a whole number, and a natural number.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=90+is+a+number%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "90 is a number? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T18:53:23.542610+00:00",
+    "user": {
+      "id": 15,
+      "username": "sarahlazuko@gmail.com"
+    },
+    "question": "Please explain to me gukurihundi in zimbabwe",
+    "answer": "Gukurahundi was a series of massacres carried out by the Zimbabwean government from 1983 to 1987, primarily targeting the Ndebele ethnic group, who were perceived as supporting political opposition. The atrocities resulted in an estimated 20,000 deaths and left deep scars on the nation's social and political landscape.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=Please+explain+to+me+gukurihundi+in+zimbabwe",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "Please explain to me gukurihundi in zimbabwe at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T18:54:20.911606+00:00",
+    "user": {
+      "id": 15,
+      "username": "sarahlazuko@gmail.com"
+    },
+    "question": "you lie it was not 1987 it was in the 200s",
+    "answer": "Please provide more context. I need to know what event or topic you're referring to in order to accurately address the discrepancy in dates.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=you+lie+it+was+not+1987+it+was+in+the+200s",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "you lie it was not 1987 it was in the 200s at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-10-28T18:54:40.777932+00:00",
+    "user": {
+      "id": 15,
+      "username": "sarahlazuko@gmail.com"
+    },
+    "question": "when was guraahundi",
+    "answer": "Gukurahundi took place in Zimbabwe between 1983 and 1987. It was a series of massacres targeting the Ndebele people, carried out by the Zimbabwe National Army under the direction of Robert Mugabe.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=when+was+guraahundi",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "when was guraahundi at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
   }
 ]

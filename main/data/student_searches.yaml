@@ -542,5 +542,141 @@
         }
       ]
     }
+  },
+  {
+    "query": "90 is a number?",
+    "timestamp": "2025-10-28T18:51:09.073994+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-F29209CD",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "Please explain to me gukurihundi in zimbabwe",
+    "timestamp": "2025-10-28T18:53:14.297816+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-F29209CD",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "you lie it was not 1987 it was in the 200s",
+    "timestamp": "2025-10-28T18:54:11.858177+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-F29209CD",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
+  },
+  {
+    "query": "when was guraahundi",
+    "timestamp": "2025-10-28T18:54:31.870548+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-F29209CD",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        }
+      ]
+    }
   }
 ]
