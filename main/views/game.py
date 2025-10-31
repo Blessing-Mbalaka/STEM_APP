@@ -335,6 +335,17 @@ def api_game_submit(request, pk: int):
         raw_answers=answers,
     )
 
+    # Assign badges based on points
+    badges = []
+    if points >= 50:
+        badges.append("Gold Badge")
+    elif points >= 30:
+        badges.append("Silver Badge")
+    elif points >= 10:
+        badges.append("Bronze Badge")
+    elif answered > 0:
+        badges.append("Participation Badge")
+
     return JsonResponse({"score": score, "points": points})
 
 

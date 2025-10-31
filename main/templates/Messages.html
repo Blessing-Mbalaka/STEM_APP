@@ -1,4 +1,32 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -10,15 +38,16 @@
 
   <style>
     :root {
-      --primary-purple: #530475;
-      --secondary-purple: #fdb4f7a1;
+      --primary-orange: rgb(184, 67, 0);
+      --secondary-orange: rgb(128, 49, 3);
       --accent-yellow: #FBBC05;
       --accent-green: #34A853;
       --accent-red: #EA4335;
-      --light-gray: #f9f9f9;
+      --light-gray: #F5F5F5;
       --medium-gray: #E0E0E0;
-      --dark-gray: #333;
-      --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      --dark-gray: #333333;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --panel-radius: 16px;
     }
 
     * {
@@ -29,20 +58,57 @@
     }
 
     body {
-      background-color: var(--light-gray);
+      background-color: #f9f9f9;
       color: var(--dark-gray);
       line-height: 1.5;
     }
 
-    .wrap {
-      max-width: 1100px;
-      margin: 30px auto;
-      padding: 16px;
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 24px 0 30px;
+      background-image: linear-gradient(180deg, #f4e2ce9d, #f6f6f6), url("{% static 'images/wallpaper7.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      color: var(--secondary-orange);
+      border-radius: var(--panel-radius);
+      box-shadow: var(--card-shadow);
+      position: relative;
     }
 
-    h2 {
-      color: var(--primary-purple);
-      font-size: 26px;
+    header h2 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .back-to-dashboard {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      padding: 8px 15px;
+      background-color: white;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: var(--card-shadow);
+      border: 2px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--primary-orange);
+    }
+
+    .back-to-dashboard:hover {
+      background-color: var(--light-gray);
+      transform: translateY(-2px);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
     .grid {
@@ -53,9 +119,10 @@
 
     .card {
       background-color: white;
-      border-radius: 15px;
+      border-radius: var(--panel-radius);
       padding: 20px;
       box-shadow: var(--card-shadow);
+      border: 1px solid var(--medium-gray);
       transition: transform 0.3s ease;
     }
 
@@ -86,8 +153,8 @@
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px rgba(83,4,117,0.15);
+      border-color: var(--primary-orange);
+      box-shadow: 0 0 0 3px rgba(184,67,0,0.15);
       outline: none;
     }
 
@@ -113,21 +180,23 @@
     }
 
     .btn.primary {
-      background-color: var(--secondary-purple);
-      color: var(--primary-purple);
+      background-color: var(--primary-orange);
+      color: #fff;
     }
 
     .btn.primary:hover {
-      background-color: #f7aef5;
+      background-color: var(--secondary-orange);
     }
 
     .btn.secondary {
-      background-color: var(--medium-gray);
-      color: var(--dark-gray);
+      background-color: white;
+      color: var(--secondary-orange);
+      border: 1px solid var(--medium-gray);
+      box-shadow: var(--card-shadow);
     }
 
     .btn.secondary:hover {
-      background-color: #d0d0d0;
+      background-color: var(--light-gray);
     }
 
     .list {
@@ -137,8 +206,8 @@
     }
 
     .item {
-      background-color: white;
-      border: 1px solid var(--medium-gray);
+      background-color: #fff7f2;
+      border: 1px solid rgba(184, 67, 0, 0.18);
       border-radius: 10px;
       padding: 12px;
       box-shadow: var(--card-shadow);
@@ -146,7 +215,7 @@
     }
 
     .item:hover {
-      background-color: #faf6fd;
+      background-color: #fff2e9;
     }
 
     .muted {
@@ -154,22 +223,13 @@
       font-size: 13px;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-    }
-
     .badge.unread {
-      background-color: #fef3c7;
-      color: #b45309;
-      border: 1px solid #fde68a;
+      background-color: rgba(184, 67, 0, 0.12);
+      color: var(--secondary-orange);
+      border: 1px solid rgba(184, 67, 0, 0.18);
     }
 
-    /* Header */
+    /* Header bar for search/buttons */
     .header-bar {
       display: flex;
       justify-content: space-between;
@@ -177,25 +237,13 @@
       margin-bottom: 15px;
     }
 
-    .header-bar .btn.secondary {
-      border-radius: 20px;
-      background-color: white;
-      border: 1px solid var(--medium-gray);
-      box-shadow: var(--card-shadow);
-    }
-
-    .header-bar .btn.secondary:hover {
-      background-color: var(--light-gray);
-    }
-
-    /* Search area */
     #search {
       border-radius: 20px;
       padding: 8px 14px;
       min-width: 220px;
+      border: 1px solid var(--medium-gray);
     }
 
-    /* Sent note */
     #sendNote {
       color: var(--accent-green);
       font-weight: 600;
@@ -211,115 +259,190 @@
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="header-bar">
+  <div class="container">
+    <header>
+      <a href="/index/" class="back-to-dashboard">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
       <h2>Messages</h2>
-      <a href="/index/" class="btn secondary"><i class="fas fa-arrow-left"></i> Back</a>
-    </div>
+      <p>Send and receive messages securely within your dashboard.</p>
+    </header>
 
-    <div class="grid">
-      <div class="card">
-        <h3 style="margin-bottom: 12px; color: var(--primary-purple);">New Message</h3>
-        <div class="row">
-          <label>To</label><select id="recipient"></select>
-        </div>
-        <div class="row">
-          <label>Subject</label><input id="subject" type="text" placeholder="Optional">
-        </div>
-        <div class="row">
-          <label>Message</label><textarea id="body"></textarea>
-        </div>
-        <div class="row" style="justify-content: flex-end;">
-          <button id="send" class="btn primary"><i class="fas fa-paper-plane"></i> Send</button>
-        </div>
-        <div id="sendNote" class="muted" style="display:none;">Sent!</div>
-      </div>
-
-      <div class="card">
-        <div class="row" style="justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <div>
-            <button id="tabInbox" class="btn secondary">Inbox</button>
-            <button id="tabSent" class="btn secondary">Sent</button>
+    <div class="wrap">
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin-bottom: 12px; color: var(--secondary-orange);">New Message</h3>
+          <div class="row">
+            <label>To</label><select id="recipient"></select>
           </div>
-          <div class="row" style="margin:0;">
-            <input id="search" type="text" placeholder="Search messages">
-            <button id="doSearch" class="btn secondary"><i class="fas fa-search"></i></button>
+          <div class="row">
+            <label>Subject</label><input id="subject" type="text" placeholder="Optional">
           </div>
+          <div class="row">
+            <label>Message</label><textarea id="body"></textarea>
+          </div>
+          <div class="row" style="justify-content: flex-end;">
+            <button id="send" class="btn primary"><i class="fas fa-paper-plane"></i> Send</button>
+          </div>
+          <div id="sendNote" class="muted" style="display:none;">Sent!</div>
         </div>
 
-        <div id="listTitle" class="muted" style="margin-bottom:8px;">Inbox</div>
-        <div id="inbox" class="list"></div>
+        <div class="card">
+          <div class="row" style="justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div>
+              <button id="tabInbox" class="btn secondary">Inbox</button>
+              <button id="tabSent" class="btn secondary">Sent</button>
+            </div>
+            <div class="row" style="margin:0;">
+              <input id="search" type="text" placeholder="Search messages">
+              <button id="doSearch" class="btn secondary"><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+
+          <div id="listTitle" class="muted" style="margin-bottom:8px;">Inbox</div>
+          <div id="inbox" class="list"></div>
+        </div>
       </div>
     </div>
   </div>
 
-   <script>
-    async function api(path,{method='GET',data,headers={}}={}){
-      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
-      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
-      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw json; return json;
+
+
+
+  <script>
+  async function api(path, { method='GET', data, headers={} } = {}) {
+    try {
+      const opts = {
+        method,
+        headers: {
+          'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '',
+          ...headers
+        }
+      };
+      if (data !== undefined) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(data);
+      }
+
+      const res = await fetch(path, opts);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw json;
+      return json;
+    } catch (error) {
+      console.error('Network or fetch error:', error);
+      alert('Network error: Unable to connect. Please check your connection or try again later.');
+      throw error; // rethrow so the calling functions handle it too
     }
-    function getParam(name){ const m=location.search.match(new RegExp(`[?&]${name}=([^&]+)`)); return m? decodeURIComponent(m[1]) : ''; }
-    async function loadRecipients(){
+  }
+
+  function getParam(name) {
+    const m = location.search.match(new RegExp(`[?&]${name}=([^&]+)`));
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+
+  async function loadRecipients() {
+    try {
       const data = await api('/api/messages/recipients');
       const sel = document.getElementById('recipient');
-      sel.innerHTML = (data.results||[]).map(u=>`<option value="${u.id}">${u.name}</option>`).join('') || '<option value="">No tutors available</option>';
+      sel.innerHTML =
+        (data.results || [])
+          .map(u => `<option value="${u.id}">${u.name}</option>`)
+          .join('') || '<option value="">No tutors available</option>';
       const pre = getParam('recipient'); if (pre) sel.value = String(pre);
       const subj = getParam('subject'); if (subj) document.getElementById('subject').value = subj;
       const body = getParam('body'); if (body) document.getElementById('body').value = body;
+    } catch (error) {
+      console.error('Failed to load recipients:', error);
+      alert('Network issue while loading recipients. Please refresh the page.');
     }
-    let currentBox = 'inbox';
-    async function loadInbox(){
+  }
+
+  let currentBox = 'inbox';
+  async function loadInbox() {
+    try {
       const q = document.getElementById('search').value.trim();
-      const p = new URLSearchParams(); if(currentBox==='sent') p.set('box','sent'); if(q) p.set('q',q);
-      const data = await api('/api/messages' + (p.toString()?`?${p.toString()}`:''));
-      const box = document.getElementById('inbox'); box.innerHTML='';
-      (data.results||[]).forEach(m=>{
-        const div=document.createElement('div');
-        div.className='item';
-        const created = (m.created_at||'').toString().slice(0,19).replace('T',' ');
+      const p = new URLSearchParams();
+      if (currentBox === 'sent') p.set('box', 'sent');
+      if (q) p.set('q', q);
+
+      const data = await api('/api/messages' + (p.toString() ? `?${p.toString()}` : ''));
+      const box = document.getElementById('inbox');
+      box.innerHTML = '';
+      (data.results || []).forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        const created = (m.created_at || '').toString().slice(0, 19).replace('T', ' ');
         const subj = m.subject || 'Message';
-        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;">
-          <div><strong>${subj}</strong> <span class="muted">from ${m.from}</span> ${m.read? '' : '<span class="badge unread">unread</span>'}</div>
-          <div class="muted">${created}</div>
-        </div>
-        <div style="margin-top:6px; white-space:pre-wrap;">${m.body}</div>
-        <div class="row" style="justify-content:flex-end; margin-top:8px;"><button class="btn secondary reply">Reply</button></div>`;
-        // Mark as read when clicking item body (not the reply button)
-        div.addEventListener('click', async (ev)=>{
+        div.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><strong>${subj}</strong> <span class="muted">from ${m.from}</span> ${m.read ? '' : '<span class="badge unread">unread</span>'}</div>
+            <div class="muted">${created}</div>
+          </div>
+          <div style="margin-top:6px; white-space:pre-wrap;">${m.body}</div>
+          <div class="row" style="justify-content:flex-end; margin-top:8px;">
+            <button class="btn secondary reply">Reply</button>
+          </div>`;
+
+        div.addEventListener('click', async (ev) => {
           if (ev.target && ev.target.classList.contains('reply')) return;
-          try{ await api(`/api/messages/${m.id}/read`, { method:'PATCH' }); }catch(_){}
+          try {
+            await api(`/api/messages/${m.id}/read`, { method: 'PATCH' });
+          } catch (error) {
+            console.warn('Failed to mark as read:', error);
+          }
           loadInbox();
         });
-        // Reply action
-        div.querySelector('.reply').addEventListener('click', (ev)=>{
+
+        div.querySelector('.reply').addEventListener('click', (ev) => {
           ev.stopPropagation();
-          const sel = document.getElementById('recipient'); if (m.sender_id) sel.value = String(m.sender_id);
+          const sel = document.getElementById('recipient');
+          if (m.sender_id) sel.value = String(m.sender_id);
           document.getElementById('subject').value = m.subject ? `Re: ${m.subject}` : '';
           document.getElementById('body').focus();
         });
         box.appendChild(div);
       });
+    } catch (error) {
+      console.error('Failed to load inbox:', error);
+      alert('Network issue while loading messages. Please check your connection.');
     }
-    document.getElementById('send').addEventListener('click', async ()=>{
-      const rid = parseInt(document.getElementById('recipient').value||'0',10);
-      const subject = document.getElementById('subject').value.trim();
-      const body = document.getElementById('body').value.trim();
-      if(!rid || !body){ alert('Recipient and message are required'); return; }
-      try{
-        await api('/api/messages/send', { method:'POST', data:{ recipient_id: rid, subject, body }});
-        document.getElementById('subject').value=''; document.getElementById('body').value='';
-        const note = document.getElementById('sendNote'); note.style.display='block'; setTimeout(()=> note.style.display='none', 1500);
-        loadInbox();
-      }catch(e){ alert(e.error||'Failed to send'); }
-    });
-    document.getElementById('tabInbox').addEventListener('click', ()=>{ currentBox='inbox'; document.getElementById('listTitle').textContent='Inbox'; loadInbox(); });
-    document.getElementById('tabSent').addEventListener('click', ()=>{ currentBox='sent'; document.getElementById('listTitle').textContent='Sent'; loadInbox(); });
-    document.getElementById('doSearch').addEventListener('click', ()=> loadInbox());
-    document.addEventListener('DOMContentLoaded', ()=>{ loadRecipients(); loadInbox(); });
-  </script>
-  <script>
-    async function api(path,{method='GET',data,headers={}}={}){ ... } // (keep your entire JS logic unchanged)
-  </script>
+  }
+
+  document.getElementById('send').addEventListener('click', async () => {
+    const rid = parseInt(document.getElementById('recipient').value || '0', 10);
+    const subject = document.getElementById('subject').value.trim();
+    const body = document.getElementById('body').value.trim();
+    if (!rid || !body) { alert('Recipient and message are required'); return; }
+
+    try {
+      await api('/api/messages/send', { method: 'POST', data: { recipient_id: rid, subject, body } });
+      document.getElementById('subject').value = '';
+      document.getElementById('body').value = '';
+      const note = document.getElementById('sendNote');
+      note.style.display = 'block';
+      setTimeout(() => note.style.display = 'none', 1500);
+      loadInbox();
+    } catch (e) {
+      console.error('Failed to send message:', e);
+      alert(e.error || 'Failed to send. Please check your connection.');
+    }
+  });
+
+  document.getElementById('tabInbox').addEventListener('click', () => {
+    currentBox = 'inbox';
+    document.getElementById('listTitle').textContent = 'Inbox';
+    loadInbox();
+  });
+
+  document.getElementById('tabSent').addEventListener('click', () => {
+    currentBox = 'sent';
+    document.getElementById('listTitle').textContent = 'Sent';
+    loadInbox();
+  });
+
+  document.getElementById('doSearch').addEventListener('click', () => loadInbox());
+  document.addEventListener('DOMContentLoaded', () => { loadRecipients(); loadInbox(); });
+</script>
+
 </body>
 </html>

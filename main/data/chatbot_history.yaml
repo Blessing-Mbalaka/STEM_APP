@@ -11017,5 +11017,94 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2025-10-31T12:43:01.106916+00:00",
+    "user": {
+      "id": 16,
+      "username": "willie@gmail.com"
+    },
+    "question": "help me with the sqrt(81)",
+    "answer": "The square root of 81, denoted as sqrt(81), is 9. This is because 9 multiplied by itself (9 * 9) equals 81.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=help+me+with+the+sqrt%2881%29",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "help me with the sqrt(81) at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Test video",
+          "description": "test script",
+          "resource_type": "youtube",
+          "course": "Grade 12 physics",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Afrikaans Huistaal – Poësie Analise (Mindset)",
+          "description": "Analise van gedigte volgens NSC kriteria",
+          "resource_type": "youtube",
+          "course": "Afrikaans Huistaal Graad 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        }
+      ]
+    }
   }
 ]

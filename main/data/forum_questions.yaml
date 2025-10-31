@@ -32,5 +32,22 @@
       "display_name": ""
     },
     "created_at": "2025-10-28T11:25:45.466835+00:00"
+  },
+  {
+    "id": 9,
+    "slug": "random-title",
+    "title": "Random Title",
+    "body": "details",
+    "category": {
+      "id": 1,
+      "slug": "Math_Theory",
+      "name": "Math Fundamentals"
+    },
+    "author": {
+      "id": 16,
+      "username": "willie@gmail.com",
+      "display_name": "Willie Leroux"
+    },
+    "created_at": "2025-10-31T12:42:18.047467+00:00"
   }
 ]

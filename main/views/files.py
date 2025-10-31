@@ -2,6 +2,7 @@ from django.http import FileResponse, Http404
 from django.conf import settings
 import os
 
+
 def pdf_embed(request, path):
     """
     Serve PDF files for embedding with proper headers
@@ -19,3 +20,9 @@ def pdf_embed(request, path):
             raise Http404("PDF not found")
     except Exception:
         raise Http404("PDF not found")
+
+
+
+
+
+

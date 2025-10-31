@@ -3,6 +3,8 @@ from django.urls import path
 from main.views import *
 from django.conf import settings
 from django.conf.urls.static import static
+
+from main.views.profiles import upload_avatar
 from .views import auth as auth_views
 from main.views.courses import (
     tutor_admin,
@@ -75,6 +77,7 @@ urlpatterns = [
     path('', auth_views.login_page, name='root_login'),
     path('login/', login_page, name='login'),
     path('profiles/', profiles, name='profiles'),
+    path('api/me/avatar', upload_avatar, name='upload_avatar'),
 
 # API endpoints
     # path("api/auth/register", api_register, name="api_register"),

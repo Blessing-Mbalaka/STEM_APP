@@ -2,6 +2,7 @@ from django.db import models
 from .base import TimeStamped, Slugged
 from .user import CustomUser
 
+#This is a constant tuple for difficulty levels
 DIFFICULTY = (("easy","Easy"),("medium","Medium"),("hard","Hard"))
 
 class Game(TimeStamped, Slugged):
@@ -81,3 +82,15 @@ class GameScore(TimeStamped):
 
     class Meta:
         ordering = ["-created_at"]
+
+#This is the badge for the game model we use it for badge assignment and future upgrades
+class Badge(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    icon = models.ImageField(upload_to='badges/', blank=True, null=True)  # Optional badge icon
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class UserBadge(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    earned_at = models.DateTimeField(auto_now_add=True)
