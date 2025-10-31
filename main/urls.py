@@ -1,5 +1,11 @@
 from django.urls import path
-
+from main.views.tutorspage import (
+    Tutors,
+    api__list as api_classes_list,        # map actual name to the route expected in URLs
+    api_class_reserve,
+    api_class_unreserve,
+    api_me_classes,
+)
 from main.views import *
 from django.conf import settings
 from django.conf.urls.static import static
@@ -59,6 +65,9 @@ from main.views.adminui import (
     api_admin_resource_document_detail,
     
     
+    
+    
+    
 
 )
 
@@ -68,6 +77,7 @@ urlpatterns = [
 #pages
     path('index/', index, name='index'),
     path('classes/', classes, name='classes'),
+    path('Tutors/', Tutors, name='Tutors'),  # new tutors route
     path('courses/', courses, name='courses'),
     path('resources/', resources, name='resources'),
     path('forum/', forum, name='forum'),
@@ -137,8 +147,9 @@ urlpatterns = [
     path('api/courses/<int:pk>/resources/<int:res_id>/poll/vote', api_course_poll_vote, name='api_course_poll_vote'),
     #API classes
     path("api/classes", api_classes_list, name="api_classes_list"),
-    # same path for POST (reserve) and DELETE (unreserve) — handled by method inside the view
+    # Reserve (POST) and Unreserve (DELETE) — explicit routes so client /unreserve won't 404
     path("api/classes/<int:pk>/reserve", api_class_reserve, name="api_class_reserve"),
+    path("api/classes/<int:pk>/unreserve", api_class_unreserve, name="api_class_unreserve"),
     path("api/me/classes", api_me_classes, name="api_me_classes"),
 
     #forum.py
@@ -176,9 +187,6 @@ urlpatterns = [
     path('session/<int:session_id>/cancel/', cancel_session, name='cancel_session'),
     path('tutor/dashboard/', tutor_dashboard, name='tutor_dashboard'),
     path('tutor/book/<int:class_id>/', book_session, name='book_session'),
-
-
-
 
 
     # Add to your main/urls.py

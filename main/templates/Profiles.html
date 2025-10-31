@@ -576,10 +576,11 @@
         <div id="profile-section" class="section">
             <div class="section-header">
                 <h2 class="section-title">My Profile</h2>
-                <div class="language-toggle">
-                    <div class="language-toggle-btn active" data-lang="en">English</div>
-                    <div class="language-toggle-btn" data-lang="zu">Zulu</div>
-                </div>
+           <div class="language-toggle">
+    <button id="translateToEnglish" class="language-toggle-btn active" data-lang="en">English</button>
+    <button id="translateToZulu" class="language-toggle-btn" data-lang="zu">Zulu</button>
+</div>
+
             </div>
 
             <div class="profile-container">
@@ -1010,6 +1011,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 <script src="{% static 'js/translation.js' %}"></script>
+<script src="{% static 'js/profiles.js' %}"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     setupLanguageToggle();

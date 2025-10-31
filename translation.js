@@ -107,7 +107,7 @@ window.translations = {
 };
 
 window.applyTranslations = function(lang) {
-    if (document.querySelector('h1')) document.querySelector('h1').textContent = window.translations[lang].profile;
+    // if (document.querySelector('h1')) document.querySelector('h1').textContent = window.translations[lang].profile;
     if (document.querySelector('.subtitle')) document.querySelector('.subtitle').textContent = window.translations[lang].subtitle;
     if (document.querySelector('.section-title')) document.querySelector('.section-title').textContent = window.translations[lang].myProfile;
     if (document.querySelector('#completedSessions')) document.querySelector('#completedSessions').nextElementSibling.textContent = window.translations[lang].sessions;

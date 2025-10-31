@@ -757,7 +757,7 @@
             right: 0;
             bottom: 0;
             background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
+            display: none; /* hidden by default; shown when Start is clicked */
             align-items: center;
             justify-content: center;
             z-index: 1000;
@@ -1057,6 +1057,105 @@
             }
         }
     </style>
+    <style>
+        /* Reward coin animation */
+        .coin-container {
+            position: fixed;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1500;
+        }
+        .coin {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff6b8, #ffcc00 40%, #d9a100 100%);
+            display: inline-block;
+            margin: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: coinPop 900ms cubic-bezier(.2,.9,.3,1) forwards;
+        }
+        .coin.plus {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #2b7a9d;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        @keyframes coinPop {
+            0% { transform: translateY(0) scale(0.6) rotate(0); opacity: 0; }
+            40% { transform: translateY(-50px) scale(1.05) rotate(15deg); opacity: 1; }
+            100% { transform: translateY(-140px) scale(0.8) rotate(40deg); opacity: 0; }
+        }
+
+        /* Reward modal (small toast-like) */
+        .reward-modal {
+            position: fixed;
+            left: 50%;
+            top: 48%;
+            transform: translate(-50%,-50%);
+            z-index: 1600;
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            display: none;
+            min-width: 320px;
+            text-align: center;
+        }
+        .reward-modal h3 { margin-bottom: 8px; color: var(--power-blue); }
+        .reward-modal .reward-amount { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        .reward-actions { display:flex; gap:8px; justify-content:center; }
+        .reward-actions .btn { min-width: 120px; }
+
+        /* Badges modal (re-usable) */
+        .badges-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1700;
+            align-items: center;
+            justify-content: center;
+        }
+        .badges-modal {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            max-width: 760px;
+            width: calc(100% - 40px);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .badge-item {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--medium-gray);
+        }
+        .badge-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 8px;
+            border-radius: 50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:20px;
+        }
+        .badge-locked { filter: grayscale(1) opacity(.5); background: #eaeaea;}
+        .badge-unlocked { box-shadow: 0 6px 18px rgba(36,173,183,.12); border: 2px solid var(--avatar-unlocked); background: linear-gradient(180deg,#fff,#effffb); }
+    </style>
 </head>
 <body>
     <!-- Dashboard View -->
@@ -1067,12 +1166,16 @@
             </a>
             <div class="user-profile">
                 <div class="avatar-container">
-                    <div class="avatar" id="current-avatar" onclick="showAvatarModal()">
+                    <div class="avatar" id="current-avatar" role="button" tabindex="0"
+                         onclick="openAvatarAndBadges()"
+                         onkeypress="if(event.key === 'Enter') openAvatarAndBadges()">
                         <i class="fas fa-user-graduate"></i>
                     </div>
                 </div>
                 <div class="points-display" id="user-points">0 pts</div>
             </div>
+
+            
             
             <h1 class="dashboard-title">Assessments</h1>
             <!-- <p class="dashboard-subtitle">Test your knowledge across Science, Engineering, Mathematics
@@ -1348,7 +1451,7 @@
         <div class="modal-container">
             <div class="modal-header">
                 <div class="modal-title">Quiz Instructions</div>
-                <button class="modal-close" onclick="startQuiz(window.pendingQuizId)">&times;</button>
+                <button class="modal-close" onclick="closeRulesModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <h3 style="margin-bottom: 15px; color: var(--power-blue);">Please read the following instructions
@@ -1404,7 +1507,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="startQuiz(window.pendingQuizId)">I Understand - Start Quiz</button>
+                <button class="btn btn-primary" onclick="startQuiz()">I Understand - Start Quiz</button>
             </div>
         </div>
     </div>
@@ -1412,20 +1515,35 @@
     <!-- Avatar Selection Modal -->
     <div class="avatar-modal" id="avatar-modal">
         <div class="avatar-modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Select Your Avatar</div>
-                <button class="modal-close" onclick="closeAvatarModal()">&times;</button>
+        </div>
+    </div>
+
+    <!-- Reward (coins) modal / toast -->
+    <div class="reward-modal" id="reward-modal" aria-hidden="true">
+        <h3>Quiz Complete!</h3>
+        <div class="reward-amount" id="reward-amount">+0 pts</div>
+        <div class="reward-actions">
+            <button class="btn btn-outline" onclick="closeRewardModal()">Close</button>
+            <button class="btn btn-primary" onclick="openBadgesModal()">View Badges</button>
+        </div>
+    </div>
+
+    <!-- Badges Modal -->
+    <div class="badges-modal-overlay" id="badges-modal-overlay" aria-hidden="true">
+        <div class="badges-modal" role="dialog" aria-modal="true">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="margin:0;color:var(--power-blue)">Your Badges</h3>
+                <button class="modal-close" onclick="closeBadgesModal()">×</button>
             </div>
-            <div class="modal-body">
-                <p>Earn points by completing quizzes to unlock more avatars!</p>
-                <p><strong>Your Points: <span id="modal-points">0</span></strong></p>
-                
-                <div class="avatar-grid" id="avatar-grid">
-                    <!-- Avatars will be loaded here -->
-                </div>
+            <p id="badges-summary" style="color:var(--text-light);margin-top:8px;">Earn more points to unlock badges.</p>
+            <div class="badges-grid" id="badges-grid">
+                <!-- badges injected here -->
             </div>
         </div>
     </div>
+
+    <!-- coin container used for animation -->
+    <div class="coin-container" id="coin-container" aria-hidden="true"></div>
 <script>
 // ---- CSRF helper ----
 function getCookie(name){
@@ -1462,14 +1580,23 @@ const quizTimer       = document.getElementById('quiz-timer');
 
 // ---- API wrapper ----
 async function api(path, { method="GET", data } = {}){
+  // if data is present and method wasn't explicitly set, use POST
+  if (data !== undefined && (method === null || method.toUpperCase() === "GET")) {
+    method = "POST";
+  }
   const opts = { method, headers: { "X-CSRFToken": csrftoken } };
   if (data !== undefined){
     opts.headers["Content-Type"] = "application/json";
     opts.body = JSON.stringify(data);
   }
   const res = await fetch(path, opts);
+  // try parse JSON safely
   const json = await res.json().catch(()=> ({}));
-  if(!res.ok) throw new Error(json.error || res.statusText);
+  if(!res.ok){
+    // include server response when available for easier debugging
+    const errMsg = json && (json.error || json.detail || JSON.stringify(json)) || res.statusText;
+    throw new Error(errMsg);
+  }
   return json;
 }
 
@@ -1556,14 +1683,24 @@ async function loadQuizzes(){
 
 // ---- Start quiz ----
 async function startQuiz(id){
-    document.getElementById('rules-modal').style.display = 'none';
+    // prefer explicit id, otherwise use pending id stored when Start was clicked
+    const quizId = id ?? window.pendingQuizId ?? null;
+    // always hide rules modal UI first
+    closeRulesModal();
+    if (!quizId) {
+        console.warn('startQuiz: quiz id missing (pendingQuizId:', window.pendingQuizId, ')');
+        alert('Unable to start quiz: missing quiz id.');
+        return;
+    }
     if (quizStarted) {
         return;
     }
     try {
-        const q = await api(`/api/games/${id}/`);
-        quizzes[id] = q;
-        currentQuiz = id;
+        const q = await api(`/api/games/${quizId}/`);
+        // store quiz under the resolved id (use string key) and set currentQuiz consistently
+        const key = String(quizId);
+        quizzes[key] = q;
+        currentQuiz = key;
         currentQuestionIndex = 0;
         quizStarted = true;
         if (!q || !Array.isArray(q.questions) || q.questions.length === 0){
@@ -1572,7 +1709,7 @@ async function startQuiz(id){
         }
         userAnswers = Array(q.questions.length).fill(null);
         markedQuestions = Array(q.questions.length).fill(false);
-
+ 
         // Switch UI
         dashboardView.style.display = "none";
         quizView.style.display = "block";
@@ -1590,9 +1727,25 @@ async function startQuiz(id){
     } catch(e){
         console.error(e);
         
+    } finally {
+        // clear pending id to avoid accidental reuse
+        window.pendingQuizId = null;
     }
 }
 
+// close rules modal without starting quiz
+function closeRulesModal(){
+  const modal = document.getElementById('rules-modal');
+  if (modal) modal.style.display = 'none';
+  // don't keep a stale pending id
+  window.pendingQuizId = null;
+}
+
+function openAvatarAndBadges(){
+  // call showAvatarModal if it exists, then open badges modal
+  try { if (typeof showAvatarModal === 'function') showAvatarModal(); } catch (e) { console.warn('showAvatarModal failed', e); }
+  try { if (typeof openBadgesModal === 'function') openBadgesModal(); } catch (e) { console.warn('openBadgesModal failed', e); }
+}
 // Fetch and display the current user's total points
 async function refreshUserPoints(){
   try {
@@ -1789,21 +1942,142 @@ function updateTimer(){
 async function submitQuiz(){
   clearInterval(timerInterval);
   try {
-    const res = await api(`/api/games/${currentQuiz}/submit/`, {
-      method:"POST",
+    // Resolve the quiz id robustly:
+    // 1) quizzes[currentQuiz].id if currentQuiz is a key
+    // 2) currentQuiz (if it's already an id)
+    // 3) fallback to pendingQuizId
+    let quizId = null;
+    if (currentQuiz && quizzes[currentQuiz] && (quizzes[currentQuiz].id || quizzes[currentQuiz].pk || quizzes[currentQuiz].quiz_id)) {
+      quizId = quizzes[currentQuiz].id ?? quizzes[currentQuiz].pk ?? quizzes[currentQuiz].quiz_id;
+    } else if (currentQuiz) {
+      quizId = currentQuiz;
+    } else if (window.pendingQuizId) {
+      quizId = window.pendingQuizId;
+    }
+
+    if (!quizId) {
+      console.warn('submitQuiz: missing quiz id', { currentQuiz, pendingQuizId: window.pendingQuizId, quizzes });
+      alert('Unable to submit quiz: quiz id missing.');
+      return;
+    }
+
+    const res = await api(`/api/games/${quizId}/submit/`, {
       data:{ answers: userAnswers }
     });
-    alert(`You scored ${res.score}% and earned ${res.points} points!`);
-    dashboardView.style.display = "block";
-    quizView.style.display = "none";
-    loadQuizzes();
-    refreshUserPoints();
+
+    // on success: play coin animation, show reward modal and refresh local points
+    const earned = Number(res.points || 0);
+    showCoinGain(earned);
+    await refreshUserPoints();
+    document.getElementById('reward-amount').textContent = `+${earned} pts`;
+    openRewardModal();
+
+    // reset local quiz state
+    quizStarted = false;
+    currentQuiz = null;
+    userAnswers = [];
+    markedQuestions = [];
+
+    // return to dashboard view after a short delay so user sees reward (UI still usable)
+    setTimeout(() => {
+      dashboardView.style.display = "block";
+      quizView.style.display = "none";
+      loadQuizzes();
+    }, 900);
   } catch(e){
     console.error(e);
     alert("Failed to submit quiz");
   }
 }
 
+// ---- Coin animation + reward modal helpers ----
+function showCoinGain(points){
+  if (!points || points <= 0) return;
+  const container = document.getElementById('coin-container');
+  container.innerHTML = '';
+  // spawn a few coins with staggered timing
+  const n = Math.min(8, Math.max(3, Math.floor(points/5)));
+  for (let i=0;i<n;i++){
+    const c = document.createElement('div');
+    c.className = 'coin';
+    // one of the coins shows the +points text
+    if (i === 0){
+      c.classList.add('plus');
+      c.textContent = `+${points}`;
+    }
+    container.appendChild(c);
+    // stagger via inline animation delay
+    c.style.animationDelay = (i * 80) + 'ms';
+  }
+  // clear coins after animation
+  setTimeout(()=> { container.innerHTML = ''; }, 1400 + (n*80));
+}
+function openRewardModal(){
+  const m = document.getElementById('reward-modal');
+  if (!m) return;
+  m.style.display = 'block';
+  m.setAttribute('aria-hidden','false');
+}
+function closeRewardModal(){
+  const m = document.getElementById('reward-modal');
+  if (!m) return;
+  m.style.display = 'none';
+  m.setAttribute('aria-hidden','true');
+}
+
+// ---- Badges logic (thresholds mirror your UI / avatar costs) ----
+const BADGE_DEFS = [
+  { id:'beginner',  name:'Beginner', pts:0,     icon:'🌱' },
+  { id:'explorer',  name:'Explorer', pts:10,    icon:'🧭' },
+  { id:'scholar',   name:'Scholar',  pts:30,    icon:'🎓' },
+  { id:'artist',    name:'Artist',   pts:25,    icon:'🎨' },
+  { id:'scientist', name:'Scientist',pts:40,    icon:'⚗️' },
+  { id:'master',    name:'Master',   pts:50,    icon:'👑' },
+  { id:'thinker',   name:'Thinker',  pts:75,    icon:'🧠' },
+  { id:'grand',     name:'Grand Master', pts:100, icon:'🏆' }
+];
+function computeBadges(totalPoints){
+  return BADGE_DEFS.map(b => ({ ...b, unlocked: (totalPoints >= b.pts) }));
+}
+async function openBadgesModal(){
+  // fetch latest user info
+  try {
+    const me = await api('/api/me');
+    const total = typeof me.total_points === 'number' ? me.total_points : 0;
+    const badges = computeBadges(total);
+    const grid = document.getElementById('badges-grid');
+    grid.innerHTML = '';
+    badges.forEach(b => {
+      const div = document.createElement('div');
+      div.className = 'badge-item';
+      div.innerHTML = `
+        <div class="badge-icon ${b.unlocked ? 'badge-unlocked' : 'badge-locked'}">${b.icon}</div>
+        <div style="font-weight:600">${b.name}</div>
+        <div style="color:var(--text-light);font-size:13px;margin-top:6px;">${b.pts} pts</div>
+      `;
+      div.onclick = () => {
+        if (!b.unlocked) alert('Earn more points to unlock this badge.');
+      };
+      grid.appendChild(div);
+    });
+    const summary = document.getElementById('badges-summary');
+    summary.textContent = `You have ${total} pts. ${badges.filter(x=>x.unlocked).length} / ${badges.length} badges unlocked.`;
+    const overlay = document.getElementById('badges-modal-overlay');
+    overlay.style.display = 'flex';
+    overlay.setAttribute('aria-hidden','false');
+  } catch(e) { console.error(e); alert('Failed to load badges'); }
+}
+function closeBadgesModal(){
+  const overlay = document.getElementById('badges-modal-overlay');
+  overlay.style.display = 'none';
+  overlay.setAttribute('aria-hidden','true');
+}
+
+// expose for UI bindings
+window.openBadgesModal = openBadgesModal;
+window.closeBadgesModal = closeBadgesModal;
+window.openRewardModal = openRewardModal;
+window.closeRewardModal = closeRewardModal;
 // ---- Init ----
 document.addEventListener("DOMContentLoaded", () => { refreshUserPoints(); loadQuizzes(); });
 
@@ -1872,6 +2146,7 @@ function selectMatchingRight(ri){
     if (pairs.some(p => p[1] === ri)) return;
     if (matchingPendingLeft === null || matchingPendingLeft === undefined){
         document.getElementById('matching-pending').textContent = 'Pick a left item first.';
+
         return;
     }
     pairs.push([matchingPendingLeft, ri]);

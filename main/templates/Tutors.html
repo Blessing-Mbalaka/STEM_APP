@@ -835,16 +835,39 @@ function getCookie(name){
 }
 const csrftoken = getCookie("csrftoken");
 
-async function api(path, {method="GET", data} = {}){
-  const opts = { method, headers: { "X-CSRFToken": csrftoken } };
-  if (data !== undefined){
+async function api(path, {method="GET", data} = {}) {
+  console.log("API call:", method, path);
+  const opts = {
+    method,
+    credentials: "same-origin",                // send cookies (CSRF cookie)
+    headers: { "X-CSRFToken": getCookie("csrftoken") || "" }
+  };
+  if (data !== undefined) {
     opts.headers["Content-Type"] = "application/json";
     opts.body = JSON.stringify(data);
   }
+
   const res = await fetch(path, opts);
-  const json = await res.json().catch(()=> ({}));
-  if(!res.ok) throw new Error(json.error || res.statusText);
+  const text = await res.text(); // read raw body for better debugging
+  let json = {};
+  try { json = JSON.parse(text); } catch (e) { /* not JSON */ }
+
+  if (!res.ok) {
+    console.error("API error:", res.status, res.statusText, "body:", text);
+    // surface server message if available
+    throw new Error(json.error || text || (`HTTP ${res.status}: ${res.statusText}`));
+  }
   return json;
+}
+
+async function reserveClass(id){
+  // POST -> /api/classes/<id>/reserve (server expects POST)
+  return await api(`/api/classes/${id}/reserve`, { method: "POST" });
+}
+
+async function unreserveClass(id){
+  // DELETE -> /api/classes/<id>/unreserve (server expects DELETE)
+  return await api(`/api/classes/${id}/unreserve`, { method: "DELETE" });
 }
 
 // ======= State =======
@@ -900,30 +923,40 @@ function parseDate(whenStr){
 // ======= Data Load =======
 async function loadClasses(){
   const data = await api("/api/classes"); // {results: [...]}
-  classesList = data.results || [];
-  // Derive myBookings and calendarEvents
-  myBookings = classesList
-    .map(c => ({
-      id: c.id,
-      tutorId: c.id,
-      title: c.title || (c.course ? `${c.course} Session` : 'Session'),
-      tutor: c.tutor || '',
-      date: (c.starts_at || ''),
-      duration: '',
-      subject: c.course || '',
-      status: 'upcoming',
-      meetingLink: c.location || '#',
-      slotId: c.id
-    }));
-
-  calendarEvents = classesList
-    .map(c => {
-      const d = parseDate(c.starts_at);
-      return d ? { date: d, title: c.title || (c.course ? `${c.course} Session` : 'Session'), time: d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), tutor: c.tutor || '' } : null;
-    })
-    .filter(Boolean);
+  // normalize server objects so template logic can use consistent keys
+  classesList = (data.results || []).map(c => ({
+    // keep original fields
+    ...c,
+    // normalized keys used by the template
+    subject: c.subject || c.course || c.module || c.title || '',
+    when: c.when || c.starts_at || c.startsAt || c.date || '',
+    
+    // // remaining: (c.remaining ?? c.seats_left ?? c.capacity_remaining ?? null),
+    remaining: null,
+    reserved: !!(c.reserved || c.user_reserved || c.is_reserved || false),
+  }));
+   // Derive myBookings and calendarEvents
+  myBookings = classesList.map(c => ({
+    id: c.id,
+    tutorId: c.id,
+    title: c.title || (c.course ? `${c.course} Session` : (c.subject || 'Session')),
+    tutor: c.tutor || '',
+    date: (c.when || ''),
+    duration: '',
+    subject: c.subject || '',
+    status: 'upcoming',
+    meetingLink: c.location || '#',
+    slotId: c.id
+  }));
+ 
+   calendarEvents = classesList
+     .map(c => {
+      const d = parseDate(c.when);
+      return d ? { date: d, title: c.title || c.subject || (c.course ? `${c.course} Session` : 'Session'), time: d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), tutor: c.tutor || '' } : null;
+     })
+     .filter(Boolean);
 }
-
+ 
 // ======= Render: Tutors =======
 function renderTutors(){
   tutorsGrid.innerHTML = '';
@@ -931,59 +964,63 @@ function renderTutors(){
     tutorsGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No classes available</p>';
     return;
   }
-
+ 
   classesList.forEach(c => {
-    const remainingBadge = `<span class="badge">${c.remaining ?? 0} left</span>`;
+    const remaining = (typeof c.remaining === 'number') ? c.remaining : null;
+    const remainingBadge = remaining !== null ? `<span class="badge">${remaining} left</span>` : '';
     const reserved = !!c.reserved;
+    const isFull = remaining !== null && remaining <= 0;
+ 
+     const card = document.createElement('div');
+     card.className = 'tutor-card';
+     card.dataset.classId = c.id;
+ 
+     // simple “rating” placeholder based on remaining seats :)
+     const ratingStars = '<i class="fas fa-star"></i>'.repeat(5);
+ 
+     card.innerHTML = `
+       <div class="tutor-header">
+         <div class="tutor-avatar"><i class="fas fa-user"></i></div>
+         <div class="tutor-info">
+           <div class="tutor-name">${c.tutor || 'Tutor'}</div>
+           <div class="tutor-subject">${c.subject || 'Subject'} ${remainingBadge}</div>
+           <div class="tutor-rating">${ratingStars} <span>(class)</span></div>
+         </div>
+       </div>
 
-    const card = document.createElement('div');
-    card.className = 'tutor-card';
-    card.dataset.classId = c.id;
+       <div class="tutor-bio">
+         ${c.title || `${c.subject} session with ${c.tutor}`}
+       </div>
 
-    // simple “rating” placeholder based on remaining seats :)
-    const ratingStars = '<i class="fas fa-star"></i>'.repeat(5);
+       <div class="tutor-availability">
+         <div class="availability-title">
+           <i class="far fa-clock"></i> Next Time
+         </div>
+         <div class="slots-container">
+           <div class="time-slot ${reserved ? 'booked' : (isFull ? 'unavailable' : '')}" data-slot-id="${c.id}">
+             ${reserved ? '<i class="fas fa-check"></i> ' : (isFull ? '<i class="fas fa-ban"></i> ' : '')}${fmtDateTime(c.when)}
+           </div>
+         </div>
+       </div>
 
-    card.innerHTML = `
-      <div class="tutor-header">
-        <div class="tutor-avatar"><i class="fas fa-user"></i></div>
-        <div class="tutor-info">
-          <div class="tutor-name">${c.tutor || 'Tutor'}</div>
-          <div class="tutor-subject">${c.subject || 'Subject'} ${remainingBadge}</div>
-          <div class="tutor-rating">${ratingStars} <span>(class)</span></div>
-        </div>
-      </div>
-
-      <div class="tutor-bio">
-        ${c.title || `${c.subject} session with ${c.tutor}`}
-      </div>
-
-      <div class="tutor-availability">
-        <div class="availability-title">
-          <i class="far fa-clock"></i> Next Time
-        </div>
-        <div class="slots-container">
-          <div class="time-slot ${reserved ? 'booked' : ''}" data-slot-id="${c.id}">
-            ${reserved ? '<i class="fas fa-check"></i> ' : ''}${fmtDateTime(c.when)}
-          </div>
-        </div>
-      </div>
-
-      <div class="tutor-actions">
-        <button class="btn btn-secondary btn-small message-btn">
-          <i class="far fa-envelope"></i> Message
-        </button>
-        ${
-          reserved
-          ? `<button class="btn btn-cancel unbook-btn"><i class="fas fa-times"></i> Cancel</button>`
-          : `<button class="btn btn-primary book-btn"><i class="fas fa-calendar-plus"></i> Book Session</button>`
-        }
-      </div>
-    `;
-    tutorsGrid.appendChild(card);
-  });
-}
-
-// ======= Render: Bookings =======
+       <div class="tutor-actions">
+         <button class="btn btn-secondary btn-small message-btn">
+           <i class="far fa-envelope"></i> Message
+         </button>
+         ${
+           reserved
+           ? `<button class="btn btn-cancel unbook-btn"><i class="fas fa-times"></i> Cancel</button>`
+           : isFull
+           ? `<button class="btn btn-secondary" disabled><i class="fas fa-ban"></i> Full</button>`
+           : `<button class="btn btn-primary book-btn"><i class="fas fa-calendar-plus"></i> Book Session</button>`
+         }
+       </div>
+     `;
+     tutorsGrid.appendChild(card);
+   });
+ }
+ 
+ // ======= Render: Bookings =======
 function renderBookings(filter='all'){
   bookingsContainer.innerHTML = '';
   const list = myBookings.filter(b => filter==='all' ? true : b.status === filter);
@@ -1089,9 +1126,9 @@ function renderCalendar(){
 // ======= Actions =======
 function openBookingModal(cls){
   selectedClassId = cls.id;
-  bookingTutor.value   = cls.tutor;
-  bookingSubject.value = cls.subject;
-  bookingSlot.value    = fmtDateTime(cls.when);
+  bookingTutor.value   = cls.tutor || '';
+  bookingSubject.value = cls.subject || cls.course || cls.title || '';
+  bookingSlot.value    = fmtDateTime(cls.when || cls.starts_at || cls.date || '');
   bookingModal.style.display = 'flex';
 }
 
@@ -1100,7 +1137,7 @@ async function reserveClass(id){
 }
 
 async function unreserveClass(id){
-  await api(`/api/classes/${id}/unreserve`, { method: "POST" });
+  await api(`/api/classes/${id}/unreserve`, { method: "DELETE" });
 }
 
 // ======= Event wiring =======

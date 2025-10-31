@@ -697,9 +697,7 @@
             </div> -->
         </header>
          <div class="nav-tabs" id="navTabs">
-                <div class="nav-tab active" data-tab="tutors">
-                    <i class="fas fa-chalkboard-teacher"></i> Available Tutors
-                </div>
+            
                 <div class="nav-tab" data-tab="bookings">
                     <i class="fas fa-calendar-check"></i> My Bookings
                 </div>
@@ -713,7 +711,7 @@
             <div class="section-header">
                 <h2 class="section-title">Available Tutors</h2>
                 <div class="search-box">
-                    <input type="text" placeholder="Search tutors or subjects..." class="btn-secondary"
+                    <input type="text" placeholder="..." class="btn-secondary"
                         style="padding: 10px 15px; width: 250px;">
                 </div>
             </div>
@@ -736,6 +734,10 @@
                     </select>
                 </div>
             </div>
+
+                   <!-- Pagination controls for bookings (will be populated by JS) -->
+    <div id="bookingsPagination" style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;"></div>
+
 
             <div class="bookings-container" id="bookingsContainer">
                 <!-- Bookings will be populated by JavaScript -->
@@ -815,7 +817,7 @@
                     <textarea id="bookingNotes" placeholder="Any specific topics you want to cover?"></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBooking">Cancel</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBooking"></button>
                     <button type="submit" class="btn btn-primary">Confirm Booking</button>
                 </div>
             </form>
@@ -836,17 +838,26 @@ function getCookie(name){
 const csrftoken = getCookie("csrftoken");
 
 async function api(path, {method="GET", data} = {}){
-  const opts = { method, headers: { "X-CSRFToken": csrftoken } };
+  const opts = {
+    method,
+    credentials: "same-origin",             // send cookies (CSRF cookie)
+    headers: { "X-CSRFToken": getCookie("csrftoken") || "" }
+  };
   if (data !== undefined){
     opts.headers["Content-Type"] = "application/json";
     opts.body = JSON.stringify(data);
   }
   const res = await fetch(path, opts);
-  const json = await res.json().catch(()=> ({}));
-  if(!res.ok) throw new Error(json.error || res.statusText);
+  const text = await res.text();
+  let json = {};
+  try { json = JSON.parse(text); } catch(e) { /* not json */ }
+  if(!res.ok){
+    console.error("API error", res.status, res.statusText, text);
+    throw new Error(json.error || text || res.statusText);
+  }
   return json;
 }
-
+ 
 // ======= State =======
 let classesList = [];        // from /api/classes
 let myBookings = [];         // derived from classesList (reserved=true)
@@ -855,6 +866,10 @@ let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear  = currentDate.getFullYear();
 let selectedClassId = null;
+
+// add bookings pagination state
+let bookingsPerPage = 5;
+let currentBookingsPage = 2; // start on page 2 as requested
 
 // ======= DOM =======
 const tutorsGrid        = document.getElementById('tutorsGrid');
@@ -984,58 +999,106 @@ function renderTutors(){
 }
 
 // ======= Render: Bookings =======
-function renderBookings(filter='all'){
+// modified to accept page param and render pagination
+function renderBookings(filter='all', page = currentBookingsPage){
   bookingsContainer.innerHTML = '';
-  const list = myBookings.filter(b => filter==='all' ? true : b.status === filter);
 
-  if (!list.length){
+  const list = myBookings.filter(b => filter==='all' ? true : b.status === filter);
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / bookingsPerPage));
+
+  // clamp page
+  page = Math.min(Math.max(1, page), totalPages);
+  currentBookingsPage = page;
+
+  const start = (page - 1) * bookingsPerPage;
+  const pageItems = list.slice(start, start + bookingsPerPage);
+
+  if (!pageItems.length){
     bookingsContainer.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No bookings found</p>';
-    return;
+  } else {
+    pageItems.forEach(b => {
+      const statusClass = b.status === 'upcoming' ? 'status-upcoming'
+                        : b.status === 'completed' ? 'status-completed'
+                        : 'status-cancelled';
+      const statusText  = b.status.charAt(0).toUpperCase() + b.status.slice(1);
+
+      const actionsHTML = b.status === 'upcoming'
+        ? `
+          <button class="btn btn-secondary btn-join"><i class="fas fa-video"></i> Join (10 min before)</button>
+          <button class="btn btn-cancel do-cancel"><i class="fas fa-times"></i> Cancel</button>
+        `
+        : b.status === 'completed'
+        ? `
+          <button class="btn btn-secondary"><i class="fas fa-download"></i> Download Materials</button>
+          <button class="btn btn-primary"><i class="fas fa-redo"></i> Rebook</button>
+        `
+        : `<button class="btn btn-secondary" disabled><i class="fas fa-info-circle"></i> Cancelled</button>`;
+
+      // normalize meeting link so plain hostnames open externally
+      const rawLink = b.meetingLink || b.location || '#';
+      let linkNormalized = '#';
+      if (rawLink && rawLink !== '#') {
+        // if it already has protocol or starts with '//' keep it; otherwise prepend https://
+        linkNormalized = /^(https?:\/\/|\/\/)/i.test(rawLink) ? rawLink : `https://${rawLink}`;
+      }
+
+      const detailsHTML = b.status === 'completed' || b.status === 'cancelled'
+        ? `<div class="detail-row"><div class="detail-label">Recording:</div><div class="detail-value"><a href="${linkNormalized}" target="_blank" rel="noopener" style="color:var(--accent-blue);">View Session Recording</a></div></div>`
+        : `<div class="detail-row"><div class="detail-label">Meeting Link:</div><div class="detail-value"><a href="${linkNormalized}" target="_blank" rel="noopener" style="color:var(--accent-blue);">Join Microsoft Teams Meeting</a></div></div>`;
+
+      const el = document.createElement('div');
+      el.className = 'booking-card';
+      el.dataset.bookingId = b.id;
+      el.dataset.classId = b.tutorId;
+      el.dataset.link = linkNormalized || '#';
+
+      el.innerHTML = `
+        <div class="booking-header">
+          <div class="booking-title">${b.title}</div>
+          <div class="booking-status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="booking-details">
+          <div class="detail-row"><div class="detail-label">Tutor:</div><div class="detail-value">${b.tutor}</div></div>
+          <div class="detail-row"><div class="detail-label">Date & Time:</div><div class="detail-value">${b.date} (${b.duration})</div></div>
+          <div class="detail-row"><div class="detail-label">Subject:</div><div class="detail-value">${b.subject}</div></div>
+          ${detailsHTML}
+        </div>
+        <div class="booking-actions">${actionsHTML}</div>
+      `;
+      bookingsContainer.appendChild(el);
+    });
   }
 
-  list.forEach(b => {
-    const statusClass = b.status === 'upcoming' ? 'status-upcoming'
-                      : b.status === 'completed' ? 'status-completed'
-                      : 'status-cancelled';
-    const statusText  = b.status.charAt(0).toUpperCase() + b.status.slice(1);
+  // render pagination controls
+  const pg = document.getElementById('bookingsPagination');
+  pg.innerHTML = '';
+  if (totalPages > 1){
+    const prev = document.createElement('button');
+    prev.className = 'btn btn-secondary btn-small';
+    prev.textContent = 'Previous';
+    prev.disabled = page <= 1;
+    prev.addEventListener('click', ()=> {
+      renderBookings(filter, currentBookingsPage - 1);
+      window.scrollTo({ top: document.querySelector('#bookings-section').offsetTop - 80, behavior: 'smooth' });
+    });
+    const next = document.createElement('button');
+    next.className = 'btn btn-secondary btn-small';
+    next.textContent = 'Next';
+    next.disabled = page >= totalPages;
+    next.addEventListener('click', ()=> {
+      renderBookings(filter, currentBookingsPage + 1);
+      window.scrollTo({ top: document.querySelector('#bookings-section').offsetTop - 80, behavior: 'smooth' });
+    });
 
-    const actionsHTML = b.status === 'upcoming'
-      ? `
-        <button class="btn btn-secondary btn-join"><i class="fas fa-video"></i> Join (10 min before)</button>
-        <button class="btn btn-cancel do-cancel"><i class="fas fa-times"></i> Cancel</button>
-      `
-      : b.status === 'completed'
-      ? `
-        <button class="btn btn-secondary"><i class="fas fa-download"></i> Download Materials</button>
-        <button class="btn btn-primary"><i class="fas fa-redo"></i> Rebook</button>
-      `
-      : `<button class="btn btn-secondary" disabled><i class="fas fa-info-circle"></i> Cancelled</button>`;
+    const info = document.createElement('div');
+    info.style.alignSelf = 'center';
+    info.textContent = `Page ${page} of ${totalPages}`;
 
-    const detailsHTML = b.status === 'completed' || b.status === 'cancelled'
-      ? `<div class="detail-row"><div class="detail-label">Recording:</div><div class="detail-value"><a href="${b.recordingLink || '#'}" style="color:var(--accent-blue);">View Session Recording</a></div></div>`
-      : `<div class="detail-row"><div class="detail-label">Meeting Link:</div><div class="detail-value"><a href="${b.meetingLink}" style="color:var(--accent-blue);">Join Microsoft Teams Meeting</a></div></div>`;
-
-    const el = document.createElement('div');
-    el.className = 'booking-card';
-    el.dataset.bookingId = b.id;
-    el.dataset.classId = b.tutorId;
-    el.dataset.link = b.meetingLink || '#';
-
-    el.innerHTML = `
-      <div class="booking-header">
-        <div class="booking-title">${b.title}</div>
-        <div class="booking-status ${statusClass}">${statusText}</div>
-      </div>
-      <div class="booking-details">
-        <div class="detail-row"><div class="detail-label">Tutor:</div><div class="detail-value">${b.tutor}</div></div>
-        <div class="detail-row"><div class="detail-label">Date & Time:</div><div class="detail-value">${b.date} (${b.duration})</div></div>
-        <div class="detail-row"><div class="detail-label">Subject:</div><div class="detail-value">${b.subject}</div></div>
-        ${detailsHTML}
-      </div>
-      <div class="booking-actions">${actionsHTML}</div>
-    `;
-    bookingsContainer.appendChild(el);
-  });
+    pg.appendChild(prev);
+    pg.appendChild(info);
+    pg.appendChild(next);
+  }
 }
 
 // ======= Render: Calendar =======
@@ -1100,7 +1163,8 @@ async function reserveClass(id){
 }
 
 async function unreserveClass(id){
-  await api(`/api/classes/${id}/unreserve`, { method: "POST" });
+  // backend expects DELETE — call DELETE so URLconf/methods match
+  await api(`/api/classes/${id}/unreserve`, { method: "DELETE" });
 }
 
 // ======= Event wiring =======
@@ -1116,7 +1180,10 @@ function setupEvents(){
   });
 
   // Booking filter
-  bookingFilter.addEventListener('change', () => renderBookings(bookingFilter.value));
+  bookingFilter.addEventListener('change', () => {
+    currentBookingsPage = 1; // reset to page 1 when filter changes
+    renderBookings(bookingFilter.value, currentBookingsPage);
+  });
 
   // Calendar nav
   prevMonthBtn.addEventListener('click', () => { currentMonth--; if(currentMonth<0){ currentMonth=11; currentYear--; } renderCalendar(); });
@@ -1179,17 +1246,44 @@ function setupEvents(){
       return;
     }
     if (e.target.closest('.unbook-btn')){
-      if (confirm('Cancel this booking?')){
-        try{
-          await unreserveClass(cls.id);
-          await loadClasses();
-          renderTutors();
-          renderBookings(bookingFilter.value);
-          renderCalendar();
-          alert('Session cancelled.');
-        }catch(err){
-          alert(err.message || "Failed to cancel");
+      if (!confirm('Cancel this booking?')) return;
+      try{
+        await unreserveClass(cls.id);
+
+        // Optimistic UI update: mark class not reserved and update card DOM
+        cls.reserved = false;
+        const timeSlot = card.querySelector('.time-slot');
+        if (timeSlot) {
+          timeSlot.classList.remove('booked', 'unavailable');
+          timeSlot.innerHTML = fmtDateTime(cls.when);
         }
+
+        const actions = card.querySelector('.tutor-actions');
+        if (actions) {
+          actions.innerHTML = `
+            <button class="btn btn-secondary btn-small message-btn">
+              <i class="far fa-envelope"></i> Message
+            </button>
+            <button class="btn btn-primary book-btn"><i class="fas fa-calendar-plus"></i> Book Session</button>
+          `;
+        }
+
+        // Remove booking card(s) immediately from the bookings list
+        document.querySelectorAll(`.booking-card[data-class-id="${cls.id}"]`).forEach(el => el.remove());
+        // Keep client-side arrays consistent
+        myBookings = myBookings.filter(b => parseInt(b.tutorId,10) !== parseInt(cls.id,10));
+        // Re-render bookings (preserves pagination/filter)
+        renderBookings(bookingFilter ? bookingFilter.value : 'all', currentBookingsPage);
+
+        // Refresh server-backed state in background so UI stays accurate
+        await loadClasses();
+        renderTutors();
+        renderCalendar();
+
+        alert('Session cancelled.');
+      }catch(err){
+        console.error('Cancel failed:', err);
+        alert(err.message || "Failed to cancel");
       }
     }
   });
@@ -1204,10 +1298,20 @@ function setupEvents(){
       if (confirm('Cancel this session?')){
         try{
           await unreserveClass(classId);
+
+          // remove the booking card immediately
+          const targetCard = document.querySelector(`.booking-card[data-class-id="${classId}"]`);
+          if (targetCard) targetCard.remove();
+
+          // update client-side bookings list
+          myBookings = myBookings.filter(b => parseInt(b.tutorId,10) !== parseInt(classId,10));
+          renderBookings(bookingFilter ? bookingFilter.value : 'all', currentBookingsPage);
+
+          // refresh other state in background
           await loadClasses();
           renderTutors();
-          renderBookings(bookingFilter.value);
           renderCalendar();
+
           alert('Session cancelled.');
         }catch(err){
           alert(err.message || "Failed to cancel");
@@ -1236,8 +1340,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     classesList = [];
   }
   setupEvents();
+
+  // make the Bookings tab active on load (show page 2)
+  const bookingsTab = document.querySelector('.nav-tab[data-tab="bookings"]');
+  if (bookingsTab){
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    bookingsTab.classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('bookings-section').classList.add('active');
+  }
+
   renderTutors();
-  renderBookings('all');
+  renderBookings('all', currentBookingsPage); // start on page 2
   renderCalendar();
 });
 </script>

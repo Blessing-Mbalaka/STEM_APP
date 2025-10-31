@@ -1,13 +1,5 @@
 [
   {
-    "title": "Test video",
-    "description": "test script",
-    "resource_type": "youtube",
-    "course": "Grade 12 physics",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=4yI9qx0NG9A"
-  },
-  {
     "title": "Solve for X",
     "description": "",
     "resource_type": "video",
@@ -80,14 +72,6 @@
     "url": "https://www.youtube.com/watch?v=d67d8DkBU2c"
   },
   {
-    "title": "sample",
-    "description": "",
-    "resource_type": "video",
-    "course": "Sample",
-    "learning_style": "visual",
-    "url": "www.google.com"
-  },
-  {
     "title": "Grade 12 Number Patterns| Sequences And Series| Exam Questions",
     "description": "",
     "resource_type": "video",
@@ -158,14 +142,6 @@
     "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
     "learning_style": "visual",
     "url": "https://www.youtube.com/watch?v=N9_aOJKdjq0"
-  },
-  {
-    "title": "Sample PDF",
-    "description": "Sample Audio",
-    "resource_type": "document",
-    "course": "Grade 12 physics",
-    "learning_style": "readwrite",
-    "url": "/media/course_resources/Information_Systems_Assignement_Semester_2_1.pdf"
   },
   {
     "title": "Grade 12 Calculus",

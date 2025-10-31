@@ -8,6 +8,9 @@ from django.utils import timezone
 from django.db import models
 from main.models import Message, CustomUser, Course, ClassSession
 import json
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 @login_required
 def messages_page(request):
@@ -46,15 +49,33 @@ def api_messages_list(request):
 @require_http_methods(["GET"])
 @login_required
 def api_messages_recipients(request):
-    """Return a simple list of tutors/staff that can receive messages."""
-    users = CustomUser.objects.filter(is_active=True).filter(
-        models.Q(is_tutor=True) | models.Q(is_staff=True) | models.Q(is_superuser=True)
-    ).order_by('username')
-    data = [{
-        "id": u.id,
-        "name": (getattr(u, 'display_name', '') or '').strip() or (f"{getattr(u,'first_name','')} {getattr(u,'last_name','')}".strip()) or u.username,
-    } for u in users[:200]]
-    return JsonResponse({"results": data})
+    """
+    Return recipients for the message composer.
+    Prefer users who have exchanged messages with the current user (so replies always work).
+    Fallback: return active users (limited).
+    Response: {"results":[{"id":123,"name":"Jane Doe"}, ...]}
+    """
+    try:
+        # Try to use your Message model to find conversation partners
+        from main.models import Message  # adjust import if your model path/name differs
+        msg_qs = Message.objects.filter(Q(sender=request.user) | Q(recipient=request.user)).only('sender_id','recipient_id')
+        partner_ids = set()
+        for m in msg_qs:
+            if getattr(m, "sender_id", None) and m.sender_id != request.user.id:
+                partner_ids.add(m.sender_id)
+            if getattr(m, "recipient_id", None) and m.recipient_id != request.user.id:
+                partner_ids.add(m.recipient_id)
+
+        users_qs = User.objects.filter(id__in=partner_ids, is_active=True)
+        # If no partners found, fall back to tutors/students selection you want:
+        if not users_qs.exists():
+            users_qs = User.objects.filter(is_active=True)[:500]
+    except Exception:
+        # If Message model not available or import failed: fallback to active users
+        users_qs = User.objects.filter(is_active=True)[:500]
+
+    results = [{"id": u.id, "name": (u.get_full_name() or u.username)} for u in users_qs]
+    return JsonResponse({"results": results})
 
 
 @require_http_methods(["POST"])
