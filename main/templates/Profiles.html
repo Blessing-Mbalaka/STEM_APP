@@ -182,6 +182,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 5px;
+            color: #ffffff; /* make the profile-name invisible by rendering it white */
         }
 
         .profile-role {
@@ -684,19 +685,19 @@
                                 </select>
                             </div>
                             <div class="form-group full-width">
-                                <label>Stream Selection</label>
+                                <!-- <label>Stream Selection</label>
                                 <div class="stream-selection">
                                     <label class="stream-option" id="stemOption">
                                         <input type="radio" name="stream" value="stem" checked>
                                         <div class="stream-title">STEM (Science, Technology, Engineering, Mathematics)</div>
-                                        <div class="stream-description">Includes Mathematics, Physical Sciences, Life Sciences, IT, etc.</div>
-                                    </label>
+                                        <div class="stream-description">Includes Mathematics, Physical Sciences, Life Sciences, IT, etc.</div> -->
+                                    <!-- </label>
                                     <label class="stream-option" id="commerceOption">
                                         <input type="radio" name="stream" value="commerce">
                                         <div class="stream-title">Commerce</div>
                                         <div class="stream-description">Includes Accounting, Business Studies, Economics, etc.</div>
-                                    </label>
-                                    <label class="stream-option" id="artsOption">
+                                    </label> -->
+                                    <!-- <label class="stream-option" id="artsOption">
                                         <input type="radio" name="stream" value="arts">
                                         <div class="stream-title">Arts</div>
                                         <div class="stream-description">Includes History, Geography, Visual Arts, Dramatic Arts, etc.</div>
@@ -705,7 +706,7 @@
                                         <input type="radio" name="stream" value="slp">
                                         <div class="stream-title">SLP (Short Learning Programmes)</div>
                                         <div class="stream-description">Vocational and skills-based courses</div>
-                                    </label>
+                                    </label> -->
                                 </div>
                             </div>
                             <div class="form-group full-width">
@@ -941,8 +942,17 @@ function setupEventListeners(){
         const stream = document.querySelector('input[name="stream"]:checked');
         payload.stream = stream ? stream.value : "";
         try {
-            await api("/api/me", { method:"PATCH", data: payload });
+            const res = await api("/api/me", { method:"PATCH", data: payload });
+           // merge server response into local state (server should return updated user)
+           if (res && typeof res === 'object') {
+                profileData = Object.assign({}, profileData, res);
+            }
+            renderProfile();
+            // update any global places that show the user's name (add class="site-user-name" in templates)
+          const display = profileData.display_name || [profileData.firstName, profileData.lastName].filter(Boolean).join(' ') || profileData.username;
+            document.querySelectorAll('.site-user-name').forEach(el => el.textContent = display);
             alert("Profile saved successfully");
+           
         } catch(e){
             alert("Failed to save profile");
         }
@@ -970,7 +980,7 @@ function setupEventListeners(){
     // Click avatar or edit badge to open picker
     const avatarBox = document.querySelector('.profile-avatar');
     if (avatarBox) { avatarBox.style.cursor = 'pointer'; avatarBox.addEventListener('click', () => avatarUpload.click()); }
-    if (avatarEdit) { avatarEdit.addEventListener('click', () => avatarUpload.click()); }
+    //if (avatarEdit) { avatarEdit.addEventListener('click', () => avatarUpload.click()); }
     
     saveAvatar.addEventListener('click', async () => {
         if(!avatarUpload.files || !avatarUpload.files[0]){ alert('Choose a photo first'); return; }
@@ -1011,7 +1021,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 <script src="{% static 'js/translation.js' %}"></script>
-<script src="{% static 'js/profiles.js' %}"></script>
+<!-- <script src="{% static 'js/profiles.js' %}"></script> -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     setupLanguageToggle();

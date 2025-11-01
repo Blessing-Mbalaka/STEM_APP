@@ -142,6 +142,13 @@
             color: #e4f4f5;
         }
 
+        .site-banner {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 10px 0;
+            color: #fcefe0;
+        }
+
         /* Dashboard Tiles */
         .tiles-container {
             display: grid;
@@ -460,6 +467,9 @@
         <div class="container">
             <div class="header-dashboard">
                 <h1 class="welcome-message" id="welcomeMessage">&nbsp;</h1>
+                <div class="site-banner">
+      <span class="site-user-name">{{ request.user.get_full_name|default:request.user.username }}</span>
+    </div>
                 <p>Learn new skills, earn badges, and unlock your potential</p>
             </div>
 
@@ -655,6 +665,25 @@ document.addEventListener("DOMContentLoaded", function() {
         btn.classList.toggle('active', btn.dataset.lang === lang);
     });
 });
+</script>
+
+<script>
+// merge into local state if you use it
+profileData = Object.assign({}, profileData, res);
+
+// canonical display name (prefer server-provided)
+const display = res.display_name || res.displayName || 
+                [res.first_name || res.firstName || profileData.firstName, res.last_name || res.lastName || profileData.lastName].filter(Boolean).join(' ') || res.username || 'Learner';
+
+// update DOM places
+document.querySelectorAll('.site-user-name').forEach(el => el.textContent = display);
+const profileNameEl = document.getElementById('profileName');
+if (profileNameEl) profileNameEl.textContent = display;
+// any sidebar/profile-card selectors you use:
+document.querySelectorAll('.sidebar .user-name, .profile-card .user-name').forEach(el => el.textContent = display);
+
+// optionally call renderProfile() if you have a function to re-render the profile area
+if (typeof renderProfile === 'function') renderProfile();
 </script>
 
 </body>
