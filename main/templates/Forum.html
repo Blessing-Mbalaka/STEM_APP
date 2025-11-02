@@ -412,6 +412,7 @@
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
+            position: relative; /* allow absolutely positioned invisible input to receive clicks */
         }
         
         .file-upload:hover {
@@ -425,8 +426,18 @@
             margin-bottom: 10px;
         }
         
+        /* Make the file input cover the entire upload box (invisible) so native file picker opens reliably. */
         .file-upload input {
-            display: none;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            display: block;
+            border: none;
+            margin: 0;
+            padding: 0;
         }
         
         .preview-image {
@@ -543,6 +554,15 @@
         .bot-chat.active {
             transform: translateY(0);
             opacity: 1;
+        }
+        .bot-chat.chatbot-disabled {
+            opacity: 1;
+        }
+        .bot-chat.chatbot-disabled .bot-input,
+        .bot-chat.chatbot-disabled .bot-send,
+        .bot-chat.chatbot-disabled input {
+            pointer-events: none;
+            opacity: 0.6;
         }
         
         .bot-header {
@@ -804,7 +824,20 @@
     </style>
 </head>
 <body>
-    <div class="container">
+<script>
+  (function(){
+    // embed JSON as an escaped string and parse it safely to avoid template injection errors
+    let raw = '{{ chatbot_config_json|default:"{}"|escapejs }}';
+    try {
+      window.chatbotConfig = JSON.parse(raw || '{}');
+    } catch (err) {
+      console.warn('Invalid chatbot_config_json, falling back to {}', err, raw);
+      window.chatbotConfig = {};
+    }
+    console.debug('Forum chatbot config', window.chatbotConfig);
+  })();
+</script>
+  <div class="container">
         <header>
             <a href="{% url 'index' %}" class="back-to-dashboard">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -864,14 +897,14 @@
                 
                 <div class="form-group">
                     <label class="form-label">Add Image (optional)</label>
-                    <div class="file-upload" id="file-upload">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Click to upload or drag and drop</p>
-                        <p>JPG, PNG up to 5MB</p>
-                        <input type="file" id="question-image" accept="image/*">
-                        <img id="preview-image" class="preview-image" alt="Preview">
-                    </div>
-                </div>
+                    <label class="file-upload" id="file-upload" for="question-image" tabindex="0" role="button" aria-label="Upload an image for this question">
+                         <i class="fas fa-cloud-upload-alt"></i>
+                         <p>Click to upload or drag and drop</p>
+                         <p>JPG, PNG up to 5MB</p>
+                        <input type="file" id="question-image" accept="image/*" />
+                        <img id="preview-image" class="preview-image" alt="Preview" />
+                    </label>
+                 </div>
                 
                 <div class="form-group">
                     <label for="question-tags" class="form-label">Tags</label>
@@ -900,14 +933,14 @@
                 
                 <div class="form-group">
                     <label class="form-label">Add Image (optional)</label>
-                    <div class="file-upload" id="answer-file-upload">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Click to upload or drag and drop</p>
-                        <p>JPG, PNG up to 5MB</p>
-                        <input type="file" id="answer-image" accept="image/*">
-                        <img id="answer-preview-image" class="preview-image" alt="Preview">
-                    </div>
-                </div>
+                    <label class="file-upload" id="answer-file-upload" for="answer-image" tabindex="0" role="button" aria-label="Upload an image with your reply">
+                         <i class="fas fa-cloud-upload-alt"></i>
+                         <p>Click to upload or drag and drop</p>
+                         <p>JPG, PNG up to 5MB</p>
+                        <input type="file" id="answer-image" accept="image/*" />
+                        <img id="answer-preview-image" class="preview-image" alt="Preview" />
+                    </label>
+                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancel-answer">Cancel</button>
@@ -989,6 +1022,7 @@ const previewImage = document.getElementById('preview-image');
 const questionsList = document.getElementById('questions-list');
 const forumTabs = document.querySelectorAll('.forum-tab');
 const searchInput = document.getElementById('search-input');
+const subjectOnlyToggle = document.getElementById('subjectOnlyToggle');
 
 const answerModal = document.getElementById('answer-modal');
 const closeAnswerModal = document.getElementById('close-answer-modal');
@@ -997,6 +1031,37 @@ const submitAnswerBtn = document.getElementById('submit-answer');
 const answerFileUpload = document.getElementById('answer-file-upload');
 const answerImage = document.getElementById('answer-image');
 const answerPreviewImage = document.getElementById('answer-preview-image');
+
+const chatbotConfig = window.chatbotConfig || {};
+const chatbotDisabled = chatbotConfig && chatbotConfig.is_enabled === false;
+const maintenanceMessage =
+  (chatbotConfig && chatbotConfig.maintenance_message) ||
+  'Our AI assistant is currently undergoing maintenance. Please add your question to the forum and a tutor will respond soon.';
+
+function showChatbotMaintenance() {
+  console.warn('Chatbot maintenance mode active', chatbotConfig);
+  if (botChat) {
+    botChat.classList.add('active', 'chatbot-disabled');
+  }
+  if (botMessages) {
+    botMessages.innerHTML = '';
+    const msg = document.createElement('div');
+    msg.className = 'message bot-message';
+    msg.textContent = maintenanceMessage;
+    botMessages.appendChild(msg);
+  }
+  if (botInput) {
+    botInput.value = '';
+    botInput.disabled = true;
+  }
+  if (botSendBtn) {
+    botSendBtn.disabled = true;
+  }
+  if (subjectOnlyToggle) {
+    subjectOnlyToggle.checked = false;
+    subjectOnlyToggle.disabled = true;
+  }
+}
 
 // ================ State =================
 let currentThreadSlug = null;
@@ -1319,6 +1384,7 @@ async function submitQuestion(){
       headers: {
         'X-CSRFToken': csrftoken
       },
+      credentials: 'same-origin', // ensure cookies/session & CSRF are sent
       body: formData
     });
 
@@ -1336,308 +1402,169 @@ async function submitQuestion(){
     questionImage.value = '';
     newQuestionModal.classList.remove('active');
 
+    // reload threads and, if server returned the new thread slug, open it
     await loadThreads();
-
+    if (result && (result.slug || result.thread_slug)) {
+      const slug = result.slug || result.thread_slug;
+      // expand the newly created thread and show its posts (if any)
+      try {
+        toggleAnswers(slug);
+        // scroll to the new thread card (wait a tick so DOM is rendered)
+        setTimeout(() => {
+          const el = document.querySelector(`.question-card[data-id="${slug}"]`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 120);
+      } catch (err) {
+        console.warn('Could not auto-open/scroll to new thread', err);
+      }
+    }
   }catch(e){
     alert(e.message || "Failed to create thread");
   }
 }
+    </script>
 
-// ================ Chatbot Helpers =================
-const chatbotState = window.chatbotState = window.chatbotState || {
-  conversationId: null,
-  pendingSearchQuery: null
-};
-
-function escapeHtml(str = '') {
-  return str.replace(/[&<>"']/g, (char) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  }[char] || char));
-}
-
-function linkifyHtml(html = '') {
-  return html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-}
-
-function renderMath(element, attempt = 0) {
-  if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-    window.MathJax.typesetPromise([element]).catch(() => {});
-  } else if (attempt < 10) {
-    setTimeout(() => renderMath(element, attempt + 1), 200);
-  }
-}
-
-function wrapNumbersInElement(root) {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  const pattern = /sqrt\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)|√\s*([0-9]+(?:\.[0-9]+)?)|([0-9]+(?:\.[0-9]+)?)/gi;
-  const replacements = [];
-
-  while (walker.nextNode()) {
-    const node = walker.currentNode;
-    const parentElement = node.parentElement;
-    if (!parentElement) continue;
-    if (parentElement.closest('a, .math-fragment')) continue;
-    const text = node.textContent || '';
-    const matches = Array.from(text.matchAll(pattern));
-    if (!matches.length) continue;
-
-    const frag = document.createDocumentFragment();
-    let lastIndex = 0;
-    matches.forEach((match) => {
-      const index = match.index ?? 0;
-      const matched = match[0];
-      if (index > lastIndex) {
-        frag.appendChild(document.createTextNode(text.slice(lastIndex, index)));
+    <script>
+    // --- Initialization / event wiring (added) ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Safety: ensure DOM refs exist
+      if (typeof loadCategories !== 'function' || typeof loadThreads !== 'function') {
+        console.warn('Forum init: load functions missing');
       }
-      const span = document.createElement('span');
-      span.className = 'math-fragment';
-      let tex;
-      if (match[1]) {
-        tex = `\\(\\sqrt{${match[1]}}\\)`;
-      } else if (match[2]) {
-        tex = `\\(\\sqrt{${match[2]}}\\)`;
-      } else if (match[3]) {
-        tex = `\\(${match[3]}\\)`;
-      } else {
-        tex = `\\(${matched}\\)`;
-      }
-      span.textContent = tex;
-      frag.appendChild(span);
-      lastIndex = index + matched.length;
-    });
-    if (lastIndex < text.length) {
-      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
-    }
-    replacements.push({ node, frag });
-  }
 
-  replacements.forEach(({ node, frag }) => {
-    if (node.parentNode) {
-      node.parentNode.replaceChild(frag, node);
-    }
-  });
-}
+      // Wire modals and buttons
+      newQuestionBtn?.addEventListener('click', () => newQuestionModal?.classList.add('active'));
+      closeQuestionModal?.addEventListener('click', () => newQuestionModal?.classList.remove('active'));
+      cancelQuestionBtn?.addEventListener('click', () => newQuestionModal?.classList.remove('active'));
+      submitQuestionBtn?.addEventListener('click', submitQuestion);
 
-function setMessageContent(element, text) {
-  const html = linkifyHtml(escapeHtml(text)).replace(/\n/g, '<br>');
-  element.innerHTML = html;
-  wrapNumbersInElement(element);
-  renderMath(element);
-}
+      // Answer modal
+      closeAnswerModal?.addEventListener('click', () => answerModal?.classList.remove('active'));
+      cancelAnswerBtn?.addEventListener('click', () => answerModal?.classList.remove('active'));
+      submitAnswerBtn?.addEventListener('click', submitAnswer);
 
-function appendMeta(element, text) {
-  if (!text) return;
-  const meta = document.createElement('div');
-  meta.className = 'message-meta';
-  meta.textContent = text;
-  element.appendChild(meta);
-}
+      // Forum tabs (sort / category)
+      forumTabs?.forEach(tab => {
+        tab.addEventListener('click', async (e) => {
+          forumTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          if (tab.dataset.sort) {
+            currentSort = tab.dataset.sort;
+            currentCategorySlug = null;
+          }
+          if (tab.dataset.tag) {
+            currentCategorySlug = tab.dataset.tag;
+            currentSort = 'recent';
+          }
+          await loadThreads();
+        });
+      });
 
-function attachSources(element, sources, heading = 'Sources') {
-  if (!Array.isArray(sources) || !sources.length) return;
-  const container = document.createElement('div');
-  container.className = 'message-sources';
+      // Search (debounced)
+      let _deb;
+      searchInput?.addEventListener('input', (e) => {
+        clearTimeout(_deb);
+        _deb = setTimeout(() => {
+          currentSearch = (searchInput.value || '').trim();
+          loadThreads();
+        }, 300);
+      });
 
-  const title = document.createElement('span');
-  title.className = 'message-sources__title';
-  title.textContent = heading;
-  container.appendChild(title);
-
-  const list = document.createElement('ul');
-  // hosts we want to render as compact "[link]"
-  const compactHostSet = new Set(['duckduckgo.com']);
-
-  sources.forEach((source) => {
-    const item = document.createElement('li');
-    if (source && source.url) {
-      const link = document.createElement('a');
-      link.className = 'message-source-link';
-      link.href = source.url;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      // choose compact text for certain hosts (e.g. DuckDuckGo)
-      let renderedText = source.title || source.url;
-      try {
-        const host = (new URL(source.url)).hostname.replace(/^www\./, '').toLowerCase();
-        if (compactHostSet.has(host)) renderedText = '[link]';
-      } catch (e) { /* ignore */ }
-      link.textContent = renderedText;
-      item.appendChild(link);
-
-      try {
-        const parsed = new URL(source.url);
-        const host = parsed.hostname.replace(/^www\./, '');
-        if (!source.title && host) {
-          // only show host as label when there is no title
-          link.textContent = host;
-          // don't overwrite compact rendering
-          if (link.textContent === source.url) link.textContent = host;
+      // File preview handlers
+      questionImage?.addEventListener('change', () => {
+        const f = questionImage.files && questionImage.files[0];
+        if (f) {
+          previewImage.src = URL.createObjectURL(f);
+          previewImage.style.display = 'block';
+        } else {
+          previewImage.src = '';
+          previewImage.style.display = 'none';
         }
-        if (source.excerpt) {
-          const excerpt = document.createElement('div');
-          excerpt.className = 'message-source-excerpt';
-          excerpt.textContent = source.excerpt;
-          item.appendChild(excerpt);
+      });
+      answerImage?.addEventListener('change', () => {
+        const f = answerImage.files && answerImage.files[0];
+        if (f) {
+          answerPreviewImage.src = URL.createObjectURL(f);
+          answerPreviewImage.style.display = 'block';
+        } else {
+          answerPreviewImage.src = '';
+          answerPreviewImage.style.display = 'none';
         }
-      } catch (e) { /* ignore */ }
+      });
 
-      list.appendChild(item);
-    }
-  });
-
-  container.appendChild(list);
-  element.appendChild(container);
-}
-
-// ================== Search ==================
-const searchDelay = 300;
-let searchTimeout = null;
-
-searchInput.addEventListener('input', (e) => {
-  const query = e.target.value.trim();
-  currentSearch = query;
-  
-  if (searchTimeout) clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    loadThreads();
-    if (query) {
-      botChat.classList.add('active');
-      setMessageContent(botMessages.firstElementChild, `Searching for: "${query}"`);
-      chatbotState.pendingSearchQuery = query;
-      runChatbotQuery();
-    } else {
-      botChat.classList.remove('active');
-      botMessages.innerHTML = '';
-    }
-  }, searchDelay);
-});
-
-document.getElementById('subjectOnlyToggle').addEventListener('change', (e) => {
-  const checked = e.target.checked;
-  if (checked) {
-    botChat.classList.add('active');
-    setMessageContent(botMessages.firstElementChild, `Searching for: "${currentSearch}"`);
-    runChatbotQuery();
-  } else {
-    botChat.classList.remove('active');
-    botMessages.innerHTML = '';
-  }
-});
-
-async function runChatbotQuery(){
-  const query = chatbotState.pendingSearchQuery;
-  if (!query) return;
-
-  // simple debounce: ignore new results if a newer request is pending
-  if (chatbotState.conversationId) {
-    try {
-      await api(`/api/chatbot/conversation/${chatbotState.conversationId}/stop`, { method: 'POST' });
-    } catch (e) { /* ignore errors */ }
-  }
-
-  const params = new URLSearchParams();
-  params.set('q', query);
-  params.set('subject_only', '1'); // force subject-only mode
-  if (currentCategorySlug) params.set("category", currentCategorySlug);
-
-  const response = await fetch(`/api/chatbot/query?${params.toString()}`, {
-    method: 'GET',
-    headers: {
-      'X-CSRFToken': csrftoken
-    }
-  });
-
-  const result = await response.json();
-  if (!response.ok) {
-    setMessageContent(botMessages.lastElementChild, `Error: ${result.error || 'Unknown error'}`);
-    return;
-  }
-
-  const { conversation_id, answer, sources } = result;
-  chatbotState.conversationId = conversation_id;
-
-  // smooth scroll to bottom
-  const scrollToBottom = () => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  };
-
-  // clear previous messages
-  botMessages.innerHTML = '';
-
-  // render answer
-  const answerDiv = document.createElement('div');
-  answerDiv.className = 'message bot-message';
-  answerDiv.style.opacity = '0';
-  setMessageContent(answerDiv, answer);
-  botMessages.appendChild(answerDiv);
-
-  // render sources
-  attachSources(answerDiv, sources);
-
-  // animate in
-  requestAnimationFrame(() => {
-    answerDiv.style.opacity = '1';
-    scrollToBottom();
-  });
-}
-
-// ======= Bot controls (ensure bot opens/sends/closes) =======
-(function wireBotControls(){
-  if (askBotBtn) {
-    askBotBtn.addEventListener('click', () => {
-      botChat.classList.add('active');
-      // show greeting if empty
-      if (!botMessages.children.length) {
-        const welcome = document.createElement('div');
-        welcome.className = 'message bot-message';
-        welcome.textContent = "Hello! I'm your AI tutor assistant. How can I help you with your studies today?";
-        botMessages.appendChild(welcome);
-      }
-      botInput.focus();
-      // optionally trigger a search if user has typed in main search
-      if (currentSearch) {
-        chatbotState.pendingSearchQuery = currentSearch;
-        runChatbotQuery();
-      }
-    });
-  }
-
-  if (closeBotBtn) {
-    closeBotBtn.addEventListener('click', () => {
-      botChat.classList.remove('active');
-    });
-  }
-
-  if (botSendBtn && botInput) {
-    botSendBtn.addEventListener('click', () => {
-      const q = botInput.value.trim();
-      if (!q) return;
-      // append user message
-      const userDiv = document.createElement('div');
-      userDiv.className = 'message user-message';
-      userDiv.innerHTML = escapeHtml(q).replace(/\n/g,'<br>');
-      botMessages.appendChild(userDiv);
-      botInput.value = '';
-      botMessages.scrollTop = botMessages.scrollHeight;
-      chatbotState.pendingSearchQuery = q;
-      runChatbotQuery();
-    });
-
-    botInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      // --- ADJUSTED: rely on native label behavior for clicks; keep keyboard + drag/drop support ---
+      // Keyboard activation for question file-upload (Enter / Space)
+      fileUpload?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          questionImage?.click();
+        }
+      });
+      // Drag & drop support for question image
+      fileUpload?.addEventListener('dragover', (e) => {
         e.preventDefault();
-        botSendBtn.click();
+        fileUpload.classList.add('dragover');
+      });
+      fileUpload?.addEventListener('dragleave', (e) => {
+        fileUpload.classList.remove('dragover');
+      });
+      fileUpload?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUpload.classList.remove('dragover');
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length) {
+          try {
+            const dt = new DataTransfer();
+            dt.items.add(files[0]);
+            questionImage.files = dt.files;
+            questionImage.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (err) {
+            console.warn('Drag/drop assign failed', err);
+          }
+        }
+      });
+
+      // Keyboard activation for answer file-upload (Enter / Space)
+      answerFileUpload?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          answerImage?.click();
+        }
+      });
+      answerFileUpload?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        answerFileUpload.classList.add('dragover');
+      });
+      answerFileUpload?.addEventListener('dragleave', (e) => {
+        answerFileUpload.classList.remove('dragover');
+      });
+      answerFileUpload?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        answerFileUpload.classList.remove('dragover');
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length) {
+          try {
+            const dt = new DataTransfer();
+            dt.items.add(files[0]);
+            answerImage.files = dt.files;
+            answerImage.dispatchEvent(new Event('change', { bubbles: true }));
+          } catch (err) {
+            console.warn('Drag/drop assign failed', err);
+          }
+        }
+      });
+
+      // Load initial data
+      try {
+        await loadCategories();
+        await loadThreads();
+      } catch (err) {
+        console.warn('Forum init: load failed', err);
       }
+
+      // If chatbot disabled from server config, show maintenance UI
+      if (chatbotDisabled) showChatbotMaintenance();
     });
-  }
-})();
- 
-// ================== Init ==================
-loadCategories().then(loadThreads);
     </script>
 </body>
 </html>

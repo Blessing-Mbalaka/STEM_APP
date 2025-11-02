@@ -7,6 +7,7 @@ from datetime import timedelta
 from typing import Any, Dict, List
 from urllib.parse import quote_plus
 
+import logging
 import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -29,12 +30,14 @@ try:
         ChatbotConversation,
         ChatbotResponse,
         PDFChunk,
+        ChatbotConfig,
     )
 except ImportError:
     ChatbotCache = None  # type: ignore
     ChatbotConversation = None  # type: ignore
     ChatbotResponse = None  # type: ignore
     PDFChunk = None  # type: ignore
+    ChatbotConfig = None  # type: ignore
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +100,148 @@ except Exception:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+logger = logging.getLogger(__name__)
+
+PROVIDER_UNAVAILABLE_MESSAGE = "Sorry, the chatbot provider is currently unavailable. Please try again later."
+CHATBOT_MODE_GEMINI = getattr(ChatbotConfig, "MODE_GEMINI", "gemini")
+CHATBOT_MODE_EXTERNAL = getattr(ChatbotConfig, "MODE_EXTERNAL", "external")
+CHATBOT_MODE_OLLAMA = getattr(ChatbotConfig, "MODE_OLLAMA", "ollama")
+
+
+def get_chatbot_config():
+    if not ChatbotConfig:
+        return None
+    try:
+        return ChatbotConfig.load()
+    except Exception as exc:  # pragma: no cover - defensive logging
+        logger.warning("Unable to load ChatbotConfig: %s", exc)
+        return None
+
+
+def _call_external_model(prompt: str, config, *, system_prompt: str | None = None) -> str:
+    api_url = (config.external_api_base_url or "").strip()
+    if not api_url:
+        raise ValueError("External API base URL is not configured.")
+    payload: Dict[str, Any] = {
+        "prompt": prompt,
+    }
+    if config.external_model:
+        payload["model"] = config.external_model
+    if system_prompt:
+        payload["system"] = system_prompt
+    # Attempt OpenAI-compatible payload as well
+    messages: List[Dict[str, str]] = [{"role": "user", "content": prompt}]
+    if system_prompt:
+        messages.insert(0, {"role": "system", "content": system_prompt})
+    payload["messages"] = messages
+
+    headers = {"Content-Type": "application/json"}
+    if config.external_api_key:
+        headers["Authorization"] = f"Bearer {config.external_api_key}"
+
+    response = requests.post(api_url, json=payload, headers=headers, timeout=45)
+    response.raise_for_status()
+    data = response.json()
+
+    if isinstance(data, dict):
+        if isinstance(data.get("response"), str):
+            return data["response"]
+        if isinstance(data.get("result"), str):
+            return data["result"]
+        if isinstance(data.get("answer"), str):
+            return data["answer"]
+        if isinstance(data.get("content"), str):
+            return data["content"]
+        if isinstance(data.get("output"), str):
+            return data["output"]
+
+        choices = data.get("choices")
+        if isinstance(choices, list) and choices:
+            choice = choices[0]
+            if isinstance(choice, dict):
+                message = choice.get("message")
+                if isinstance(message, dict):
+                    content = message.get("content")
+                    if isinstance(content, list):
+                        return "".join(
+                            part.get("text") or ""
+                            for part in content
+                            if isinstance(part, dict)
+                        ).strip()
+                    if isinstance(content, str):
+                        return content
+                if isinstance(choice.get("text"), str):
+                    return choice["text"]
+
+    if isinstance(data, list) and data:
+        first = data[0]
+        if isinstance(first, str):
+            return first
+        if isinstance(first, dict):
+            return first.get("text") or first.get("content") or ""
+
+    return json.dumps(data, ensure_ascii=False)
+
+
+def _call_ollama_model(prompt: str, config, *, system_prompt: str | None = None) -> str:
+    base_url = (config.ollama_api_base_url or "http://localhost:11434").rstrip("/")
+    url = f"{base_url}/api/generate"
+    payload: Dict[str, Any] = {
+        "model": config.ollama_model or "llama3:latest",
+        "prompt": prompt,
+        "stream": False,
+    }
+    if system_prompt:
+        payload["system"] = system_prompt
+
+    response = requests.post(url, json=payload, timeout=60)
+    response.raise_for_status()
+    data = response.json()
+    if isinstance(data, dict):
+        if isinstance(data.get("response"), str):
+            return data["response"]
+        if isinstance(data.get("output"), str):
+            return data["output"]
+    return json.dumps(data, ensure_ascii=False)
+
+
+def call_primary_model(
+    prompt: str,
+    *,
+    config=None,
+    system_prompt: str | None = None,
+) -> str:
+    mode = getattr(config, "mode", None) if config else None
+    try:
+        if config and mode == CHATBOT_MODE_EXTERNAL:
+            logger.debug("Dispatching chatbot prompt to external provider.")
+            return _call_external_model(prompt, config, system_prompt=system_prompt)
+        if config and mode == CHATBOT_MODE_OLLAMA:
+            logger.debug("Dispatching chatbot prompt to Ollama provider.")
+            return _call_ollama_model(prompt, config, system_prompt=system_prompt)
+
+        model_name = (
+            (config.gemini_model or "").strip()
+            if config and getattr(config, "gemini_model", "")
+            else "gemini-2.5-flash-latest"
+        )
+        logger.debug("Dispatching chatbot prompt to Gemini model %s.", model_name)
+        return ask_gemini(prompt, model_name=model_name, system_prompt=system_prompt)
+    except Exception as exc:
+        logger.exception("Chatbot primary provider failed: %s", exc)
+        if not config or mode == CHATBOT_MODE_GEMINI:
+            return PROVIDER_UNAVAILABLE_MESSAGE
+        try:
+            model_name = (
+                (config.gemini_model or "").strip()
+                if config and getattr(config, "gemini_model", "")
+                else "gemini-2.5-flash-latest"
+            )
+            return ask_gemini(prompt, model_name=model_name, system_prompt=system_prompt)
+        except Exception as fallback_exc:  # pragma: no cover - defensive
+            logger.exception("Gemini fallback after provider failure: %s", fallback_exc)
+            return PROVIDER_UNAVAILABLE_MESSAGE
 
 def _coerce_sources(raw_sources: Any) -> List[Dict[str, Any]]:
     if not raw_sources:
@@ -231,6 +376,22 @@ def chatbot_api(request):
     if not user_question:
         return JsonResponse({"error": "Question is required"}, status=400)
 
+    config = get_chatbot_config()
+    if config and not getattr(config, "is_enabled", True):
+        logger.info(
+            "Chatbot disabled via admin config; responding with maintenance message (user=%s)",
+            request.user.pk if request.user.is_authenticated else "anon",
+        )
+        message = config.maintenance_message or PROVIDER_UNAVAILABLE_MESSAGE
+        return JsonResponse(
+            {
+                "response": message,
+                "disabled": True,
+                "maintenance": True,
+                "mode": getattr(config, "mode", ""),
+            }
+        )
+
     try:
         conversation = None
         if ChatbotConversation and request.user.is_authenticated:
@@ -303,7 +464,7 @@ def chatbot_api(request):
         # 2. Knowledge base lookup
         rag_result = search_pdf_knowledge(user_question)
         if rag_result["found"]:
-            response = generate_rag_response(user_question, rag_result["context"])
+            response = generate_rag_response(user_question, rag_result["context"], config=config)
             response_data = {
                 "response": response,
                 "sources": rag_result["sources"],
@@ -339,6 +500,7 @@ def chatbot_api(request):
             conversation=conversation,
             local_resources=suggested_links,
             metadata={"auto_search": True},
+            config=config,
         )
         return JsonResponse(search_payload)
 
@@ -425,7 +587,7 @@ def search_pdf_knowledge(question: str) -> Dict[str, Any]:
     return {"found": True, "context": context, "sources": sources}
 
 
-def generate_rag_response(question: str, context: str) -> str:
+def generate_rag_response(question: str, context: str, config=None) -> str:
     """Use Gemini helper to compose a response using retrieved context."""
     prompt = (
         "You are an academic tutor tasked with answering student questions concisely. "
@@ -433,7 +595,7 @@ def generate_rag_response(question: str, context: str) -> str:
         "state that clearly. Limit the response to 2-3 sentences.\n\n"
         f"Context:\n{context}\n\nQuestion: {question}"
     )
-    return ask_gemini(prompt)
+    return call_primary_model(prompt, config=config)
 
 
 def cache_response(question: str, answer: str, sources: List[Dict[str, Any]], user) -> None:
@@ -533,12 +695,21 @@ def internet_search_api(request):
     if not search_query:
         return JsonResponse({"error": "Search query is required"}, status=400)
 
+    config = get_chatbot_config()
+    if config and not getattr(config, "allow_internet_search", True):
+        logger.info(
+            "Manual internet search blocked by config (user=%s)",
+            request.user.pk if request.user.is_authenticated else "anon",
+        )
+        return JsonResponse({"error": "Internet search is currently disabled by an administrator."}, status=403)
+
     try:
         payload = run_internet_search_flow(
             search_query,
             request.user,
             conversation_id=conversation_id,
             metadata={"manual_search": True},
+            config=config,
         )
         return JsonResponse(payload)
     except Exception as exc:  # pragma: no cover - defensive
@@ -616,7 +787,9 @@ def perform_internet_search(query: str) -> List[Dict[str, str]]:
 
 
 def generate_search_response(
-    query: str, search_results: List[Dict[str, str]]
+    query: str,
+    search_results: List[Dict[str, str]],
+    config=None,
 ) -> tuple[str, List[Dict[str, str]]]:
     if not search_results:
         fallback = (
@@ -679,7 +852,7 @@ def generate_search_response(
                 f"Question: {query}\n"
                 "Answer:"
             )
-        llm_response = ask_gemini(prompt).strip()
+        llm_response = call_primary_model(prompt, config=config).strip()
         if llm_response:
             fallback_text = llm_response
     except Exception:
@@ -696,6 +869,7 @@ def run_internet_search_flow(
     conversation_id=None,
     local_resources=None,
     metadata: Dict[str, Any] | None = None,
+    config=None,
 ):
     log_meta: Dict[str, Any] = dict(metadata or {})
     if local_resources:
@@ -712,8 +886,36 @@ def run_internet_search_flow(
         metadata=log_meta,
     )
 
+    if config and not getattr(config, "allow_internet_search", True):
+        fallback_text = (
+            "I couldn't find a direct answer in the course resources. "
+            "Internet search is currently disabled, so please add your question to the forum for a tutor to assist."
+        )
+        conv_id = conversation.id if conversation is not None else conversation_id
+        logger.info(
+            "Internet search skipped due to config (user=%s, conversation=%s)",
+            getattr(user, "pk", None),
+            conv_id,
+        )
+        payload = {
+            "response": fallback_text,
+            "sources": [],
+            "from_internet": False,
+            "conversation_id": conv_id,
+            "search_disabled": True,
+        }
+        if local_resources:
+            payload["local_resources"] = local_resources
+        return payload
+
+    logger.debug(
+        "Running internet search for query='%s' mode=%s allow_search=%s",
+        query,
+        getattr(config, "mode", None) if config else None,
+        True,
+    )
     results = perform_internet_search(query)
-    response_text, enriched_results = generate_search_response(query, results)
+    response_text, enriched_results = generate_search_response(query, results, config=config)
 
     conv_id = conversation.id if conversation is not None else conversation_id
     cache_response(query, response_text, enriched_results, user)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -18,6 +19,9 @@ from main.utils.roles import (
 )
 
 User = get_user_model()
+
+
+logger = logging.getLogger(__name__)
 
 
 def _serialize_user(u):
@@ -437,3 +441,61 @@ def api_admin_resource_document_detail(request: HttpRequest, pk: int):
     if changed:
         doc.save()
     return JsonResponse({"ok": True})
+
+
+@require_http_methods(["GET", "PATCH"])
+@login_required
+def api_admin_chatbot_config(request: HttpRequest):
+    if not _require_admin(request):
+        return JsonResponse({"error": "forbidden"}, status=403)
+    from main.models.chatbot_config import ChatbotConfig
+
+    config = ChatbotConfig.load()
+    if request.method == "GET":
+        logger.debug("Admin requested chatbot config load for user %s", request.user.pk)
+        return JsonResponse({"config": config.as_dict(include_sensitive=True)})
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    logger.info("Admin %s updating chatbot config: %s", request.user.pk, payload.keys())
+
+    valid_modes = {choice[0] for choice in ChatbotConfig.MODE_CHOICES}
+    mode = payload.get("mode")
+    if mode and mode not in valid_modes:
+        return JsonResponse({"error": "Invalid mode selected"}, status=400)
+
+    if "is_enabled" in payload:
+        config.is_enabled = bool(payload["is_enabled"])
+    if mode:
+        config.mode = mode
+    if "allow_internet_search" in payload:
+        config.allow_internet_search = bool(payload["allow_internet_search"])
+    if "maintenance_message" in payload:
+        message = (payload.get("maintenance_message") or "").strip()
+        if message:
+            config.maintenance_message = message
+    if "gemini_model" in payload:
+        config.gemini_model = (payload.get("gemini_model") or "").strip()
+    if "external_api_base_url" in payload:
+        config.external_api_base_url = (payload.get("external_api_base_url") or "").strip()
+    if "external_model" in payload:
+        config.external_model = (payload.get("external_model") or "").strip()
+    if "ollama_api_base_url" in payload:
+        config.ollama_api_base_url = (payload.get("ollama_api_base_url") or "").strip()
+    if "ollama_model" in payload:
+        config.ollama_model = (payload.get("ollama_model") or "").strip()
+    if "external_api_key" in payload:
+        config.external_api_key = (payload.get("external_api_key") or "").strip()
+
+    config.save()
+    logger.info(
+        "Chatbot config updated by admin %s: enabled=%s mode=%s search=%s",
+        request.user.pk,
+        config.is_enabled,
+        config.mode,
+        config.allow_internet_search,
+    )
+    return JsonResponse({"config": config.as_dict(include_sensitive=True)})

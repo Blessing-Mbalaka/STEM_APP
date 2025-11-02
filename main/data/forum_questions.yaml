@@ -49,5 +49,56 @@
       "display_name": "Willie Leroux"
     },
     "created_at": "2025-10-31T12:42:18.047467+00:00"
+  },
+  {
+    "id": 10,
+    "slug": "test-2",
+    "title": "test",
+    "body": "test",
+    "category": {
+      "id": 1,
+      "slug": "Math_Theory",
+      "name": "Math Fundamentals"
+    },
+    "author": {
+      "id": 17,
+      "username": "sarahlazuko@gmail.com",
+      "display_name": "Sarah Lazuko"
+    },
+    "created_at": "2025-11-02T14:14:35.928264+00:00"
+  },
+  {
+    "id": 11,
+    "slug": "graph-interpretation",
+    "title": "Graph Interpretation",
+    "body": "help me analyse this, what does it mean?",
+    "category": {
+      "id": 1,
+      "slug": "Math_Theory",
+      "name": "Math Fundamentals"
+    },
+    "author": {
+      "id": 17,
+      "username": "sarahlazuko@gmail.com",
+      "display_name": "Sarah Lazuko"
+    },
+    "created_at": "2025-11-02T14:27:55.815131+00:00"
+  },
+  {
+    "id": 12,
+    "slug": "math",
+    "title": "math",
+    "body": "math",
+    "category": {
+      "id": 1,
+      "slug": "Math_Theory",
+      "name": "Math Fundamentals"
+    },
+    "author": {
+      "id": 17,
+      "username": "sarahlazuko@gmail.com",
+      "display_name": "Sarah Lazuko"
+    },
+    "created_at": "2025-11-02T14:36:18.160786+00:00"
   }
 ]

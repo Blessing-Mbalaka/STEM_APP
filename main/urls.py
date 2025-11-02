@@ -63,6 +63,7 @@ from main.views.adminui import (
     api_admin_resource_documents,
     api_admin_resource_upload,
     api_admin_resource_document_detail,
+    api_admin_chatbot_config,
     
     
     
@@ -174,6 +175,7 @@ urlpatterns = [
     path('api/admin/resource-documents', api_admin_resource_documents, name='api_admin_resource_documents'),
     path('api/admin/resource-documents/<int:pk>', api_admin_resource_document_detail, name='api_admin_resource_document_detail'),
     path('api/admin/resource-upload', api_admin_resource_upload, name='api_admin_resource_upload'),
+    path('api/admin/chatbot-config', api_admin_chatbot_config, name='api_admin_chatbot_config'),
     path('api/admin/users', api_admin_users, name='api_admin_users'),
     path('api/admin/users/<int:pk>', api_admin_user_update, name='api_admin_user_update'),
     path('api/admin/content/pending', api_admin_content_pending, name='api_admin_content_pending'),

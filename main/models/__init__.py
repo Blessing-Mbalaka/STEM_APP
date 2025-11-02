@@ -6,6 +6,7 @@ from .resource import ResourceCategory, ResourceDocument
 from .classes import ClassSession, Reservation
 from .forum import ForumCategory, Thread, Post, PostLike
 from .message import Message
+from .chatbot_config import ChatbotConfig
 
 __all__ = [
     "CustomUser", "Profile",
@@ -14,5 +15,5 @@ __all__ = [
     "ResourceCategory", "ResourceDocument",
     "ClassSession", "Reservation",
     "ForumCategory", "Thread", "Post", "PostLike",
-    "Message",
+    "Message", "ChatbotConfig",
 ]

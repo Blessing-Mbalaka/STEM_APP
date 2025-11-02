@@ -1,0 +1,301 @@
+<div class="tile tile--wide">
+  <div class="tile-title">Chatbot Assistant Controls</div>
+  <p class="tile-subtitle">Configure the forum chatbot, switch between providers, and schedule maintenance messaging.</p>
+  <div class="chatbot-config-card">
+    <form id="chatbotConfigForm" autocomplete="off">
+      <div class="cfg-grid">
+        <label for="cfg-enabled">Availability</label>
+        <div class="cfg-field">
+          <select id="cfg-enabled" name="is_enabled">
+            <option value="true">Active – chatbot visible to students</option>
+            <option value="false">Maintenance mode – show notice only</option>
+          </select>
+          <p class="cfg-hint">Toggle to temporarily disable the assistant without changing other settings.</p>
+        </div>
+      </div>
+
+      <div class="cfg-grid">
+        <label for="cfg-mode">Provider</label>
+        <div class="cfg-field">
+          <select id="cfg-mode" name="mode">
+            <option value="gemini">Gemini (current default)</option>
+            <option value="external">External REST API</option>
+            <option value="ollama">Ollama (local)</option>
+          </select>
+          <p class="cfg-hint">Choose the model backend used when answering forum questions.</p>
+        </div>
+      </div>
+
+      <div class="cfg-grid">
+        <label for="cfg-search">Internet search</label>
+        <div class="cfg-field">
+          <select id="cfg-search" name="allow_internet_search">
+            <option value="true">Allow internet search fallback</option>
+            <option value="false">Disable internet search (subject-only)</option>
+          </select>
+          <p class="cfg-hint">Disable this when you want strictly course-related resources.</p>
+        </div>
+      </div>
+
+      <div class="cfg-grid">
+        <label for="cfg-maint">Maintenance message</label>
+        <div class="cfg-field">
+          <textarea id="cfg-maint" name="maintenance_message" rows="3"></textarea>
+          <p class="cfg-hint">Displayed when the chatbot is disabled (maintenance mode).</p>
+        </div>
+      </div>
+
+      <div class="cfg-section" data-mode-section="gemini">
+        <div class="cfg-grid">
+          <label for="cfg-gemini-model">Gemini model</label>
+          <div class="cfg-field">
+            <input id="cfg-gemini-model" name="gemini_model" type="text" placeholder="Optional override e.g. gemini-2.0-pro-exp">
+            <p class="cfg-hint">Leave blank to use the default Gemini settings from the server.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cfg-section" data-mode-section="external">
+        <div class="cfg-grid">
+          <label for="cfg-external-base">External API URL</label>
+          <div class="cfg-field">
+            <input id="cfg-external-base" name="external_api_base_url" type="url" placeholder="https://api.example.com/v1/chat/completions">
+            <p class="cfg-hint">Full endpoint for your hosted provider.</p>
+          </div>
+        </div>
+        <div class="cfg-grid">
+          <label for="cfg-external-key">API key</label>
+          <div class="cfg-field">
+            <input id="cfg-external-key" name="external_api_key" type="password" placeholder="••••••••">
+            <p class="cfg-hint">The key is stored encrypted in the database. Leave blank to keep existing value.</p>
+          </div>
+        </div>
+        <div class="cfg-grid">
+          <label for="cfg-external-model">Model name</label>
+          <div class="cfg-field">
+            <input id="cfg-external-model" name="external_model" type="text" placeholder="gpt-4o-mini">
+            <p class="cfg-hint">Used by some providers to select a specific model.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cfg-section" data-mode-section="ollama">
+        <div class="cfg-grid">
+          <label for="cfg-ollama-base">Ollama host</label>
+          <div class="cfg-field">
+            <input id="cfg-ollama-base" name="ollama_api_base_url" type="url" placeholder="http://localhost:11434">
+            <p class="cfg-hint">Make sure the forum server can reach this Ollama endpoint.</p>
+          </div>
+        </div>
+        <div class="cfg-grid">
+          <label for="cfg-ollama-model">Ollama model</label>
+          <div class="cfg-field">
+            <input id="cfg-ollama-model" name="ollama_model" type="text" placeholder="llama3:latest">
+            <p class="cfg-hint">Matches the model tag pulled with <code>ollama list</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cfg-actions">
+        <span id="chatbotConfigStatus" class="cfg-status" role="status" aria-live="polite"></span>
+        <button class="btn" type="submit"><i class="fas fa-save"></i> Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+<style>
+  .chatbot-config-card {
+    margin-top: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 14px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.9);
+  }
+  .cfg-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .cfg-grid label {
+    font-weight: 600;
+    color: var(--secondary-orange, #8b3d02);
+    padding-top: 4px;
+  }
+  .cfg-field input,
+  .cfg-field select,
+  .cfg-field textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #d5d9de;
+    font-size: 14px;
+  }
+  .cfg-field textarea {
+    resize: vertical;
+  }
+  .cfg-hint {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #6b6f76;
+  }
+  .cfg-section {
+    display: none;
+    border-top: 1px dashed rgba(0, 0, 0, 0.05);
+    padding-top: 14px;
+    margin-top: 10px;
+  }
+  .cfg-section.is-active {
+    display: block;
+  }
+  .cfg-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .cfg-status {
+    font-size: 14px;
+    color: #2b7a0b;
+    min-height: 18px;
+  }
+  .cfg-status.is-error {
+    color: #c0392b;
+  }
+  @media (max-width: 720px) {
+    .cfg-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+<script>
+  (function () {
+    const form = document.getElementById('chatbotConfigForm');
+    if (!form) return;
+    const statusEl = document.getElementById('chatbotConfigStatus');
+    const modeField = document.getElementById('cfg-mode');
+    const sections = Array.from(form.querySelectorAll('[data-mode-section]'));
+
+    function getCsrf() {
+      const match = document.cookie.match(/csrftoken=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function showStatus(message, isError = false) {
+      if (!statusEl) return;
+      statusEl.textContent = message || '';
+      statusEl.classList.toggle('is-error', !!isError);
+    }
+
+    function toggleSections(mode) {
+      sections.forEach((section) => {
+        const targetMode = section.getAttribute('data-mode-section');
+        section.classList.toggle('is-active', targetMode === mode);
+      });
+    }
+
+    async function loadConfig() {
+      try {
+        showStatus('Loading configuration…', false);
+        const res = await fetch('/api/admin/chatbot-config', {
+          headers: { 'X-CSRFToken': getCsrf() },
+          credentials: 'same-origin',
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to load settings');
+        }
+        console.debug('Chatbot config loaded', data);
+        applyConfig(data.config || {});
+        showStatus('Configuration loaded.', false);
+        setTimeout(() => showStatus(''), 1500);
+      } catch (error) {
+        showStatus(error.message || 'Unable to load configuration.', true);
+      }
+    }
+
+    function applyConfig(config) {
+      const fallbackMessage =
+        'Our AI assistant is currently undergoing maintenance. Please post your question in the forum and the next available tutor will respond.';
+      console.debug('Applying chatbot config to form', config);
+      form.elements.is_enabled.value = String(
+        config.is_enabled !== undefined ? config.is_enabled : true
+      );
+      form.elements.mode.value = config.mode || 'gemini';
+      form.elements.allow_internet_search.value = String(
+        config.allow_internet_search !== undefined ? config.allow_internet_search : true
+      );
+      form.elements.maintenance_message.value = config.maintenance_message || fallbackMessage;
+      form.elements.gemini_model.value = config.gemini_model || '';
+      form.elements.external_api_base_url.value = config.external_api_base_url || '';
+      form.elements.external_model.value = config.external_model || '';
+      form.elements.ollama_api_base_url.value = config.ollama_api_base_url || '';
+      form.elements.ollama_model.value = config.ollama_model || '';
+      if (form.elements.external_api_key) {
+        form.elements.external_api_key.value = '';
+        form.elements.external_api_key.placeholder = config.external_api_key
+          ? 'Key stored (leave blank to keep)'
+          : '••••••••';
+      }
+      toggleSections(form.elements.mode.value);
+    }
+
+    async function submitConfig(event) {
+      event.preventDefault();
+      showStatus('Saving…', false);
+      const payload = {
+        is_enabled: form.elements.is_enabled.value === 'true',
+        mode: form.elements.mode.value,
+        allow_internet_search: form.elements.allow_internet_search.value === 'true',
+        maintenance_message: form.elements.maintenance_message.value.trim(),
+        gemini_model: form.elements.gemini_model.value.trim(),
+        external_api_base_url: form.elements.external_api_base_url.value.trim(),
+        external_model: form.elements.external_model.value.trim(),
+        ollama_api_base_url: form.elements.ollama_api_base_url.value.trim(),
+        ollama_model: form.elements.ollama_model.value.trim(),
+      };
+      const apiKey = form.elements.external_api_key.value.trim();
+      if (apiKey) {
+        payload.external_api_key = apiKey;
+      }
+      if (!payload.maintenance_message) {
+        payload.maintenance_message =
+          'Our AI assistant is currently undergoing maintenance. Please post your question in the forum and the next available tutor will respond.';
+      }
+      try {
+        console.debug('Submitting chatbot config payload', payload);
+        const res = await fetch('/api/admin/chatbot-config', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrf(),
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || 'Unable to save changes');
+        }
+        console.debug('Chatbot config saved response', data);
+        applyConfig(data.config || {});
+        showStatus('Saved successfully.', false);
+        setTimeout(() => showStatus(''), 2000);
+      } catch (error) {
+        showStatus(error.message || 'Save failed.', true);
+        console.error('Chatbot config save failed', error);
+      }
+    }
+
+    form.addEventListener('submit', submitConfig);
+    modeField.addEventListener('change', (event) => {
+      toggleSections(event.target.value);
+    });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadConfig);
+    } else {
+      loadConfig();
+    }
+  })();
+</script>
