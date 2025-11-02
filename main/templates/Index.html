@@ -435,7 +435,8 @@
         .header-dashboard { height: auto !important; padding: 16px 10px !important; }
         /* hide expanded sidebar text on very small screens */
         .sidebar .nav-text { display: none !important; }
-    }
+
+
 
 </style>
 </head>
@@ -468,7 +469,7 @@
             <span class="nav-text">Resources</span>
         </a>
      
-        <a href="#" class="nav-item" id="logoutLink">
+        <a href="#" class="nav-item logout-link">
             <i class="fas fa-right-from-bracket"></i>
             <span class="nav-text">Logout</span>
         </a>
@@ -478,10 +479,8 @@
     <div class="main-content">
         <div class="container">
             <div class="header-dashboard">
+                <span class="site-user-name" style="display:none;">{{ request.user.get_full_name|default:request.user.username }}</span>
                 <h1 class="welcome-message" id="welcomeMessage">&nbsp;</h1>
-                <div class="site-banner">
-      <span class="site-user-name">{{ request.user.get_full_name|default:request.user.username }}</span>
-    </div>
                 <p>Learn new skills, earn badges, and unlock your potential</p>
             </div>
 
@@ -571,6 +570,11 @@
             <span>Profile</span>
             <div class="nav-tooltip">Profile</div>
         </a>
+        <a href="#" class="nav-item logout-link">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+            <div class="nav-tooltip">Logout</div>
+        </a>
     </div>
 
     <script src="{% static 'js/api.js' %}"></script>
@@ -595,6 +599,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     else greeting = "Good evening";
 
     const welcomeMessage = document.getElementById('welcomeMessage');
+    const nameHolder = document.querySelector('.site-user-name');
+    const initialName = (nameHolder?.textContent || '').trim();
+    const setWelcome = (rawName) => {
+        const display = (rawName && rawName.trim()) || initialName || "Learner";
+        welcomeMessage.textContent = `${greeting}, ${display}! Ready to Learn Today?`;
+        if (nameHolder) nameHolder.textContent = display;
+    };
+
+    setWelcome();
 
     try {
         // fetch /api/me to get logged-in user
@@ -602,13 +615,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (res.ok) {
             const user = await res.json();
             const name = (user.display_name && user.display_name.trim()) || [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || "Learner";
-            welcomeMessage.textContent = `${greeting}, ${name}! Ready to Learn Today?`;
+            setWelcome(name);
         } else {
-            welcomeMessage.textContent = `${greeting}! Ready to Learn Today?`;
+            setWelcome();
         }
     } catch (err) {
         console.warn("Failed to load user:", err);
-        welcomeMessage.textContent = `${greeting}! Ready to Learn Today?`;
+        setWelcome();
     }
 
     // Tile click animations + confetti
@@ -623,22 +636,24 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Active nav item toggle
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', function() {
+            if (this.classList.contains('logout-link')) {
+                return;
+            }
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
         });
     });
 
     // Logout handler
-    const logoutLink = document.getElementById('logoutLink');
-    if (logoutLink){
-        logoutLink.addEventListener('click', async (e) => {
+    document.querySelectorAll('.logout-link').forEach(link => {
+        link.addEventListener('click', async (e) => {
             e.preventDefault();
             try {
                 await api('/api/auth/logout', { method: 'POST' });
             } catch(_) {}
             window.location.href = '/login/';
         });
-    }
+    });
 
     // Show profile hint once for students (non-staff/tutor)
     try {
