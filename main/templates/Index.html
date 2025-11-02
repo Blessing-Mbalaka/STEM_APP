@@ -600,22 +600,30 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const welcomeMessage = document.getElementById('welcomeMessage');
     const nameHolder = document.querySelector('.site-user-name');
-    const initialName = (nameHolder?.textContent || '').trim();
+    const storedName = (() => {
+        try { return (localStorage.getItem('profile_display_name') || '').trim(); }
+        catch (_) { return ''; }
+    })();
+    const initialName = storedName || (nameHolder?.textContent || '').trim();
     const setWelcome = (rawName) => {
         const display = (rawName && rawName.trim()) || initialName || "Learner";
         welcomeMessage.textContent = `${greeting}, ${display}! Ready to Learn Today?`;
         if (nameHolder) nameHolder.textContent = display;
+        try { localStorage.setItem('profile_display_name', display); } catch (_) {}
     };
 
     setWelcome();
 
     try {
-        // fetch /api/me to get logged-in user
-        const res = await fetch("/api/me");
-        if (res.ok) {
-            const user = await res.json();
-            const name = (user.display_name && user.display_name.trim()) || [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || "Learner";
-            setWelcome(name);
+        const me = await api('/api/me');
+        if (me && me.authenticated) {
+            const nameFromProfile = [me.first_name, me.last_name].filter(Boolean).join(' ').trim();
+            const preferredDisplay =
+                nameFromProfile
+                || (me.display_name && me.display_name.trim())
+                || me.username
+                || "Learner";
+            setWelcome(preferredDisplay);
         } else {
             setWelcome();
         }
@@ -692,25 +700,6 @@ document.addEventListener("DOMContentLoaded", function() {
         btn.classList.toggle('active', btn.dataset.lang === lang);
     });
 });
-</script>
-
-<script>
-// merge into local state if you use it
-profileData = Object.assign({}, profileData, res);
-
-// canonical display name (prefer server-provided)
-const display = res.display_name || res.displayName || 
-                [res.first_name || res.firstName || profileData.firstName, res.last_name || res.lastName || profileData.lastName].filter(Boolean).join(' ') || res.username || 'Learner';
-
-// update DOM places
-document.querySelectorAll('.site-user-name').forEach(el => el.textContent = display);
-const profileNameEl = document.getElementById('profileName');
-if (profileNameEl) profileNameEl.textContent = display;
-// any sidebar/profile-card selectors you use:
-document.querySelectorAll('.sidebar .user-name, .profile-card .user-name').forEach(el => el.textContent = display);
-
-// optionally call renderProfile() if you have a function to re-render the profile area
-if (typeof renderProfile === 'function') renderProfile();
 </script>
 
 </body>
