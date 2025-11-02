@@ -156,6 +156,25 @@
       color: var(--text-light);
     }
 
+    .tile--wide {
+      grid-column: 1 / -1;
+      display: block;
+    }
+
+    .tile--wide .tile-title {
+      font-size: 20px;
+      margin-bottom: 6px;
+      color: var(--secondary-orange);
+    }
+
+    .tile--wide .tile-subtitle {
+      margin-bottom: 16px;
+    }
+
+    .tile--wide .quiz-builder {
+      margin-top: 12px;
+    }
+
     @media (max-width: 768px) {
       .hero {
         padding: 24px;
@@ -209,6 +228,11 @@
           <p class="tile-subtitle">Bulk upload subject material for classrooms</p>
         </div>
       </a>
+      <div class="tile tile--wide">
+        <div class="tile-title">Quick Quiz Builder</div>
+        <p class="tile-subtitle">Create or update games and questions without leaving this dashboard.</p>
+        {% include "partials/quiz_builder.html" with initial_quizzes=quiz_bootstrap %}
+      </div>
     </section>
   </div>
   <script>

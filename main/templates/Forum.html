@@ -814,7 +814,9 @@
         </header>
 
         <div class="forum-container">
-            <div class="forum-header">
+            <!-- Invisible toggle: force subject-only filtering on all chatbot/source searches -->
+            <input type="checkbox" id="subjectOnlyToggle" checked style="display:none" aria-hidden="true">
+             <div class="forum-header">
                 <div class="search-bar-container">
                     <input type="text" class="search-bar" id="search-input" placeholder="Search questions...">
                 </div>
@@ -972,11 +974,13 @@ const closeQuestionModal = document.getElementById('close-question-modal');
 const cancelQuestionBtn = document.getElementById('cancel-question');
 const submitQuestionBtn = document.getElementById('submit-question');
 const askBotBtn = document.getElementById('ask-bot-btn');
-const botChat = document.getElementById('bot-chat');
 const closeBotBtn = document.getElementById('close-bot');
+const botSendBtn = document.getElementById('bot-send');
+
+// add these missing declarations so botChat/botMessages/botInput exist
+const botChat = document.getElementById('bot-chat');
 const botMessages = document.getElementById('bot-messages');
 const botInput = document.getElementById('bot-input');
-const botSendBtn = document.getElementById('bot-send');
 
 const fileUpload = document.getElementById('file-upload');
 const questionImage = document.getElementById('question-image');
@@ -1444,6 +1448,9 @@ function attachSources(element, sources, heading = 'Sources') {
   container.appendChild(title);
 
   const list = document.createElement('ul');
+  // hosts we want to render as compact "[link]"
+  const compactHostSet = new Set(['duckduckgo.com']);
+
   sources.forEach((source) => {
     const item = document.createElement('li');
     if (source && source.url) {
@@ -1452,304 +1459,185 @@ function attachSources(element, sources, heading = 'Sources') {
       link.href = source.url;
       link.target = '_blank';
       link.rel = 'noopener';
-      link.textContent = source.title || source.url;
+      // choose compact text for certain hosts (e.g. DuckDuckGo)
+      let renderedText = source.title || source.url;
+      try {
+        const host = (new URL(source.url)).hostname.replace(/^www\./, '').toLowerCase();
+        if (compactHostSet.has(host)) renderedText = '[link]';
+      } catch (e) { /* ignore */ }
+      link.textContent = renderedText;
       item.appendChild(link);
 
       try {
         const parsed = new URL(source.url);
         const host = parsed.hostname.replace(/^www\./, '');
         if (!source.title && host) {
+          // only show host as label when there is no title
           link.textContent = host;
+          // don't overwrite compact rendering
+          if (link.textContent === source.url) link.textContent = host;
         }
-        if (host) {
-          const hostLabel = document.createElement('span');
-          hostLabel.className = 'message-source-host';
-          hostLabel.textContent = host;
-          item.appendChild(hostLabel);
+        if (source.excerpt) {
+          const excerpt = document.createElement('div');
+          excerpt.className = 'message-source-excerpt';
+          excerpt.textContent = source.excerpt;
+          item.appendChild(excerpt);
         }
-      } catch (e) {
-        // ignore invalid URL
-      }
-    } else if (source && source.title) {
-      const titleOnly = document.createElement('span');
-      titleOnly.className = 'message-source-link';
-      titleOnly.textContent = source.title;
-      item.appendChild(titleOnly);
-    } else if (typeof source === 'string') {
-      const textOnly = document.createElement('span');
-      textOnly.className = 'message-source-link';
-      textOnly.textContent = source;
-      item.appendChild(textOnly);
-    }
+      } catch (e) { /* ignore */ }
 
-    if (source && source.excerpt) {
-      const excerpt = document.createElement('div');
-      excerpt.className = 'message-source-excerpt';
-      excerpt.textContent = source.excerpt;
-      item.appendChild(excerpt);
+      list.appendChild(item);
     }
-
-    list.appendChild(item);
   });
+
   container.appendChild(list);
   element.appendChild(container);
 }
 
-async function getBotResponse(question) {
-  const res = await fetch('/api/chatbot/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrftoken
-    },
-    body: JSON.stringify({
-      question,
-      conversation_id: chatbotState.conversationId
-    })
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || data.response || 'The tutor is unavailable right now.');
-  }
-  return data;
-}
+// ================== Search ==================
+const searchDelay = 300;
+let searchTimeout = null;
 
-async function requestInternetSearch(query, conversationId) {
-  const payload = { query };
-  if (conversationId) {
-    payload.conversation_id = conversationId;
-  }
-  const res = await fetch('/api/chatbot/search/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrftoken
-    },
-    body: JSON.stringify(payload)
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || 'Unable to fetch internet results right now.');
-  }
-  return data;
-}
+searchInput.addEventListener('input', (e) => {
+  const query = e.target.value.trim();
+  currentSearch = query;
+  
+  if (searchTimeout) clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    loadThreads();
+    if (query) {
+      botChat.classList.add('active');
+      setMessageContent(botMessages.firstElementChild, `Searching for: "${query}"`);
+      chatbotState.pendingSearchQuery = query;
+      runChatbotQuery();
+    } else {
+      botChat.classList.remove('active');
+      botMessages.innerHTML = '';
+    }
+  }, searchDelay);
+});
 
-function appendUserMessage(text) {
-  const message = document.createElement('div');
-  message.className = 'message user-message';
-  message.textContent = text;
-  botMessages.appendChild(message);
-  botMessages.scrollTop = botMessages.scrollHeight;
-  return message;
-}
-
-function appendBotMessage(text, options = {}) {
-  const message = document.createElement('div');
-  message.className = 'message bot-message';
-  if (options.loading) {
-    message.classList.add('is-loading');
+document.getElementById('subjectOnlyToggle').addEventListener('change', (e) => {
+  const checked = e.target.checked;
+  if (checked) {
+    botChat.classList.add('active');
+    setMessageContent(botMessages.firstElementChild, `Searching for: "${currentSearch}"`);
+    runChatbotQuery();
+  } else {
+    botChat.classList.remove('active');
+    botMessages.innerHTML = '';
   }
-  botMessages.appendChild(message);
-  setMessageContent(message, text);
-  botMessages.scrollTop = botMessages.scrollHeight;
-  return message;
-}
+});
 
-async function performInternetSearch(query, conversationId, triggerButton) {
+async function runChatbotQuery(){
+  const query = chatbotState.pendingSearchQuery;
   if (!query) return;
-  if (triggerButton) {
-    triggerButton.disabled = true;
-    triggerButton.textContent = 'Searching...';
-  }
-  chatbotState.pendingSearchQuery = null;
-  const loader = appendBotMessage('Searching online...', { loading: true });
-  try {
-    const data = await requestInternetSearch(query, conversationId);
-    loader.classList.remove('is-loading');
-    setMessageContent(loader, data.response || 'Here is what I found online.');
-    appendMeta(loader, 'Information gathered from the internet.');
-    if (Array.isArray(data.sources) && data.sources.length) {
-      attachSources(loader, data.sources);
-    }
-    if (Array.isArray(data.local_resources) && data.local_resources.length) {
-      attachSources(loader, data.local_resources, "Campus resources to review");
-    }
-    if (data.conversation_id) {
-      chatbotState.conversationId = data.conversation_id;
-    }
-  } catch (error) {
-    loader.classList.remove('is-loading');
-    loader.classList.add('has-error');
-    setMessageContent(loader, error.message || 'Internet search failed.');
-  } finally {
-    if (triggerButton) {
-      triggerButton.remove();
-    }
-  }
-}
 
-async function sendBotMessage(){
-  const message = botInput.value.trim();
-  if (!message) return;
+  // simple debounce: ignore new results if a newer request is pending
+  if (chatbotState.conversationId) {
+    try {
+      await api(`/api/chatbot/conversation/${chatbotState.conversationId}/stop`, { method: 'POST' });
+    } catch (e) { /* ignore errors */ }
+  }
 
-  const normalized = message.toLowerCase();
-  if (chatbotState.pendingSearchQuery && /^(yes|y|sure|ok|please|search)/.test(normalized)) {
-    appendUserMessage(message);
-    botInput.value = '';
-    const query = chatbotState.pendingSearchQuery;
-    chatbotState.pendingSearchQuery = null;
-    await performInternetSearch(query, chatbotState.conversationId);
+  const params = new URLSearchParams();
+  params.set('q', query);
+  params.set('subject_only', '1'); // force subject-only mode
+  if (currentCategorySlug) params.set("category", currentCategorySlug);
+
+  const response = await fetch(`/api/chatbot/query?${params.toString()}`, {
+    method: 'GET',
+    headers: {
+      'X-CSRFToken': csrftoken
+    }
+  });
+
+  const result = await response.json();
+  if (!response.ok) {
+    setMessageContent(botMessages.lastElementChild, `Error: ${result.error || 'Unknown error'}`);
     return;
   }
 
-  appendUserMessage(message);
-  botInput.value = '';
+  const { conversation_id, answer, sources } = result;
+  chatbotState.conversationId = conversation_id;
 
-  const placeholder = appendBotMessage('Thinking...', { loading: true });
+  // smooth scroll to bottom
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  };
 
-  try{
-    const data = await getBotResponse(message);
-    placeholder.classList.remove('is-loading');
-    chatbotState.conversationId = data.conversation_id || chatbotState.conversationId;
-    chatbotState.pendingSearchQuery = null;
+  // clear previous messages
+  botMessages.innerHTML = '';
 
-    setMessageContent(placeholder, data.response || "I'm still learning, could you rephrase that?");
+  // render answer
+  const answerDiv = document.createElement('div');
+  answerDiv.className = 'message bot-message';
+  answerDiv.style.opacity = '0';
+  setMessageContent(answerDiv, answer);
+  botMessages.appendChild(answerDiv);
 
-    if (data.from_arithmetic) {
-      appendMeta(placeholder, 'Computed using built-in arithmetic.');
-    }
-    if (data.from_cache) {
-      appendMeta(placeholder, 'Answered from recent conversation history.');
-    }
-    if (data.from_internet) {
-      appendMeta(placeholder, 'Information gathered from the web.');
-    }
+  // render sources
+  attachSources(answerDiv, sources);
 
-    if (Array.isArray(data.sources) && data.sources.length) {
-      attachSources(placeholder, data.sources);
-    }
-    if (Array.isArray(data.local_resources) && data.local_resources.length) {
-      attachSources(placeholder, data.local_resources, "Campus resources to review");
-    }
-
-    if (data.needs_internet_search) {
-      chatbotState.pendingSearchQuery = data.search_query || message;
-      appendMeta(placeholder, 'I could not find this in the course materials.');
-      const action = document.createElement('button');
-      action.type = 'button';
-      action.className = 'message-action';
-      action.textContent = 'Search the Internet';
-      action.addEventListener('click', () => {
-        chatbotState.pendingSearchQuery = null;
-        performInternetSearch(
-          data.search_query || message,
-          data.conversation_id || chatbotState.conversationId,
-          action
-        );
-      });
-      placeholder.appendChild(action);
-    }
-  }catch(error){
-    chatbotState.pendingSearchQuery = null;
-    placeholder.classList.remove('is-loading');
-    placeholder.classList.add('has-error');
-    setMessageContent(placeholder, error.message || 'The tutor is unavailable right now.');
-  }finally{
-    botMessages.scrollTop = botMessages.scrollHeight;
-  }
-}
-// ================ Events =================
-newQuestionBtn.addEventListener('click', () => newQuestionModal.classList.add('active'));
-closeQuestionModal.addEventListener('click', () => newQuestionModal.classList.remove('active'));
-cancelQuestionBtn.addEventListener('click', () => newQuestionModal.classList.remove('active'));
-submitQuestionBtn.addEventListener('click', submitQuestion);
-
-askBotBtn.addEventListener('click', () => botChat.classList.toggle('active'));
-closeBotBtn.addEventListener('click', () => botChat.classList.remove('active'));
-botSendBtn.addEventListener('click', sendBotMessage);
-botInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendBotMessage(); });
-
-// File previews (kept client-side; no upload API yet)
-fileUpload?.addEventListener('click', () => questionImage.click());
-questionImage?.addEventListener('change', () => {
-  if (questionImage.files && questionImage.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (e) => { previewImage.src = e.target.result; previewImage.style.display = 'block'; };
-    reader.readAsDataURL(questionImage.files[0]);
-  }
-});
-answerFileUpload?.addEventListener('click', () => answerImage.click());
-answerImage?.addEventListener('change', () => {
-  if (answerImage.files && answerImage.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (e) => { answerPreviewImage.src = e.target.result; answerPreviewImage.style.display = 'block'; };
-    reader.readAsDataURL(answerImage.files[0]);
-  }
-});
-
-closeAnswerModal.addEventListener('click', () => answerModal.classList.remove('active'));
-cancelAnswerBtn.addEventListener('click', () => answerModal.classList.remove('active'));
-submitAnswerBtn.addEventListener('click', submitAnswer);
-
-// Tabs (use data-sort or data-tag for category slug)
-forumTabs.forEach(tab => {
-  tab.addEventListener('click', async () => {
-    forumTabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-
-    if (tab.dataset.sort){
-      currentSort = tab.dataset.sort;
-      applySort();
-      renderThreads();
-    } else if (tab.dataset.tag){
-      currentCategorySlug = tab.dataset.tag; // assumes your tab’s data-tag == backend category slug
-      await loadThreads();
-    }
+  // animate in
+  requestAnimationFrame(() => {
+    answerDiv.style.opacity = '1';
+    scrollToBottom();
   });
-});
+}
 
-// Search
-searchInput.addEventListener('input', async () => {
-  currentSearch = searchInput.value;
-  await loadThreads();
-});
-
-// Expose for inline handlers if needed
-window.toggleAnswers = toggleAnswers;
-window.openAnswerModal = openAnswerModal;
-window.toggleThreadLike = toggleThreadLike;
-window.togglePostLike = togglePostLike;
-
-// ================ Init =================
-(async function init(){
-  await loadCategories();
-  await loadThreads();
-})();
-</script>
-
-
-<script src="{% static 'js/translation.js' %}"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    setupLanguageToggle();
-    const lang = localStorage.getItem('preferredLanguage') || 'en';
-    applyTranslations(lang);
-    // Optionally, set the active toggle button
-    document.querySelectorAll('.language-toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
+// ======= Bot controls (ensure bot opens/sends/closes) =======
+(function wireBotControls(){
+  if (askBotBtn) {
+    askBotBtn.addEventListener('click', () => {
+      botChat.classList.add('active');
+      // show greeting if empty
+      if (!botMessages.children.length) {
+        const welcome = document.createElement('div');
+        welcome.className = 'message bot-message';
+        welcome.textContent = "Hello! I'm your AI tutor assistant. How can I help you with your studies today?";
+        botMessages.appendChild(welcome);
+      }
+      botInput.focus();
+      // optionally trigger a search if user has typed in main search
+      if (currentSearch) {
+        chatbotState.pendingSearchQuery = currentSearch;
+        runChatbotQuery();
+      }
     });
-});
-</script>
+  }
 
-<script src="{% static 'js/chatbot.js' %}"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // ...existing translation logic...
-    botSendBtn.addEventListener('click', sendBotMessage);
-    botInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendBotMessage(); });
-});
-</script>
+  if (closeBotBtn) {
+    closeBotBtn.addEventListener('click', () => {
+      botChat.classList.remove('active');
+    });
+  }
 
+  if (botSendBtn && botInput) {
+    botSendBtn.addEventListener('click', () => {
+      const q = botInput.value.trim();
+      if (!q) return;
+      // append user message
+      const userDiv = document.createElement('div');
+      userDiv.className = 'message user-message';
+      userDiv.innerHTML = escapeHtml(q).replace(/\n/g,'<br>');
+      botMessages.appendChild(userDiv);
+      botInput.value = '';
+      botMessages.scrollTop = botMessages.scrollHeight;
+      chatbotState.pendingSearchQuery = q;
+      runChatbotQuery();
+    });
+
+    botInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        botSendBtn.click();
+      }
+    });
+  }
+})();
+ 
+// ================== Init ==================
+loadCategories().then(loadThreads);
+    </script>
 </body>
 </html>
-

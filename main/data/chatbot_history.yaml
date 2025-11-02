@@ -11380,5 +11380,94 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2025-11-01T01:18:57.614055+00:00",
+    "user": {
+      "id": 18,
+      "username": "Bridgetlazuko@gmail.com"
+    },
+    "question": "hi\\",
+    "answer": "Hi there! How can I help you today? Let me know what you'd like to work on.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=hi%5C",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "hi&#92; at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        },
+        {
+          "title": "Gr 12 Business Studies: Business Management (Live)",
+          "description": "Mindset Live show on business management functions",
+          "resource_type": "youtube",
+          "course": "Business Studies Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
+        },
+        {
+          "title": "Gr 12 Economics: Macro & Micro (Live)",
+          "description": "Mindset Live show on macro- and microeconomics",
+          "resource_type": "youtube",
+          "course": "Economics Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
+        }
+      ]
+    }
   }
 ]

@@ -117,6 +117,9 @@ a:hover { color: #ff5d36; }
 .sa-section{ background: transparent; }
 .sa-section__header{ margin-bottom: 10px; }
 .sa-section__header h2{ margin:0; font-size:1.1rem; color:var(--ink); font-weight:700; }
+.sa-section__note{ margin:4px 0 18px; color: var(--muted); font-size:.9rem; }
+.sa-section--quiz-builder{ grid-column: 1 / -1; }
+.sa-section--quiz-builder .quiz-builder{ margin-top: 12px; }
 
 .sa-tilegrid{
   display:grid; gap:20px;

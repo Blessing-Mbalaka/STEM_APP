@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse, HttpRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
+from django.core.serializers.json import DjangoJSONEncoder
 
 from main.utils.roles import (
     get_primary_role,
@@ -163,7 +166,27 @@ def admin_approvals_page(request: HttpRequest):
 def admin_dashboard_page(request: HttpRequest):
     if not _require_admin(request):
         return HttpResponseForbidden("Forbidden")
-    return render(request, "Administrator.html")
+    from main.models.game import Game
+
+    games = [
+        {
+            "id": g.id,
+            "title": g.title,
+            "description": g.description,
+            "category": g.category,
+            "difficulty": g.difficulty,
+            "duration": g.duration_minutes,
+            "points": g.max_points,
+            "is_active": g.is_active,
+            "question_count": g.questions.count(),
+            "created_by": getattr(g.created_by, "id", None),
+        }
+        for g in Game.objects.all().order_by("title")
+    ]
+    context = {
+        "quiz_bootstrap": json.dumps(games, cls=DjangoJSONEncoder),
+    }
+    return render(request, "Administrator.html", context)
 
 
 def administrator_login_page(request: HttpRequest):

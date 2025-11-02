@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from ..models import Game, GameQuestion, GameScore
 from django.db.models import Max
+from django.core.serializers.json import DjangoJSONEncoder
 import json
 
 from main.utils.roles import user_has_role, ROLE_ADMIN
@@ -14,7 +15,25 @@ def games(request):
 
 @login_required
 def add_question(request):
-    return render(request, "AddQuestion.html")
+    games = [
+        {
+            "id": g.id,
+            "title": g.title,
+            "description": g.description,
+            "category": g.category,
+            "difficulty": g.difficulty,
+            "duration": g.duration_minutes,
+            "points": g.max_points,
+            "is_active": g.is_active,
+            "question_count": g.questions.count(),
+            "created_by": getattr(g.created_by, "id", None),
+        }
+        for g in Game.objects.all().order_by("title")
+    ]
+    context = {
+        "quiz_bootstrap": json.dumps(games, cls=DjangoJSONEncoder),
+    }
+    return render(request, "AddQuestion.html", context)
 
 # ---------- API: LIST ----------
 @require_http_methods(["GET", "POST"])
@@ -152,12 +171,22 @@ def _question_to_dict(q: GameQuestion):
         # MC-like options use chartData.labels as options
     return base
 
-@require_http_methods(["GET", "PATCH", "PUT"])
+@require_http_methods(["GET", "PATCH", "PUT", "DELETE"])
 def api_game_detail(request, pk: int):
     """
     GET /api/games/<id>/ : returns full playable quiz with questions (active only)
     PATCH/PUT /api/games/<id>/ : update basic game fields (active or inactive)
     """
+    if request.method == "DELETE":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Login required"}, status=401)
+        g = get_object_or_404(Game, pk=pk)
+        allowed = user_has_role(request.user, ROLE_ADMIN) or g.created_by_id == getattr(request.user, "id", None)
+        if not allowed:
+            return JsonResponse({"error": "Not allowed"}, status=403)
+        g.delete()
+        return JsonResponse({"status": "deleted"})
+
     if request.method in {"PATCH", "PUT"}:
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Login required"}, status=401)

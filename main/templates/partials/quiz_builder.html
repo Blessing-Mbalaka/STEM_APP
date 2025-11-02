@@ -1,0 +1,676 @@
+{% load static %}
+<div class="quiz-builder{% if standalone %} quiz-builder--standalone{% else %} quiz-builder--embedded{% endif %}">
+    <div class="container">
+      {% if standalone %}
+        <h2 style="margin-bottom:12px; color:#24adb7;">Add Question</h2>
+      {% else %}
+        <h2 style="margin-bottom:12px; color:#24adb7;">Quick Quiz Builder</h2>
+      {% endif %}
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin-top:0;">Create New Game</h3>
+          <div class="row"><label>Title</label><input id="g-title" type="text" placeholder="e.g., Algebra Basics" /></div>
+          <div class="row"><label>Description</label><textarea id="g-desc" placeholder="Optional"></textarea></div>
+          <div class="row"><label>Category</label>
+            <select id="g-cat">
+              <option value="">(none)</option>
+              <option value="stem">STEM</option>
+              <option value="steam">STEAM</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <div class="row"><label>Difficulty</label>
+            <select id="g-diff">
+              <option value="">(none)</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <div class="row"><label>Duration (min)</label><input id="g-dur" type="number" value="15" /></div>
+          <div class="row"><label>Max Points</label><input id="g-pts" type="number" value="10" /></div>
+          <div class="row"><label>Active</label>
+            <select id="g-active"><option value="true">Yes</option><option value="false">No</option></select>
+          </div>
+        <div class="row" style="justify-content:flex-end;"><button class="btn" onclick="createGame()" type="button">Create Game</button></div>
+        <div class="section">
+          <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <h3 style="margin:0;">Manage Quizzes</h3>
+            <button class="btn ghost" type="button" onclick="loadGames()">Refresh</button>
+          </div>
+          <p class="muted games-hint">Select a quiz below to edit it or remove duplicates.</p>
+          <div id="games-empty" class="muted games-empty" style="display:none;">No quizzes yet. Create your first quiz to see it here.</div>
+          <ul id="games-list" class="games-list"></ul>
+        </div>
+      </div>
+
+        <div class="card">
+          <div class="row">
+            <label for="game">Game</label>
+            <select id="game"></select>
+          </div>
+          <div class="section">
+            <h3 style="margin-top:0;">Edit Selected Game</h3>
+            <div class="row"><label>Title</label><input id="eg-title" type="text" /></div>
+            <div class="row"><label>Description</label><textarea id="eg-desc"></textarea></div>
+            <div class="row"><label>Category</label>
+              <select id="eg-cat">
+                <option value="">(none)</option>
+                <option value="stem">STEM</option>
+                <option value="steam">STEAM</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+            <div class="row"><label>Difficulty</label>
+              <select id="eg-diff">
+                <option value="">(none)</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <div class="row"><label>Duration (min)</label><input id="eg-dur" type="number" /></div>
+            <div class="row"><label>Max Points</label><input id="eg-pts" type="number" /></div>
+            <div class="row"><label>Active</label>
+              <select id="eg-active"><option value="true">Yes</option><option value="false">No</option></select>
+            </div>
+            <div class="row" style="justify-content:flex-end; gap:8px;"><button class="btn secondary" type="button" onclick="loadSelectedIntoForm()">Reset</button><button class="btn" type="button" onclick="saveEditGame()">Save Changes</button></div>
+          </div>
+          <div class="row">
+            <label for="qtype">Type</label>
+            <select id="qtype">
+              <option value="multiple-choice">Multiple Choice</option>
+              <option value="true-false">True/False</option>
+              <option value="fill-blank">Fill in the Blank</option>
+              <option value="essay">Essay</option>
+              <option value="matching">Matching</option>
+              <option value="calculation">Calculation</option>
+              <option value="case-study">Case Study (MC)</option>
+              <option value="chart-bar">Chart (Bar)</option>
+              <option value="chart-line">Chart (Line)</option>
+              <option value="chart-pie">Chart (Pie)</option>
+              <option value="chart-doughnut">Chart (Doughnut)</option>
+              <option value="chart-radar">Chart (Radar)</option>
+              <option value="chart-polar">Chart (Polar)</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="order">Order</label>
+            <input id="order" type="number" placeholder="Leave blank for next" />
+          </div>
+          <div class="row">
+            <label for="question">Question</label>
+            <textarea id="question" placeholder="Type the question text..."></textarea>
+          </div>
+
+          <div id="sec-mc" class="section" style="display:none;">
+            <div class="row"><label>Options</label>
+              <div style="flex:1;">
+                <div class="list" id="mc-list"></div>
+                <div class="row" style="margin-top:8px;">
+                  <input id="mc-new" type="text" placeholder="Add option and click +" />
+                  <button class="btn" onclick="mcAdd()">+</button>
+                </div>
+                <div class="muted">Mark correct by selecting its radio.</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="sec-tf" class="section" style="display:none;">
+            <div class="row"><label>Correct</label>
+              <div>
+                <label class="pill"><input type="radio" name="tf" value="true" /> True</label>
+                <label class="pill"><input type="radio" name="tf" value="false"/> False</label>
+              </div>
+            </div>
+          </div>
+
+          <div id="sec-fill" class="section" style="display:none;">
+            <div class="row"><label>Correct Answer</label>
+              <input id="fill-correct" type="text" placeholder="Correct text/number" />
+            </div>
+          </div>
+
+          <div id="sec-essay" class="section" style="display:none;">
+            <div class="row"><label>Min words</label>
+              <input id="essay-min" type="number" value="0" />
+            </div>
+          </div>
+
+          <div id="sec-matching" class="section" style="display:none;">
+            <div class="split">
+              <div>
+                <div class="row"><label>Left items</label></div>
+                <div id="match-left" class="list"></div>
+                <div class="row" style="margin-top:8px;">
+                  <input id="match-left-new" type="text" placeholder="Add left item" />
+                  <button class="btn" onclick="addLeft()">+</button>
+                </div>
+              </div>
+              <div>
+                <div class="row"><label>Right items</label></div>
+                <div id="match-right" class="list"></div>
+                <div class="row" style="margin-top:8px;">
+                  <input id="match-right-new" type="text" placeholder="Add right item" />
+                  <button class="btn" onclick="addRight()">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <div class="row"><label>Create pair</label>
+                <div class="split">
+                  <select id="pair-left"></select>
+                  <select id="pair-right"></select>
+                </div>
+              </div>
+              <button class="btn" onclick="addPair()">Add Pair</button>
+              <div class="row" style="margin-top:10px;"><label>Pairs</label>
+                <ul id="pairs" style="margin:0; padding-left:18px;"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div id="sec-chart" class="section" style="display:none;">
+            <div class="row"><label>Labels</label>
+              <div style="flex:1;">
+                <div id="chart-labels" class="list"></div>
+                <div class="row" style="margin-top:8px;">
+                  <input id="chart-label-new" type="text" placeholder="Add label and click +" />
+                  <button class="btn" onclick="addLabel()">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="row"><label>Datasets JSON</label>
+              <textarea id="chart-datasets" placeholder='e.g. [{"label":"Series A","data":[1,2,3]}]'></textarea>
+            </div>
+            <div class="row"><label>Correct Index</label>
+              <input id="chart-correct" type="number" value="0" />
+            </div>
+          </div>
+
+          <div class="section row" style="justify-content:flex-end; gap:8px;">
+            <button class="btn ghost" onclick="preview()" type="button">Preview</button>
+            <button class="btn" onclick="saveQuestion()" type="button">Save Question</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0;">Preview</h3>
+          <div id="preview" class="section"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/api.js' %}"></script>
+  
+</div>
+<style>
+.quiz-builder { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; color: #222; width: 100%; }
+.quiz-builder * { box-sizing: border-box; font-family: inherit; }
+.quiz-builder--standalone { background: #f7f7f9; min-height: 100vh; padding: 24px 0 40px; }
+.quiz-builder--embedded { background: #fff; border: 1px solid #e5e9f2; border-radius: 18px; box-shadow: var(--shadow, 0 12px 28px rgba(24,39,75,.08)); padding: 24px; }
+.quiz-builder .container { max-width: 1100px; margin: 0 auto; padding: 0; }
+.quiz-builder--standalone .container { padding: 16px; margin-top: 20px; background: transparent; }
+.quiz-builder--embedded .container { max-width: 100%; }
+.quiz-builder .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.quiz-builder .card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.quiz-builder .row { display:flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.quiz-builder label { width: 140px; font-weight: 600; color: #444; }
+.quiz-builder input[type=text], .quiz-builder input[type=number], .quiz-builder select, .quiz-builder textarea { width: 100%; padding: 8px 10px; border: 1px solid #d0d7de; border-radius: 8px; }
+.quiz-builder textarea { min-height: 80px; }
+.quiz-builder .btn { background: #24adb7; color:#fff; border:none; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.quiz-builder .btn.secondary { background: #6c757d; }
+.quiz-builder .btn.warn { background: #ff9933; }
+.quiz-builder .btn.ghost { background: #e9ecef; color:#222; }
+.quiz-builder .btn.danger { background: #e5534b; }
+.quiz-builder .btn.danger:hover { background: #d13f37; }
+.quiz-builder .section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
+.quiz-builder .pill { display:inline-flex; align-items:center; gap:6px; background:#eef6f7; border:1px solid #d0eef1; color:#0b6870; padding:4px 8px; border-radius: 999px; margin: 3px 6px 0 0; }
+.quiz-builder .pill--active { background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+.quiz-builder .pill--inactive { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+.quiz-builder .muted { color:#666; font-size: 13px; }
+.quiz-builder .games-hint { margin-bottom: 8px; }
+.quiz-builder .games-empty { color:#888; font-size: 13px; padding: 6px 0; }
+.quiz-builder .games-list { list-style:none; padding:0; margin:0; }
+.quiz-builder .games-item { display:flex; justify-content:space-between; gap:16px; border-top:1px solid #eef0f4; padding:12px 0; }
+.quiz-builder .games-item:first-child { border-top:0; padding-top:0; }
+.quiz-builder .games-item.is-selected { border-left:4px solid #24adb7; padding-left:12px; background:#f1fafb; border-radius:10px; }
+.quiz-builder .games-info { flex:1; min-width:0; }
+.quiz-builder .games-title { font-weight:600; color:#222; margin-bottom:4px; }
+.quiz-builder .games-meta { font-size:12px; color:#777; margin-bottom:6px; }
+.quiz-builder .games-desc { font-size:12px; color:#555; margin-bottom:6px; }
+.quiz-builder .games-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.quiz-builder .split { display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quiz-builder .list { display:flex; flex-wrap:wrap; gap:8px; }
+.quiz-builder #preview { min-height: 200px; }
+@media (max-width: 1024px){
+  .quiz-builder--embedded { padding: 18px; }
+  .quiz-builder .grid { grid-template-columns: 1fr; }
+  .quiz-builder .split { grid-template-columns: 1fr; }
+  .quiz-builder label { width: 120px; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const state = {
+      mc: { options: [], correct: 0 },
+      tf: { correct: true },
+      fill: { correct: '' },
+      essay: { min: 0 },
+      match: { left: [], right: [], pairs: [] },
+      chart: { labels: [], datasets: [], correct: 0 },
+    };
+
+    const callApi = window.api
+      ? ((...args) => window.api(...args))
+      : (async function(path, { method='GET', data, headers={}, credentials='same-origin' } = {}){
+          const csrftoken = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+          const opts = { method, credentials, headers: { 'X-CSRFToken': csrftoken, ...headers } };
+          if(data !== undefined){
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(data);
+          }
+          const res = await fetch(path, opts);
+          const json = await res.json().catch(()=> ({}));
+          if(!res.ok) throw Object.assign(new Error(json.error || res.statusText), { status: res.status, json });
+          return json;
+      });
+
+    function byId(id){ return document.getElementById(id); }
+    function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+
+    const gamesMap = {};
+    let gamesList = [];
+
+    function hydrateGames(list, selectId){
+      const sel = byId('game');
+      const merged = Array.isArray(list) ? list.slice() : [];
+      merged.sort((a,b)=> (a.title||'').localeCompare(b.title||'', undefined, { sensitivity:'base' }));
+      gamesList = merged;
+      Object.keys(gamesMap).forEach(key=> delete gamesMap[key]);
+      merged.forEach(g=> { gamesMap[String(g.id)] = g; });
+
+      if(sel){
+        sel.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select a game...';
+        sel.appendChild(placeholder);
+        merged.forEach(g=>{
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = g.title || 'Untitled quiz';
+          if(g.is_active === false){ opt.textContent += ' (inactive)'; }
+          sel.appendChild(opt);
+        });
+        if(selectId){ sel.value = String(selectId); }
+      }
+
+      const empty = byId('games-empty');
+      if(empty){
+        if(empty.dataset.defaultText){
+          empty.textContent = empty.dataset.defaultText;
+        }
+        empty.style.display = merged.length ? 'none' : 'block';
+        delete empty.dataset.message;
+      }
+
+      renderGamesList();
+      if(merged.length){
+        loadSelectedIntoForm();
+      }
+    }
+
+    const initialQuizzes = {% if initial_quizzes %}{{ initial_quizzes|safe }}{% else %}null{% endif %};
+    if(initialQuizzes){ console.debug('Quiz builder bootstrap', initialQuizzes); }
+    if(Array.isArray(initialQuizzes) && initialQuizzes.length){
+      hydrateGames(initialQuizzes);
+    }
+
+    async function loadGames(selectId){
+      const sel = byId('game');
+      if(sel){
+        sel.innerHTML = '';
+        const loadingOpt = document.createElement('option');
+        loadingOpt.value = '';
+        loadingOpt.textContent = 'Loading...';
+        sel.appendChild(loadingOpt);
+      }
+      try{
+        const data = await callApi('/api/games/');
+        const mine = await callApi('/api/games/?mine=true').catch(()=> null);
+        const baseList = Array.isArray(data) ? data : (data.results || []);
+        const mineList = mine ? (Array.isArray(mine) ? mine : (mine.results || [])) : [];
+        const merged = [];
+        const seen = new Set();
+        [...baseList, ...mineList].forEach(g=>{
+          if(!g) return;
+          const key = String(g.id);
+          if(seen.has(key)) return;
+          seen.add(key);
+          merged.push(g);
+        });
+        hydrateGames(merged, selectId);
+      } catch(err){
+        console.error('Failed to load quizzes', err);
+        if(sel){
+          sel.innerHTML = '';
+          const failed = document.createElement('option');
+          failed.value = '';
+          failed.textContent = 'Failed to load';
+          sel.appendChild(failed);
+        }
+        gamesList = [];
+        const empty = byId('games-empty');
+        if(empty){
+          empty.textContent = 'Unable to load quizzes.';
+          empty.dataset.message = 'error';
+          empty.style.display = 'block';
+        }
+        renderGamesList();
+      }
+    }
+
+    function renderGamesList(){
+      const list = byId('games-list');
+      const empty = byId('games-empty');
+      if(empty && !empty.dataset.defaultText){
+        empty.dataset.defaultText = empty.textContent;
+      }
+      if(!list) return;
+      const selectEl = byId('game');
+      const currentId = selectEl ? String(selectEl.value) : '';
+      list.innerHTML = '';
+      if(!gamesList.length){
+        if(empty){
+          if(empty.dataset.message !== 'error' && empty.dataset.defaultText){
+            empty.textContent = empty.dataset.defaultText;
+          }
+          empty.style.display = 'block';
+          delete empty.dataset.message;
+        }
+        return;
+      }
+      if(empty){
+        if(empty.dataset.defaultText){
+          empty.textContent = empty.dataset.defaultText;
+        }
+        empty.style.display = 'none';
+        delete empty.dataset.message;
+      }
+      gamesList.forEach(g=>{
+        const li = el('li','games-item');
+        if(currentId && String(g.id) === currentId){
+          li.classList.add('is-selected');
+        }
+        const info = el('div','games-info');
+        const title = el('div','games-title');
+        title.textContent = g.title || 'Untitled quiz';
+        info.appendChild(title);
+        const meta = el('div','games-meta');
+        const metaParts = [];
+        if(g.category) metaParts.push(g.category.toUpperCase());
+        if(g.difficulty) metaParts.push(g.difficulty.charAt(0).toUpperCase()+g.difficulty.slice(1));
+        const durationVal = g.duration_minutes !== undefined ? g.duration_minutes : g.duration;
+        if(typeof durationVal === 'number' && !Number.isNaN(durationVal)) metaParts.push(`${durationVal} min`);
+        const pointsVal = g.max_points !== undefined ? g.max_points : g.points;
+        if(typeof pointsVal === 'number' && !Number.isNaN(pointsVal)) metaParts.push(`${pointsVal} pts`);
+        if(typeof g.question_count === 'number') metaParts.push(`${g.question_count} question${g.question_count === 1 ? '' : 's'}`);
+        meta.textContent = metaParts.join(' | ') || 'n/a';
+        info.appendChild(meta);
+        if(g.description){
+          const desc = el('div','games-desc');
+          desc.textContent = g.description;
+          info.appendChild(desc);
+        }
+        const status = el('span', `pill ${g.is_active === false ? 'pill--inactive' : 'pill--active'}`);
+        status.textContent = g.is_active === false ? 'Inactive' : 'Active';
+        info.appendChild(status);
+        const actions = el('div','games-actions');
+        const editBtn = el('button','btn ghost','Edit');
+        editBtn.type = 'button';
+        editBtn.addEventListener('click', ()=> selectGame(g.id));
+        actions.appendChild(editBtn);
+        const deleteBtn = el('button','btn danger','Delete');
+        deleteBtn.type = 'button';
+        deleteBtn.addEventListener('click', ()=> deleteGame(g.id, g.title));
+        actions.appendChild(deleteBtn);
+        li.append(info, actions);
+        list.appendChild(li);
+      });
+    }
+
+    function selectGame(id){
+      const sel = byId('game');
+      if(!sel) return;
+      sel.value = String(id);
+      loadSelectedIntoForm();
+      sel.focus();
+    }
+
+    async function deleteGame(id, title){
+      const name = title ? `"${title}"` : 'this quiz';
+      if(!confirm(`Delete ${name}? This cannot be undone.`)) return;
+      try{
+        await callApi(`/api/games/${id}/`, { method:'DELETE' });
+        alert('Quiz deleted');
+        const sel = byId('game');
+        if(sel && sel.value === String(id)){ sel.value = ''; }
+        await loadGames();
+      } catch(e){
+        console.error(e);
+        alert(e?.json?.error || 'Failed to delete quiz');
+      }
+    }
+
+    function showSections(){
+      const t = byId('qtype').value;
+      byId('sec-mc').style.display = (t==='multiple-choice'||t==='case-study')? 'block':'none';
+      byId('sec-tf').style.display = (t==='true-false')? 'block':'none';
+      byId('sec-fill').style.display = (t==='fill-blank'||t==='calculation')? 'block':'none';
+      byId('sec-essay').style.display = (t==='essay')? 'block':'none';
+      byId('sec-matching').style.display = (t==='matching')? 'block':'none';
+      byId('sec-chart').style.display = (t.startsWith('chart-'))? 'block':'none';
+    }
+
+    // ---- MC helpers ----
+    function renderMc(){
+      const list = byId('mc-list'); list.innerHTML = '';
+      state.mc.options.forEach((opt,i)=>{
+        const pill = el('label','pill');
+        const r = el('input'); r.type='radio'; r.name='mc-correct'; r.checked = (state.mc.correct===i);
+        r.onchange=()=> state.mc.correct = i;
+        const txt = el('span','', opt);
+        const rm = el('button','btn warn','&times;'); rm.type='button'; rm.onclick=()=>{ state.mc.options.splice(i,1); if(state.mc.correct>=state.mc.options.length) state.mc.correct=0; renderMc(); };
+        pill.append(r, txt, rm); list.appendChild(pill);
+      });
+    }
+    function mcAdd(){ const v = byId('mc-new').value.trim(); if(!v) return; state.mc.options.push(v); byId('mc-new').value=''; renderMc(); }
+
+    // ---- Matching helpers ----
+    function renderSides(){
+      const L = byId('match-left'); const R = byId('match-right');
+      L.innerHTML=''; R.innerHTML='';
+      state.match.left.forEach((t,i)=>{ const p=el('span','pill',`${i}: ${t}`); const b=el('button','btn warn','&times;'); b.onclick=()=>{ state.match.left.splice(i,1); renderSides(); renderPairs(); populatePairSelects(); }; p.appendChild(b); L.appendChild(p); });
+      state.match.right.forEach((t,i)=>{ const p=el('span','pill',`${i}: ${t}`); const b=el('button','btn warn','&times;'); b.onclick=()=>{ state.match.right.splice(i,1); renderSides(); renderPairs(); populatePairSelects(); }; p.appendChild(b); R.appendChild(p); });
+    }
+    function addLeft(){ const v = byId('match-left-new').value.trim(); if(!v) return; state.match.left.push(v); byId('match-left-new').value=''; renderSides(); populatePairSelects(); }
+    function addRight(){ const v = byId('match-right-new').value.trim(); if(!v) return; state.match.right.push(v); byId('match-right-new').value=''; renderSides(); populatePairSelects(); }
+    function populatePairSelects(){
+      const sl = byId('pair-left'); const sr = byId('pair-right');
+      sl.innerHTML = state.match.left.map((t,i)=>`<option value="${i}">${i}: ${t}</option>`).join('');
+      sr.innerHTML = state.match.right.map((t,i)=>`<option value="${i}">${i}: ${t}</option>`).join('');
+    }
+    function addPair(){
+      const li = parseInt(byId('pair-left').value,10);
+      const ri = parseInt(byId('pair-right').value,10);
+      if(Number.isNaN(li) || Number.isNaN(ri)) return;
+      if (state.match.pairs.some(p=>p[0]===li || p[1]===ri)) return; // one-to-one
+      state.match.pairs.push([li,ri]);
+      renderPairs();
+    }
+    function renderPairs(){
+      const ul = byId('pairs'); ul.innerHTML='';
+      state.match.pairs.forEach((p,i)=>{
+        const li = el('li','', `${p[0]} â‡„ ${p[1]}`);
+        const b = el('button','btn warn','Remove'); b.onclick=()=>{ state.match.pairs.splice(i,1); renderPairs(); };
+        li.append(' ', b); ul.appendChild(li);
+      });
+    }
+
+    // ---- Chart helpers ----
+    function renderLabels(){
+      const L = byId('chart-labels'); L.innerHTML='';
+      state.chart.labels.forEach((t,i)=>{ const p=el('span','pill',`${i}: ${t}`); const b=el('button','btn warn','&times;'); b.onclick=()=>{ state.chart.labels.splice(i,1); renderLabels(); }; p.appendChild(b); L.appendChild(p); });
+    }
+    function addLabel(){ const v=byId('chart-label-new').value.trim(); if(!v) return; state.chart.labels.push(v); byId('chart-label-new').value=''; renderLabels(); }
+
+    // ---- Preview ----
+    function preview(){
+      const t = byId('qtype').value;
+      const qtext = byId('question').value.trim();
+      const wrap = byId('preview');
+      wrap.innerHTML = '';
+      let html = `<div style="font-weight:600; margin-bottom:8px;">${qtext || '(no question text)'} <span class="muted" style="font-weight:400;">(${t})</span></div>`;
+      if(t==='multiple-choice' || t==='case-study'){
+        html += '<div class="muted" style="margin-bottom:6px;">Choose 1 answer</div>' +
+          '<ul style="list-style:none; padding:0;">' + state.mc.options.map((o,i)=>`<li style="margin:6px 0;"><label><input type="radio" name="p-mc" ${state.mc.correct===i?'checked':''} /> ${o}</label></li>`).join('') + '</ul>';
+      } else if(t==='true-false'){
+        html += `<div class="list"><button class="btn ${state.tf.correct? '':'ghost'}">True</button><button class="btn ${!state.tf.correct? '':'ghost'}">False</button></div>`;
+      } else if(t==='fill-blank' || t==='calculation'){
+        html += `<input type="text" placeholder="Your answerâ€¦" style="width:100%; padding:8px; border:1px solid #d0d7de; border-radius:8px;"/>`;
+      } else if(t==='essay'){
+        html += `<textarea rows="5" style="width:100%; padding:8px; border:1px solid #d0d7de; border-radius:8px;" placeholder="Type your answer (min ${state.essay.min} words)â€¦"></textarea>`;
+      } else if(t==='matching'){
+        html += `<div class="split"><div><div class="muted">Left</div>${state.match.left.map(x=>`<div>${x}</div>`).join('')}</div><div><div class="muted">Right</div>${state.match.right.map(x=>`<div>${x}</div>`).join('')}</div></div>`;
+        if(state.match.pairs.length){ html += `<div class="section"><div class="muted">Pairs:</div><ul>${state.match.pairs.map(p=>`<li>${p[0]} â‡„ ${p[1]}</li>`).join('')}</ul></div>`; }
+      } else if(t.startsWith('chart-')){
+        const id = 'chart-prev';
+        html += `<div style="height:220px"><canvas id="${id}"></canvas></div>`;
+        setTimeout(()=>{
+          try {
+            const ctx = document.getElementById(id).getContext('2d');
+            if (window._prevChart) window._prevChart.destroy();
+            const datasets = JSON.parse(byId('chart-datasets').value || '[]');
+            window._prevChart = new Chart(ctx, {
+              type: t.replace('chart-',''),
+              data: { labels: state.chart.labels, datasets },
+              options: { responsive:true, maintainAspectRatio:false }
+            });
+          } catch(e) { console.warn('Chart preview failed', e); }
+        }, 0);
+      }
+      wrap.innerHTML = html;
+    }
+
+    // ---- Create Game ----
+    async function createGame(){
+      const title = byId('g-title').value.trim();
+      if(!title) return alert('Game title is required');
+      const payload = {
+        title,
+        description: byId('g-desc').value,
+        category: byId('g-cat').value,
+        difficulty: byId('g-diff').value,
+        duration_minutes: parseInt(byId('g-dur').value||'15',10) || 15,
+        max_points: parseInt(byId('g-pts').value||'10',10) || 10,
+        is_active: byId('g-active').value === 'true'
+      };
+      try{
+        const g = await callApi('/api/games/', { method:'POST', data: payload });
+        alert('Game created');
+        // reset basics and preselect new game
+        byId('g-title').value=''; byId('g-desc').value=''; byId('g-cat').value=''; byId('g-diff').value='';
+        byId('g-dur').value='15'; byId('g-pts').value='10'; byId('g-active').value='true';
+        await loadGames(g.id);
+      } catch(e){ console.error(e); alert(e?.json?.error || 'Failed to create game'); }
+    }
+
+    // ---- Edit Selected Game ----
+    function loadSelectedIntoForm(){
+      const sel = byId('game');
+      const id = sel ? sel.value : '';
+      const g = gamesMap[String(id)];
+      const durationVal = g ? (g.duration_minutes !== undefined ? g.duration_minutes : g.duration) : '';
+      const pointsVal = g ? (g.max_points !== undefined ? g.max_points : g.points) : '';
+      byId('eg-title').value = g ? (g.title||'') : '';
+      byId('eg-desc').value  = g ? (g.description||'') : '';
+      byId('eg-cat').value   = g ? (g.category||'') : '';
+      byId('eg-diff').value  = g ? (g.difficulty||'') : '';
+      byId('eg-dur').value   = g && durationVal !== undefined && durationVal !== null && durationVal !== '' ? durationVal : (g ? 15 : '');
+      byId('eg-pts').value   = g && pointsVal !== undefined && pointsVal !== null && pointsVal !== '' ? pointsVal : (g ? 10 : '');
+      byId('eg-active').value= g && g.is_active===false ? 'false' : 'true';
+      renderGamesList();
+    }
+    async function saveEditGame(){
+      const id = byId('game').value;
+      if(!id) return alert('Select a game to edit');
+      const payload = {
+        title: byId('eg-title').value,
+        description: byId('eg-desc').value,
+        category: byId('eg-cat').value,
+        difficulty: byId('eg-diff').value,
+        duration_minutes: parseInt(byId('eg-dur').value||'15',10) || 15,
+        max_points: parseInt(byId('eg-pts').value||'10',10) || 10,
+        is_active: byId('eg-active').value === 'true'
+      };
+      try {
+        const g = await callApi(`/api/games/${id}/`, { method:'PATCH', data: payload });
+        alert('Game updated');
+        await loadGames(g.id);
+      } catch(e){ console.error(e); alert(e?.json?.error || 'Failed to update game'); }
+    }
+
+    // ---- Save Question ----
+    async function saveQuestion(){
+      const gameId = byId('game').value;
+      if(!gameId) return alert('Select a game');
+      const qtype = byId('qtype').value;
+      const question = byId('question').value.trim();
+      const orderVal = parseInt(byId('order').value, 10);
+      const payload = { qtype, question };
+      if(!Number.isNaN(orderVal)) payload.order = orderVal;
+      if(qtype==='multiple-choice' || qtype==='case-study'){
+        payload.options = state.mc.options.slice();
+        payload.correct_answer = state.mc.correct|0;
+        if(!payload.options.length) return alert('Add at least one option');
+      } else if(qtype==='true-false'){
+        const v = [...document.querySelectorAll('input[name="tf"]')].find(x=>x.checked);
+        payload.correct_answer = v ? (v.value==='true') : true;
+      } else if(qtype==='fill-blank' || qtype==='calculation'){
+        payload.correct_answer = byId('fill-correct').value;
+      } else if(qtype==='essay'){
+        payload.min_words = parseInt(byId('essay-min').value||'0',10) || 0;
+      } else if(qtype==='matching'){
+        payload.left_items = state.match.left.slice();
+        payload.right_items = state.match.right.slice();
+        payload.correct_matches = state.match.pairs.slice();
+        if(!payload.left_items.length || !payload.right_items.length) return alert('Add left and right items');
+      } else if(qtype.startsWith('chart-')){
+        let datasets = [];
+        try { datasets = JSON.parse(byId('chart-datasets').value || '[]'); }
+        catch { return alert('Datasets must be valid JSON'); }
+        payload.chart_data = { labels: state.chart.labels.slice(), datasets };
+        payload.correct_answer = parseInt(byId('chart-correct').value||'0',10) || 0;
+      }
+      try {
+        const res = await callApi(`/api/games/${gameId}/questions/`, { method: 'POST', data: payload });
+        alert('Question created');
+        // reset simple fields but keep current game/type for faster entry
+        byId('question').value = '';
+      } catch(e){
+        console.error(e); alert(e?.json?.error || 'Failed to save');
+      }
+    }
+
+    // Wire up
+    document.addEventListener('DOMContentLoaded', ()=>{
+      loadGames(); showSections(); renderMc(); renderSides(); populatePairSelects(); renderLabels();
+      byId('qtype').addEventListener('change', ()=>{ showSections(); preview(); });
+      byId('game').addEventListener('change', loadSelectedIntoForm);
+      // TF default
+      const tfs = document.querySelectorAll('input[name="tf"]');
+      if(tfs[0]) tfs[0].checked = true;
+      tfs.forEach(el=> el.addEventListener('change', ()=>{ state.tf.correct = (el.value==='true'); preview(); }));
+    });
+  </script>
