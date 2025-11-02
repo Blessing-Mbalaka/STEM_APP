@@ -195,6 +195,7 @@
               </div>
               <div class="doc-actions">
                 <a class="btn secondary" href="${doc.file}" target="_blank" rel="noopener">Download</a>
+                <button class="btn secondary" type="button" data-action="edit" data-id="${doc.id}" data-title="${doc.title}"><i class="fas fa-pen"></i></button>
                 <button class="btn danger" type="button" data-action="delete" data-id="${doc.id}" data-category="${payload.category.id}"><i class="fas fa-trash"></i></button>
               </div>`;
             section.appendChild(row);
@@ -204,22 +205,47 @@
       });
     }
 
+    if (detailCard) {
+      detailCard.addEventListener('click', handleDocAction);
+    }
+
     async function handleDocAction(event) {
       const target = event.target.closest('button[data-action]');
       if (!target) return;
       const action = target.getAttribute('data-action');
-      if (action !== 'delete') return;
       const docId = target.getAttribute('data-id');
       if (!docId) return;
-      if (!confirm('Delete this resource?')) return;
-      try {
-        await api(`/api/admin/resource-documents/${docId}`, { method: 'DELETE' });
-        await fetchCategories();
-        if (state.current) {
-          await loadCategory(state.current.id);
+      if (action === 'delete') {
+        if (!confirm('Delete this resource?')) return;
+        try {
+          await api(`/api/admin/resource-documents/${docId}`, { method: 'DELETE' });
+          await fetchCategories();
+          if (state.current) {
+            await loadCategory(state.current.id);
+          }
+        } catch (err) {
+          alert(err?.error || 'Failed to delete resource');
         }
-      } catch (err) {
-        alert(err?.error || 'Failed to delete resource');
+        return;
+      }
+      if (action === 'edit') {
+        const currentTitle = target.getAttribute('data-title') || '';
+        const nextTitle = prompt('Update title', currentTitle);
+        if (nextTitle === null) return;
+        const trimmed = nextTitle.trim();
+        if (!trimmed) {
+          alert('Title cannot be blank.');
+          return;
+        }
+        try {
+          await api(`/api/admin/resource-documents/${docId}`, { method: 'PATCH', data: { title: trimmed } });
+          await fetchCategories();
+          if (state.current) {
+            await loadCategory(state.current.id);
+          }
+        } catch (err) {
+          alert(err?.error || 'Failed to update title');
+        }
       }
     }
 
@@ -310,5 +336,3 @@
   </script>
 </body>
 </html>
-
-
