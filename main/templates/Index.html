@@ -425,6 +425,18 @@
     color: white;
 }
 
+ @media (max-width: 480px) {
+        html { font-size: 14px; } /* base scale down */
+        .welcome-message { font-size: 1.1rem !important; } /* header greeting */
+        .site-banner { font-size: 0.95rem !important; } /* user name banner */
+        .tile-title { font-size: 1.05rem !important; }
+        .tile-description { font-size: 0.9rem !important; }
+        .tile-action { font-size: 0.9rem !important; padding: 0.45rem 1rem !important; }
+        .header-dashboard { height: auto !important; padding: 16px 10px !important; }
+        /* hide expanded sidebar text on very small screens */
+        .sidebar .nav-text { display: none !important; }
+    }
+
 </style>
 </head>
 

@@ -1565,6 +1565,36 @@ async function submitQuestion(){
       // If chatbot disabled from server config, show maintenance UI
       if (chatbotDisabled) showChatbotMaintenance();
     });
+
+        // Ensure close button reliably hides the bot panel
+     const closeBot = document.getElementById('close-bot');
+    closeBot?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const bc = document.getElementById('bot-chat');
+      if (bc) {
+        bc.classList.remove('active', 'chatbot-disabled');
+      }
+    });
+
+          // open bot on Ask AI button click
+      askBotBtn?.addEventListener('click', (e) => {
+        e?.preventDefault();
+        // If maintenance mode, show maintenance UI instead of opening chat
+        if (chatbotDisabled) {
+          showChatbotMaintenance();
+          return;
+        }
+        if (botChat) {
+          // toggle open state, ensure not left in disabled state
+          const isOpen = botChat.classList.toggle('active');
+          botChat.classList.remove('chatbot-disabled');
+          // focus input after animation
+          setTimeout(() => botInput?.focus(), 120);
+          // if opening and messages area exists, scroll to bottom
+          if (isOpen && botMessages) botMessages.scrollTop = botMessages.scrollHeight;
+        }
+      });
+
     </script>
 </body>
 </html>
