@@ -182,6 +182,13 @@ urlpatterns = [
     path("api/chatbot/search/",                 internet_search_api,     name="chatbot_search"),
     path("api/chatbot/history/",                chatbot_history_api,     name="chatbot_history"),
 
+    #-----Forum Critical Api's-----------
+    path("api/forum/categories", api_forum_categories, name="api_forum_categories"),
+    path("api/forum/threads", api_forum_threads, name="api_forum_threads"),
+    path("api/forum/threads/<slug:slug>", api_forum_thread_detail, name="api_forum_thread_detail"),
+    path("api/forum/threads/<slug:slug>/posts", api_forum_thread_posts, name="api_forum_thread_posts"),
+    path("api/forum/posts/<int:post_id>/like", api_forum_post_like, name="api_forum_post_like"),
+
     # ---------- Tutor Sessions ----------
     path("session/<int:session_id>/confirm/",   confirm_session,         name="confirm_session"),
     path("session/<int:session_id>/video/",     video_session,           name="video_session"),
