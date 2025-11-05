@@ -36,7 +36,7 @@ def login_page(request: HttpRequest):
         else:
             target = "/index/"
         return redirect(target)
-    return render(request, "Login.html")
+    return render(request, "login.html")
 
 
 @require_http_methods(["POST"])

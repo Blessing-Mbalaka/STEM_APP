@@ -1,7 +1,5 @@
+# main/views.py
 from django.shortcuts import render
 
 def Tutors(request):
-    """
-    Simple view that returns the tutors page (literal copy of classes).
-    """
-    return render(request, 'main/tutors.html')
+    return render(request, "Tutors.html")  # exact name, no "main/" prefix

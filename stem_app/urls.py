@@ -18,10 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+
+def health(_request):
+    return JsonResponse({"status": "ok"}, status=200)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('main.urls')),
+    path("health/", health),            # ✅ cheap 200 for Render
+    path("admin/", admin.site.urls),
+    path("", include("main.urls")),  
 ]
 
 # Serve media files in development
