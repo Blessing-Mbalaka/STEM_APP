@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from ..models import Game, GameQuestion, GameScore
-from django.db.models import Max
+from django.db.models import Max, F
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 
@@ -144,6 +144,7 @@ def api_games_list(request):
 def _question_to_dict(q: GameQuestion):
     base = {
         "id": q.order,
+        "order": q.order,
         "type": q.qtype,
         "question": q.question,
     }
@@ -170,6 +171,183 @@ def _question_to_dict(q: GameQuestion):
         base["chartData"] = q.chart_data or {"labels": [], "datasets": []}
         # MC-like options use chartData.labels as options
     return base
+
+
+def _question_admin_dict(q: GameQuestion):
+    base = {
+        "questionId": q.id,
+        "order": q.order,
+        "qtype": q.qtype,
+        "question": q.question,
+    }
+    if q.qtype in {"multiple-choice", "case-study"}:
+        base["options"] = q.options or []
+        base["correctAnswer"] = q.correct_answer
+    elif q.qtype == "true-false":
+        base["correctAnswer"] = bool(q.correct_answer)
+    elif q.qtype in {"fill-blank", "calculation"}:
+        base["correctAnswer"] = q.correct_answer
+    elif q.qtype == "matching":
+        base["leftItems"] = q.left_items or []
+        base["rightItems"] = q.right_items or []
+        base["correctMatches"] = [
+            [int(pair[0]), int(pair[1])]
+            for pair in (q.correct_matches or [])
+            if isinstance(pair, (list, tuple)) and len(pair) == 2
+        ]
+    elif q.qtype == "essay":
+        base["minWords"] = q.min_words or 0
+    elif q.qtype.startswith("chart-"):
+        base["chartData"] = q.chart_data or {"labels": [], "datasets": []}
+        base["correctAnswer"] = q.correct_answer
+    else:
+        base["correctAnswer"] = q.correct_answer
+    return base
+
+
+def _parse_question_payload(game: Game, data: dict, existing=None):
+    allowed_types = {
+        "multiple-choice", "true-false", "fill-blank", "matching", "essay",
+        "case-study", "calculation",
+        "chart-radar", "chart-pie", "chart-line", "chart-bar", "chart-doughnut", "chart-polar",
+    }
+
+    qtype = (data.get("qtype") or (existing.qtype if existing else "")).strip()
+    if qtype not in allowed_types:
+        raise ValueError(f"Invalid qtype '{qtype}'")
+
+    question_text = (data.get("question") or (existing.question if existing else "")).strip()
+    if not question_text:
+        raise ValueError("question is required")
+
+    payload: dict[str, object] = {
+        "qtype": qtype,
+        "question": question_text,
+    }
+
+    order = None
+    if "order" in data:
+        try:
+            order = int(data.get("order"))
+        except Exception as exc:
+            raise ValueError("order must be an integer") from exc
+        if order <= 0:
+            raise ValueError("order must be greater than zero")
+    elif existing:
+        order = existing.order
+
+    if qtype in {"multiple-choice", "case-study"}:
+        if "options" in data:
+            options = data.get("options")
+        else:
+            options = existing.options if existing else None
+        if not isinstance(options, list) or not all(isinstance(opt, str) for opt in options or []):
+            raise ValueError("options must be a list of strings")
+        if not options:
+            raise ValueError("options must include at least one value")
+        if "correct_answer" in data:
+            correct_answer = data.get("correct_answer")
+        elif existing is not None:
+            correct_answer = existing.correct_answer
+        else:
+            correct_answer = None
+        if not isinstance(correct_answer, int) or not (0 <= correct_answer < len(options)):
+            raise ValueError("correct_answer must be a valid option index")
+        payload["options"] = options
+        payload["correct_answer"] = correct_answer
+
+    elif qtype == "true-false":
+        if "correct_answer" in data:
+            correct_answer = data.get("correct_answer")
+        elif existing is not None:
+            correct_answer = existing.correct_answer
+        else:
+            correct_answer = None
+        if not isinstance(correct_answer, bool):
+            raise ValueError("correct_answer must be true or false")
+        payload["correct_answer"] = correct_answer
+
+    elif qtype in {"fill-blank", "calculation"}:
+        if "correct_answer" in data:
+            correct_answer = data.get("correct_answer")
+        elif existing is not None:
+            correct_answer = existing.correct_answer
+        else:
+            correct_answer = None
+        if correct_answer is None:
+            raise ValueError("correct_answer is required")
+        payload["correct_answer"] = correct_answer
+
+    elif qtype == "matching":
+        if "left_items" in data or "leftItems" in data:
+            left_items = data.get("left_items") or data.get("leftItems")
+        else:
+            left_items = existing.left_items if existing else None
+        if "right_items" in data or "rightItems" in data:
+            right_items = data.get("right_items") or data.get("rightItems")
+        else:
+            right_items = existing.right_items if existing else None
+        if not isinstance(left_items, list) or not all(isinstance(x, str) for x in left_items or []):
+            raise ValueError("left_items must be a list of strings")
+        if not isinstance(right_items, list) or not all(isinstance(x, str) for x in right_items or []):
+            raise ValueError("right_items must be a list of strings")
+        if not left_items or not right_items:
+            raise ValueError("left_items and right_items cannot be empty")
+        if "correct_matches" in data or "correctMatches" in data:
+            raw_matches = data.get("correct_matches") or data.get("correctMatches")
+        else:
+            raw_matches = existing.correct_matches if existing else None
+        if not isinstance(raw_matches, list):
+            raise ValueError("correct_matches must be a list of [left_idx, right_idx]")
+        matches: list[list[int]] = []
+        for pair in raw_matches:
+            if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+                raise ValueError("correct_matches must contain [left_idx, right_idx] pairs")
+            li, ri = int(pair[0]), int(pair[1])
+            if not (0 <= li < len(left_items)) or not (0 <= ri < len(right_items)):
+                raise ValueError("correct_matches indexes must reference valid options")
+            matches.append([li, ri])
+        payload["left_items"] = left_items
+        payload["right_items"] = right_items
+        payload["correct_matches"] = matches
+
+    elif qtype == "essay":
+        if "min_words" in data or "minWords" in data:
+            min_words = data.get("min_words", data.get("minWords"))
+        elif existing is not None:
+            min_words = existing.min_words
+        else:
+            min_words = 0
+        try:
+            payload["min_words"] = int(min_words or 0)
+        except Exception as exc:
+            raise ValueError("min_words must be an integer") from exc
+
+    elif qtype.startswith("chart-"):
+        if "chart_data" in data or "chartData" in data:
+            chart_data = data.get("chart_data") or data.get("chartData")
+        else:
+            chart_data = existing.chart_data if existing else None
+        if not isinstance(chart_data, dict):
+            raise ValueError("chart_data must be an object with labels/datasets")
+        labels = chart_data.get("labels") or []
+        if not isinstance(labels, list) or not all(isinstance(x, str) for x in labels):
+            raise ValueError("chart_data.labels must be a list of strings")
+        datasets = chart_data.get("datasets") or []
+        if not isinstance(datasets, list):
+            raise ValueError("chart_data.datasets must be a list")
+        if "correct_answer" in data:
+            correct_answer = data.get("correct_answer")
+        elif existing is not None:
+            correct_answer = existing.correct_answer
+        else:
+            correct_answer = None
+        if not isinstance(correct_answer, int):
+            raise ValueError("correct_answer must be an integer index")
+        payload["chart_data"] = {"labels": labels, "datasets": datasets}
+        payload["correct_answer"] = correct_answer
+
+    return payload, order
 
 @require_http_methods(["GET", "PATCH", "PUT", "DELETE"])
 def api_game_detail(request, pk: int):
@@ -393,86 +571,87 @@ def api_game_add_question(request, pk: int):
     except Exception:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    qtype = (data.get("qtype") or "").strip()
-    question = (data.get("question") or "").strip()
-    order = data.get("order")
+    try:
+        fields, order = _parse_question_payload(g, data)
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
 
-    allowed_types = {
-        "multiple-choice", "true-false", "fill-blank", "matching", "essay",
-        "case-study", "calculation",
-        "chart-radar", "chart-pie", "chart-line", "chart-bar", "chart-doughnut", "chart-polar",
-    }
-    if qtype not in allowed_types:
-        return JsonResponse({"error": f"Invalid qtype '{qtype}'"}, status=400)
-    if not question:
-        return JsonResponse({"error": "question is required"}, status=400)
+    if order is None:
+        order = g.questions.aggregate(m=Max("order")).get("m") or 0
+        order += 1
 
-    if not isinstance(order, int) or order <= 0:
-        last = g.questions.aggregate(m=Max("order")).get("m") or 0
-        order = last + 1
-
-    fields = {
+    fields.update({
         "game": g,
         "order": order,
-        "qtype": qtype,
-        "question": question,
-    }
-
-    # Conditional fields by type
-    if qtype in {"multiple-choice", "case-study"}:
-        options = data.get("options")
-        correct_answer = data.get("correct_answer")
-        if not isinstance(options, list) or not all(isinstance(x, str) for x in options):
-            return JsonResponse({"error": "options must be a list of strings"}, status=400)
-        if not isinstance(correct_answer, int) or not (0 <= correct_answer < len(options)):
-            return JsonResponse({"error": "correct_answer must be a valid option index"}, status=400)
-        fields.update({"options": options, "correct_answer": correct_answer})
-
-    elif qtype == "true-false":
-        ca = data.get("correct_answer")
-        if not isinstance(ca, bool):
-            return JsonResponse({"error": "correct_answer must be true/false"}, status=400)
-        fields.update({"correct_answer": ca})
-
-    elif qtype in {"fill-blank", "calculation"}:
-        ca = data.get("correct_answer")
-        if ca is None:
-            return JsonResponse({"error": "correct_answer is required"}, status=400)
-        fields.update({"correct_answer": ca})
-
-    elif qtype == "matching":
-        left_items = data.get("left_items") or data.get("leftItems")
-        right_items = data.get("right_items") or data.get("rightItems")
-        correct_matches = data.get("correct_matches") or data.get("correctMatches")
-        if not isinstance(left_items, list) or not all(isinstance(x, str) for x in left_items):
-            return JsonResponse({"error": "left_items must be a list of strings"}, status=400)
-        if not isinstance(right_items, list) or not all(isinstance(x, str) for x in right_items):
-            return JsonResponse({"error": "right_items must be a list of strings"}, status=400)
-        if not isinstance(correct_matches, list) or not all(isinstance(p, (list, tuple)) and len(p) == 2 for p in correct_matches):
-            return JsonResponse({"error": "correct_matches must be list of [left_idx,right_idx]"}, status=400)
-        fields.update({
-            "left_items": left_items,
-            "right_items": right_items,
-            "correct_matches": [[int(p[0]), int(p[1])] for p in correct_matches],
-        })
-
-    elif qtype == "essay":
-        min_words = data.get("min_words") or data.get("minWords") or 0
-        try:
-            min_words = int(min_words)
-        except Exception:
-            min_words = 0
-        fields.update({"min_words": min_words})
-
-    elif qtype.startswith("chart-"):
-        chart_data = data.get("chart_data") or data.get("chartData")
-        correct_answer = data.get("correct_answer")
-        if not isinstance(chart_data, dict):
-            return JsonResponse({"error": "chart_data must be an object with labels/datasets"}, status=400)
-        if not isinstance(correct_answer, int):
-            return JsonResponse({"error": "correct_answer must be an integer index"}, status=400)
-        fields.update({"chart_data": chart_data, "correct_answer": correct_answer})
-
-    # Create the question
+    })
     q = GameQuestion.objects.create(**fields)
     return JsonResponse(_question_to_dict(q), status=201)
+
+
+@require_http_methods(["GET"])
+@login_required
+def api_game_questions_manage(request, pk: int):
+    g = get_object_or_404(Game, pk=pk)
+    allowed = user_has_role(request.user, ROLE_ADMIN) or g.created_by_id == getattr(request.user, "id", None)
+    if not allowed:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+    questions = [
+        _question_admin_dict(q)
+        for q in g.questions.order_by("order", "id")
+    ]
+    return JsonResponse({"questions": questions})
+
+
+@require_http_methods(["PATCH", "DELETE"])
+@login_required
+def api_game_question_manage(request, pk: int, question_id: int):
+    g = get_object_or_404(Game, pk=pk)
+    allowed = user_has_role(request.user, ROLE_ADMIN) or g.created_by_id == getattr(request.user, "id", None)
+    if not allowed:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    q = get_object_or_404(GameQuestion, pk=question_id, game=g)
+
+    if request.method == "DELETE":
+        removed_order = q.order
+        q.delete()
+        GameQuestion.objects.filter(game=g, order__gt=removed_order).update(order=F("order") - 1)
+        return JsonResponse({"status": "deleted"})
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    try:
+        fields, desired_order = _parse_question_payload(g, data, existing=q)
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+
+    new_order = desired_order if desired_order is not None else q.order
+    if new_order <= 0:
+        return JsonResponse({"error": "order must be greater than zero"}, status=400)
+
+    if new_order != q.order:
+        if new_order < q.order:
+            GameQuestion.objects.filter(game=g, order__lt=q.order, order__gte=new_order).update(order=F("order") + 1)
+        else:
+            GameQuestion.objects.filter(game=g, order__gt=q.order, order__lte=new_order).update(order=F("order") - 1)
+        q.order = new_order
+
+    # Reset type-specific fields before applying new data
+    q.qtype = fields.pop("qtype")
+    q.question = fields.pop("question")
+    q.options = None
+    q.correct_answer = None
+    q.left_items = None
+    q.right_items = None
+    q.correct_matches = None
+    q.min_words = None
+    q.chart_data = None
+
+    for key, value in fields.items():
+        setattr(q, key, value)
+
+    q.save()
+    return JsonResponse(_question_admin_dict(q))

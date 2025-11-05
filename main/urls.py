@@ -14,12 +14,21 @@ from main.views import (
     games as games_page,
     add_question as add_question_page,
     profiles as profiles_page,
+    survey_builder,
 
     # game APIs
     api_games_list,
     api_game_detail,
     api_game_submit,
     api_game_add_question,
+    api_surveys_collection,
+    api_survey_detail,
+    api_survey_questions,
+    api_survey_question_detail,
+    api_survey_next,
+    api_survey_participation,
+    api_survey_responses,
+    api_survey_analytics,
 )
 
 
@@ -125,6 +134,7 @@ urlpatterns = [
     path("games/",        games_page,          name="games"),
     path("games/add/",    add_question_page,   name="add_question"),
     path("profiles/",     profiles_page,       name="profiles"),
+    path("surveys/builder/", survey_builder,   name="survey_builder"),
 
     # ---------- Auth ----------
     path("login/",                        auth_views.login_page,          name="login"),
@@ -140,13 +150,25 @@ urlpatterns = [
     path("api/auth/forgot-password",      auth_views.api_forgot_password,  name="api_forgot_password"),
     path("reset-password/<str:uidb64>/<str:token>/",
                                          auth_views.reset_password_page,  name="reset_password"),
-    path("api/auth/reset-password",       auth_views.api_reset_password,   name="api_reset_password"),
+    path("api/auth/reset-password",      auth_views.api_reset_password,   name="api_reset_password"),
 
     # ---------- Games API ----------
     path("api/games/",                     api_games_list,        name="api_games_list"),
     path("api/games/<int:pk>/",            api_game_detail,       name="api_game_detail"),
     path("api/games/<int:pk>/submit/",     api_game_submit,       name="api_game_submit"),
     path("api/games/<int:pk>/questions/",  api_game_add_question, name="api_game_add_question"),
+    path("api/games/<int:pk>/questions/manage/",              api_game_questions_manage,    name="api_game_questions_manage"),
+    path("api/games/<int:pk>/questions/<int:question_id>/manage/", api_game_question_manage, name="api_game_question_manage"),
+
+    # ---------- Surveys ----------
+    path("api/surveys/",                                api_surveys_collection,     name="api_surveys_collection"),
+    path("api/surveys/next/",                           api_survey_next,            name="api_survey_next"),
+    path("api/surveys/<int:pk>/questions/",             api_survey_questions,       name="api_survey_questions"),
+    path("api/surveys/<int:pk>/questions/<int:question_id>/", api_survey_question_detail, name="api_survey_question_detail"),
+    path("api/surveys/<int:pk>/participation/",         api_survey_participation,   name="api_survey_participation"),
+    path("api/surveys/<int:pk>/responses/",             api_survey_responses,       name="api_survey_responses"),
+    path("api/surveys/<int:pk>/analytics/",             api_survey_analytics,       name="api_survey_analytics"),
+    path("api/surveys/<int:pk>/",                       api_survey_detail,          name="api_survey_detail"),
 
     # ---------- Courses / Resources ----------
     path("api/courses/",                               api_courses,                 name="api_courses"),

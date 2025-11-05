@@ -13,6 +13,8 @@ from main.models import (
     ClassSession, Reservation,
     ForumCategory, Thread, Post, PostLike,
     ResourceCategory, ResourceDocument,
+    CustomUserSurvey, CustomUserSurveyQuestion,
+    CustomUserSurveyParticipant, CustomUserSurveyResponse,
 )
 
 @admin.register(CustomUser)
@@ -114,3 +116,46 @@ class ResourceDocumentAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "term", "created_at")
     list_filter = ("category", "term")
     search_fields = ("title", "original_filename")
+
+
+class CustomUserSurveyQuestionInline(admin.TabularInline):
+    model = CustomUserSurveyQuestion
+    extra = 0
+    ordering = ("order",)
+
+
+@admin.register(CustomUserSurvey)
+class CustomUserSurveyAdmin(admin.ModelAdmin):
+    list_display = ("title", "is_active", "created_at", "updated_at")
+    list_filter = ("is_active",)
+    search_fields = ("title", "description")
+    inlines = [CustomUserSurveyQuestionInline]
+    actions = ["activate_surveys", "deactivate_surveys"]
+    readonly_fields = ("created_at", "updated_at")
+
+    def activate_surveys(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"Activated {updated} survey(s).")
+
+    activate_surveys.short_description = "Activate selected surveys"
+
+    def deactivate_surveys(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"Deactivated {updated} survey(s).")
+
+    deactivate_surveys.short_description = "Deactivate selected surveys"
+
+
+@admin.register(CustomUserSurveyParticipant)
+class CustomUserSurveyParticipantAdmin(admin.ModelAdmin):
+    list_display = ("survey", "user", "status", "consented_at", "last_prompted_at", "created_at")
+    list_filter = ("status", "survey")
+    search_fields = ("user__username", "user__email", "survey__title")
+    readonly_fields = ("created_at", "updated_at", "consented_at", "dismissed_at", "last_prompted_at")
+
+
+@admin.register(CustomUserSurveyResponse)
+class CustomUserSurveyResponseAdmin(admin.ModelAdmin):
+    list_display = ("participant", "submitted_at")
+    search_fields = ("participant__user__username", "participant__survey__title")
+    readonly_fields = ("submitted_at", "created_at", "updated_at")

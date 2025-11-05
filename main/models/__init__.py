@@ -7,6 +7,12 @@ from .classes import ClassSession, Reservation
 from .forum import ForumCategory, Thread, Post, PostLike
 from .message import Message
 from .chatbot_config import ChatbotConfig
+from .survey import (
+    CustomUserSurvey,
+    CustomUserSurveyQuestion,
+    CustomUserSurveyParticipant,
+    CustomUserSurveyResponse,
+)
 
 __all__ = [
     "CustomUser", "Profile",
@@ -16,4 +22,8 @@ __all__ = [
     "ClassSession", "Reservation",
     "ForumCategory", "Thread", "Post", "PostLike",
     "Message", "ChatbotConfig",
+    "CustomUserSurvey",
+    "CustomUserSurveyQuestion",
+    "CustomUserSurveyParticipant",
+    "CustomUserSurveyResponse",
 ]

@@ -42,6 +42,33 @@
           <div id="games-empty" class="muted games-empty" style="display:none;">No quizzes yet. Create your first quiz to see it here.</div>
           <ul id="games-list" class="games-list"></ul>
         </div>
+        <div class="section bulk-section">
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <h3 style="margin:0;">Bulk JSON Import</h3>
+            <button class="btn ghost" type="button" onclick="downloadJsonTemplate()">Download Template</button>
+          </div>
+          <p class="muted">Upload a JSON file to create new quizzes or append questions for every supported type.</p>
+          <div class="row">
+            <label for="bulk-mode">Import Mode</label>
+            <select id="bulk-mode">
+              <option value="append">Add to selected quiz</option>
+              <option value="new">Create quiz from file</option>
+            </select>
+          </div>
+          <div class="row" id="bulk-target-row">
+            <label>Target Quiz</label>
+            <div class="bulk-note" id="bulk-target-label">Select a quiz to append questions.</div>
+          </div>
+          <div class="row">
+            <label for="bulk-json-file">JSON file</label>
+            <input id="bulk-json-file" type="file" accept="application/json" />
+          </div>
+          <div class="row" style="justify-content:flex-end; gap:8px;">
+            <button class="btn secondary" type="button" onclick="resetBulkImport()">Clear</button>
+            <button class="btn" id="bulk-upload-btn" type="button" onclick="handleJsonUpload()">Upload</button>
+          </div>
+          <div id="bulk-json-status" class="status-line" style="display:none;"></div>
+        </div>
       </div>
 
         <div class="card">
@@ -97,6 +124,10 @@
           <div class="row">
             <label for="order">Order</label>
             <input id="order" type="number" placeholder="Leave blank for next" />
+          </div>
+          <div id="question-edit-banner" class="alert" style="display:none;">
+            <span id="question-edit-label">Editing question</span>
+            <button type="button" onclick="cancelQuestionEdit()">Cancel</button>
           </div>
           <div class="row">
             <label for="question">Question</label>
@@ -192,6 +223,11 @@
             <button class="btn ghost" onclick="preview()" type="button">Preview</button>
             <button class="btn" onclick="saveQuestion()" type="button">Save Question</button>
           </div>
+          <div class="section">
+            <h3 style="margin-top:0;">Existing Questions</h3>
+            <p class="muted" id="questions-empty" style="display:none;">No questions yet. Add one above or import via JSON.</p>
+            <ul id="questions-list" class="questions-list"></ul>
+          </div>
         </div>
 
         <div class="card">
@@ -243,6 +279,22 @@
 .quiz-builder .split { display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .quiz-builder .list { display:flex; flex-wrap:wrap; gap:8px; }
 .quiz-builder #preview { min-height: 200px; }
+.quiz-builder .bulk-section { background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin-top:14px; }
+.quiz-builder .bulk-section label { width: 160px; }
+.quiz-builder .bulk-note { font-size:12px; color:#4b5563; }
+.quiz-builder .status-line { font-size:13px; }
+.quiz-builder .status-line.success { color:#166534; }
+.quiz-builder .status-line.error { color:#991b1b; }
+.quiz-builder .alert { display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff7d6; border:1px solid #fcd34d; color:#92400e; padding:8px 12px; border-radius:8px; margin-bottom:10px; }
+.quiz-builder .alert button { background:none; border:none; color:#92400e; cursor:pointer; font-weight:600; }
+.quiz-builder .questions-list { list-style:none; padding:0; margin:0; }
+.quiz-builder .questions-item { display:flex; gap:12px; justify-content:space-between; padding:10px 0; border-top:1px solid #eef0f4; }
+.quiz-builder .questions-item:first-child { border-top:0; }
+.quiz-builder .questions-item.is-editing { background:#fef3c7; border-radius:10px; padding:12px; }
+.quiz-builder .questions-info { flex:1; min-width:0; }
+.quiz-builder .questions-title { font-weight:600; color:#1f2937; margin-bottom:4px; }
+.quiz-builder .questions-meta { font-size:12px; color:#6b7280; }
+.quiz-builder .questions-actions { display:flex; gap:8px; flex-wrap:wrap; }
 @media (max-width: 1024px){
   .quiz-builder--embedded { padding: 18px; }
   .quiz-builder .grid { grid-template-columns: 1fr; }
@@ -259,6 +311,9 @@
       essay: { min: 0 },
       match: { left: [], right: [], pairs: [] },
       chart: { labels: [], datasets: [], correct: 0 },
+      questions: [],
+      editing: { pk: null, order: null, originalType: null },
+      bulk: { busy: false },
     };
 
     const callApi = window.api
@@ -281,6 +336,39 @@
 
     const gamesMap = {};
     let gamesList = [];
+
+    function updateBulkTargetLabel(){
+      const label = byId('bulk-target-label');
+      if(!label) return;
+      const modeSel = byId('bulk-mode');
+      const mode = modeSel ? modeSel.value : 'append';
+      if(mode === 'new'){
+        label.textContent = 'A new quiz will be created from the uploaded file.';
+        return;
+      }
+      const sel = byId('game');
+      const id = sel ? sel.value : '';
+      if(id && gamesMap[id]){
+        const title = gamesMap[id].title || `Quiz #${id}`;
+        label.textContent = `${title} (ID ${id})`;
+      } else {
+        label.textContent = 'Select a quiz to append questions.';
+      }
+    }
+
+    function setBulkStatus(message, type='info'){
+      const status = byId('bulk-json-status');
+      if(!status) return;
+      if(!message){
+        status.style.display = 'none';
+        status.textContent = '';
+        status.className = 'status-line';
+        return;
+      }
+      status.style.display = 'block';
+      status.textContent = message;
+      status.className = `status-line ${type === 'error' ? 'error' : (type === 'success' ? 'success' : '')}`.trim();
+    }
 
     function hydrateGames(list, selectId){
       const sel = byId('game');
@@ -316,6 +404,7 @@
       }
 
       renderGamesList();
+      updateBulkTargetLabel();
       if(merged.length){
         loadSelectedIntoForm();
       }
@@ -438,6 +527,254 @@
         li.append(info, actions);
         list.appendChild(li);
       });
+    }
+
+    function renderQuestionsList(){
+      const list = byId('questions-list');
+      const empty = byId('questions-empty');
+      if(!list || !empty) return;
+      if(!empty.dataset.defaultText){
+        empty.dataset.defaultText = empty.textContent;
+      }
+      list.innerHTML = '';
+      const questions = Array.isArray(state.questions) ? state.questions.slice().sort((a,b)=> (a.order||0) - (b.order||0)) : [];
+      if(!questions.length){
+        empty.textContent = empty.dataset.defaultText || empty.textContent;
+        empty.style.display = 'block';
+        return;
+      }
+      empty.textContent = empty.dataset.defaultText || empty.textContent;
+      empty.style.display = 'none';
+      questions.forEach((q, index)=>{
+        const li = el('li','questions-item');
+        if(state.editing.pk && state.editing.pk === q.questionId){
+          li.classList.add('is-editing');
+        }
+        const info = el('div','questions-info');
+        const heading = el('div','questions-title');
+        const pillType = el('span','pill', q.qtype || 'unknown');
+        heading.appendChild(pillType);
+        heading.appendChild(document.createTextNode(' ' + (q.question || 'Untitled question')));
+        info.appendChild(heading);
+        const metaParts = [`Order #${q.order ?? (index + 1)}`];
+        if(Array.isArray(q.options) && q.options.length && (q.qtype === 'multiple-choice' || q.qtype === 'case-study')){
+          metaParts.push(`${q.options.length} option${q.options.length === 1 ? '' : 's'}`);
+        }
+        if(q.qtype === 'matching' && Array.isArray(q.leftItems) && Array.isArray(q.rightItems)){
+          metaParts.push(`${q.leftItems.length} left • ${q.rightItems.length} right`);
+        }
+        const meta = el('div','questions-meta', metaParts.join(' • '));
+        info.appendChild(meta);
+
+        const actions = el('div','questions-actions');
+        const editBtn = el('button','btn ghost','Edit');
+        editBtn.type = 'button';
+        editBtn.addEventListener('click', ()=> enterQuestionEdit(q));
+        actions.appendChild(editBtn);
+
+        const deleteBtn = el('button','btn danger','Delete');
+        deleteBtn.type = 'button';
+        deleteBtn.addEventListener('click', ()=> deleteQuestionItem(q));
+        actions.appendChild(deleteBtn);
+
+        li.append(info, actions);
+        list.appendChild(li);
+      });
+    }
+
+    async function loadQuestionsForGame(gameId){
+      if(!gameId){
+        state.questions = [];
+        renderQuestionsList();
+        return;
+      }
+      try{
+        const res = await callApi(`/api/games/${gameId}/questions/manage/`);
+        const list = Array.isArray(res.questions) ? res.questions : [];
+        state.questions = list.map(item => ({
+          ...item,
+          order: typeof item.order === 'number' ? item.order : parseInt(item.order, 10) || 0,
+        }));
+        const empty = byId('questions-empty');
+        if(empty && empty.dataset && empty.dataset.defaultText){
+          empty.textContent = empty.dataset.defaultText;
+        }
+      } catch(err){
+        console.error('Failed to load questions', err);
+        state.questions = [];
+        const empty = byId('questions-empty');
+        if(empty){
+          if(!empty.dataset.defaultText){
+            empty.dataset.defaultText = empty.textContent;
+          }
+          empty.textContent = 'Unable to load questions for this quiz.';
+          empty.style.display = 'block';
+        }
+      }
+      renderQuestionsList();
+    }
+
+    function updateQuestionBanner(){
+      const banner = byId('question-edit-banner');
+      const label = byId('question-edit-label');
+      if(!banner || !label) return;
+      if(state.editing.pk){
+        label.textContent = `Editing question #${state.editing.order}`;
+        banner.style.display = 'flex';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function resetQuestionForm(preserveType=false){
+      const typeSelect = byId('qtype');
+      const currentType = typeSelect ? typeSelect.value : 'multiple-choice';
+      state.editing = { pk: null, order: null, originalType: null };
+      byId('order').value = '';
+      byId('question').value = '';
+
+      state.mc.options = [];
+      state.mc.correct = 0;
+      renderMc();
+
+      state.tf.correct = true;
+      const tfInputs = document.querySelectorAll('input[name="tf"]');
+      tfInputs.forEach((input, idx)=> input.checked = idx === 0);
+
+      state.fill.correct = '';
+      const fillInput = byId('fill-correct');
+      if(fillInput) fillInput.value = '';
+
+      state.essay.min = 0;
+      const essayInput = byId('essay-min');
+      if(essayInput) essayInput.value = '';
+
+      state.match.left = [];
+      state.match.right = [];
+      state.match.pairs = [];
+      renderSides();
+      renderPairs();
+      populatePairSelects();
+
+      state.chart.labels = [];
+      state.chart.datasets = [];
+      state.chart.correct = 0;
+      byId('chart-datasets').value = '[]';
+      byId('chart-correct').value = '0';
+      renderLabels();
+
+      if(typeSelect){
+        typeSelect.value = preserveType ? currentType : 'multiple-choice';
+      }
+      showSections();
+      preview();
+      updateQuestionBanner();
+    }
+
+    function cancelQuestionEdit(){
+      resetQuestionForm(true);
+    }
+
+    function enterQuestionEdit(question){
+      if(!question) return;
+      const q = JSON.parse(JSON.stringify(question));
+      const typeSelect = byId('qtype');
+      if(typeSelect){
+        typeSelect.value = q.qtype || 'multiple-choice';
+      }
+      state.editing = {
+        pk: q.questionId,
+        order: q.order,
+        originalType: q.qtype || null,
+      };
+      byId('order').value = q.order != null ? q.order : '';
+      byId('question').value = q.question || '';
+      showSections();
+
+      // Reset shared state before applying
+      state.mc.options = [];
+      state.match.left = [];
+      state.match.right = [];
+      state.match.pairs = [];
+      state.chart.labels = [];
+      state.chart.datasets = [];
+
+      if(q.qtype === 'multiple-choice' || q.qtype === 'case-study'){
+        state.mc.options = Array.isArray(q.options) ? q.options.slice() : [];
+        state.mc.correct = typeof q.correctAnswer === 'number' ? q.correctAnswer : 0;
+        renderMc();
+      } else {
+        renderMc();
+      }
+
+      if(q.qtype === 'true-false'){
+        state.tf.correct = !!q.correctAnswer;
+        const tfInputs = document.querySelectorAll('input[name="tf"]');
+        tfInputs.forEach(input => {
+          input.checked = (input.value === 'true') === state.tf.correct;
+        });
+      } else {
+        state.tf.correct = true;
+      }
+
+      if(q.qtype === 'fill-blank' || q.qtype === 'calculation'){
+        state.fill.correct = q.correctAnswer != null ? q.correctAnswer : '';
+        byId('fill-correct').value = state.fill.correct;
+      } else {
+        state.fill.correct = '';
+        byId('fill-correct').value = '';
+      }
+
+      if(q.qtype === 'essay'){
+        state.essay.min = q.minWords || 0;
+        byId('essay-min').value = state.essay.min;
+      } else {
+        state.essay.min = 0;
+        byId('essay-min').value = '';
+      }
+
+      if(q.qtype === 'matching'){
+        state.match.left = Array.isArray(q.leftItems) ? q.leftItems.slice() : [];
+        state.match.right = Array.isArray(q.rightItems) ? q.rightItems.slice() : [];
+        state.match.pairs = Array.isArray(q.correctMatches) ? q.correctMatches.map(pair => [pair[0], pair[1]]) : [];
+      }
+      renderSides();
+      renderPairs();
+      populatePairSelects();
+
+      if(q.qtype && q.qtype.startsWith('chart-')){
+        state.chart.labels = Array.isArray(q.chartData?.labels) ? q.chartData.labels.slice() : [];
+        state.chart.datasets = Array.isArray(q.chartData?.datasets) ? q.chartData.datasets.slice() : [];
+        byId('chart-datasets').value = JSON.stringify(state.chart.datasets, null, 2);
+        const correct = typeof q.correctAnswer === 'number' ? q.correctAnswer : 0;
+        state.chart.correct = correct;
+        byId('chart-correct').value = String(correct);
+        renderLabels();
+      } else {
+        renderLabels();
+        byId('chart-datasets').value = '[]';
+        byId('chart-correct').value = '0';
+      }
+
+      preview();
+      updateQuestionBanner();
+    }
+
+    async function deleteQuestionItem(question){
+      const gameId = byId('game').value;
+      if(!gameId) return alert('Select a game first');
+      if(!question || !question.questionId) return;
+      if(!confirm('Delete this question? This cannot be undone.')) return;
+      try{
+        await callApi(`/api/games/${gameId}/questions/${question.questionId}/manage/`, { method: 'DELETE' });
+        alert('Question deleted');
+        await loadQuestionsForGame(gameId);
+        await loadGames(gameId);
+        resetQuestionForm(true);
+      } catch(err){
+        console.error(err);
+        alert(err?.json?.error || 'Failed to delete question');
+      }
     }
 
     function selectGame(id){
@@ -622,55 +959,402 @@
     }
 
     // ---- Save Question ----
-    async function saveQuestion(){
-      const gameId = byId('game').value;
-      if(!gameId) return alert('Select a game');
+    function buildQuestionPayload(){
       const qtype = byId('qtype').value;
-      const question = byId('question').value.trim();
+      const questionText = (byId('question').value || '').trim();
+      if(!questionText) throw new Error('Enter question text');
+      const payload = { qtype, question: questionText };
       const orderVal = parseInt(byId('order').value, 10);
-      const payload = { qtype, question };
       if(!Number.isNaN(orderVal)) payload.order = orderVal;
-      if(qtype==='multiple-choice' || qtype==='case-study'){
+      if(qtype === 'multiple-choice' || qtype === 'case-study'){
+        if(!state.mc.options.length) throw new Error('Add at least one option');
         payload.options = state.mc.options.slice();
-        payload.correct_answer = state.mc.correct|0;
-        if(!payload.options.length) return alert('Add at least one option');
-      } else if(qtype==='true-false'){
-        const v = [...document.querySelectorAll('input[name="tf"]')].find(x=>x.checked);
-        payload.correct_answer = v ? (v.value==='true') : true;
-      } else if(qtype==='fill-blank' || qtype==='calculation'){
-        payload.correct_answer = byId('fill-correct').value;
-      } else if(qtype==='essay'){
-        payload.min_words = parseInt(byId('essay-min').value||'0',10) || 0;
-      } else if(qtype==='matching'){
+        const correct = typeof state.mc.correct === 'number' ? state.mc.correct : 0;
+        payload.correct_answer = Math.max(0, Math.min(correct, payload.options.length - 1));
+      } else if(qtype === 'true-false'){
+        const selected = [...document.querySelectorAll('input[name="tf"]')].find(x=>x.checked);
+        payload.correct_answer = selected ? (selected.value === 'true') : true;
+      } else if(qtype === 'fill-blank' || qtype === 'calculation'){
+        const correct = byId('fill-correct').value;
+        if(correct === undefined || correct === null || `${correct}`.trim() === ''){
+          throw new Error('Provide a correct answer');
+        }
+        payload.correct_answer = correct;
+      } else if(qtype === 'essay'){
+        payload.min_words = parseInt(byId('essay-min').value || '0', 10) || 0;
+      } else if(qtype === 'matching'){
+        if(!state.match.left.length || !state.match.right.length){
+          throw new Error('Add left and right items for matching questions');
+        }
         payload.left_items = state.match.left.slice();
         payload.right_items = state.match.right.slice();
         payload.correct_matches = state.match.pairs.slice();
-        if(!payload.left_items.length || !payload.right_items.length) return alert('Add left and right items');
       } else if(qtype.startsWith('chart-')){
-        let datasets = [];
-        try { datasets = JSON.parse(byId('chart-datasets').value || '[]'); }
-        catch { return alert('Datasets must be valid JSON'); }
-        payload.chart_data = { labels: state.chart.labels.slice(), datasets };
-        payload.correct_answer = parseInt(byId('chart-correct').value||'0',10) || 0;
+        const labels = state.chart.labels.slice();
+        if(!labels.length) throw new Error('Add at least one chart label');
+        let datasets;
+        try {
+          datasets = JSON.parse(byId('chart-datasets').value || '[]');
+        } catch {
+          throw new Error('Datasets JSON must be valid');
+        }
+        if(!Array.isArray(datasets)){
+          throw new Error('Datasets JSON must describe an array');
+        }
+        payload.chart_data = { labels, datasets };
+        payload.correct_answer = parseInt(byId('chart-correct').value || '0', 10) || 0;
       }
+      return payload;
+    }
+
+    async function saveQuestion(){
+      const gameId = byId('game').value;
+      if(!gameId) return alert('Select a game');
+      let payload;
       try {
-        const res = await callApi(`/api/games/${gameId}/questions/`, { method: 'POST', data: payload });
-        alert('Question created');
-        // reset simple fields but keep current game/type for faster entry
-        byId('question').value = '';
+        payload = buildQuestionPayload();
+      } catch(err){
+        return alert(err?.message || 'Unable to build question payload');
+      }
+      const isEditing = !!state.editing.pk;
+      const endpoint = isEditing
+        ? `/api/games/${gameId}/questions/${state.editing.pk}/manage/`
+        : `/api/games/${gameId}/questions/`;
+      const method = isEditing ? 'PATCH' : 'POST';
+      try {
+        await callApi(endpoint, { method, data: payload });
+        alert(isEditing ? 'Question updated' : 'Question created');
+        await loadQuestionsForGame(gameId);
+        await loadGames(gameId);
+        resetQuestionForm(true);
       } catch(e){
-        console.error(e); alert(e?.json?.error || 'Failed to save');
+        console.error(e);
+        alert(e?.json?.error || 'Failed to save');
+      }
+    }
+
+    function resetBulkImport(){
+      const file = byId('bulk-json-file');
+      if(file) file.value = '';
+    }
+
+    function downloadJsonTemplate(){
+      const template = {
+        game: {
+          title: "Sample STEM Pulse",
+          description: "Example quiz generated from a JSON template.",
+          category: "stem",
+          difficulty: "medium",
+          duration_minutes: 15,
+          max_points: 20,
+          is_active: false
+        },
+        questions: [
+          {
+            order: 1,
+            qtype: "multiple-choice",
+            question: "Which planet is known as the Red Planet?",
+            options: ["Venus", "Mars", "Jupiter"],
+            correctAnswer: 1
+          },
+          {
+            order: 2,
+            qtype: "case-study",
+            question: "Choose the best response for this classroom scenario.",
+            options: ["Investigate quietly", "Ignore the issue", "Escalate immediately"],
+            correctAnswer: 0
+          },
+          {
+            order: 3,
+            qtype: "true-false",
+            question: "Light travels faster than sound.",
+            correctAnswer: true
+          },
+          {
+            order: 4,
+            qtype: "fill-blank",
+            question: "The chemical symbol for water is ___",
+            correctAnswer: "H2O"
+          },
+          {
+            order: 5,
+            qtype: "calculation",
+            question: "12 + 8 = ?",
+            correctAnswer: "20"
+          },
+          {
+            order: 6,
+            qtype: "essay",
+            question: "Describe the difference between kinetic and potential energy.",
+            minWords: 50
+          },
+          {
+            order: 7,
+            qtype: "matching",
+            question: "Match each scientist to their contribution.",
+            leftItems: ["Albert Einstein", "Marie Curie", "Isaac Newton"],
+            rightItems: ["Radioactivity", "Theory of Relativity", "Law of Gravity"],
+            correctMatches: [[0,1],[1,0],[2,2]]
+          },
+          {
+            order: 8,
+            qtype: "chart-bar",
+            question: "Which quarter shows the highest sales?",
+            chartData: { labels: ["Q1","Q2","Q3","Q4"], datasets: [{ label: "Sales", data: [12, 18, 9, 22] }] },
+            correctAnswer: 3
+          },
+          {
+            order: 9,
+            qtype: "chart-line",
+            question: "During which year did the trend dip the lowest?",
+            chartData: { labels: ["2019","2020","2021"], datasets: [{ label: "Active Users", data: [120, 90, 180] }] },
+            correctAnswer: 1
+          },
+          {
+            order: 10,
+            qtype: "chart-pie",
+            question: "Which slice represents the largest market share?",
+            chartData: { labels: ["Chrome","Safari","Firefox"], datasets: [{ data: [55, 30, 15] }] },
+            correctAnswer: 0
+          },
+          {
+            order: 11,
+            qtype: "chart-doughnut",
+            question: "Select the smallest region by distribution.",
+            chartData: { labels: ["North","South","East","West"], datasets: [{ data: [25, 22, 28, 25] }] },
+            correctAnswer: 1
+          },
+          {
+            order: 12,
+            qtype: "chart-radar",
+            question: "Which skill requires the most improvement?",
+            chartData: { labels: ["Analysis","Creativity","Communication"], datasets: [{ label: "Score", data: [3,4,2] }] },
+            correctAnswer: 2
+          },
+          {
+            order: 13,
+            qtype: "chart-polar",
+            question: "Identify the leading category in the polar chart.",
+            chartData: { labels: ["Alpha","Beta","Gamma","Delta"], datasets: [{ data: [2,4,3,1] }] },
+            correctAnswer: 1
+          }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'quiz-template.json';
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(()=>{
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
+
+    function convertQuestionJson(item, index){
+      if(!item || typeof item !== 'object'){
+        throw new Error(`Question ${index + 1} is not a valid object.`);
+      }
+      const qtype = (item.qtype || '').trim();
+      const questionText = (item.question || '').trim();
+      if(!qtype) throw new Error(`Question ${index + 1} is missing a qtype.`);
+      if(!questionText) throw new Error(`Question ${index + 1} is missing question text.`);
+      const payload = { qtype, question: questionText };
+      if('order' in item){
+        const orderVal = parseInt(item.order, 10);
+        if(!Number.isNaN(orderVal) && orderVal > 0){
+          payload.order = orderVal;
+        }
+      }
+      if(qtype === 'multiple-choice' || qtype === 'case-study'){
+        const options = item.options;
+        if(!Array.isArray(options) || !options.length){
+          throw new Error(`Question ${index + 1} requires an options array.`);
+        }
+        payload.options = options.map(opt => String(opt));
+        const correct = item.correctAnswer ?? item.correct_answer;
+        const answerIndex = parseInt(correct, 10);
+        if(Number.isNaN(answerIndex)){
+          throw new Error(`Question ${index + 1} requires a numeric correctAnswer.`);
+        }
+        payload.correct_answer = answerIndex;
+      } else if(qtype === 'true-false'){
+        let correct = item.correctAnswer;
+        if(correct === undefined) correct = item.correct_answer;
+        if(typeof correct === 'string'){
+          correct = correct.trim().toLowerCase() === 'true';
+        }
+        if(typeof correct !== 'boolean'){
+          throw new Error(`Question ${index + 1} requires a boolean correctAnswer.`);
+        }
+        payload.correct_answer = correct;
+      } else if(qtype === 'fill-blank' || qtype === 'calculation'){
+        const correct = item.correctAnswer ?? item.correct_answer;
+        if(correct === undefined || correct === null){
+          throw new Error(`Question ${index + 1} requires correctAnswer.`);
+        }
+        payload.correct_answer = correct;
+      } else if(qtype === 'essay'){
+        payload.min_words = parseInt(item.minWords ?? item.min_words ?? 0, 10) || 0;
+      } else if(qtype === 'matching'){
+        const left = item.leftItems ?? item.left_items;
+        const right = item.rightItems ?? item.right_items;
+        const matches = item.correctMatches ?? item.correct_matches;
+        if(!Array.isArray(left) || !Array.isArray(right) || !left.length || !right.length){
+          throw new Error(`Question ${index + 1} requires leftItems and rightItems arrays.`);
+        }
+        if(!Array.isArray(matches)){
+          throw new Error(`Question ${index + 1} requires a correctMatches array.`);
+        }
+        payload.left_items = left.map(v => String(v));
+        payload.right_items = right.map(v => String(v));
+        payload.correct_matches = matches.map(pair=>{
+          if(!Array.isArray(pair) || pair.length !== 2){
+            throw new Error(`Question ${index + 1} has invalid correctMatches entries.`);
+          }
+          const li = parseInt(pair[0], 10);
+          const ri = parseInt(pair[1], 10);
+          if(Number.isNaN(li) || Number.isNaN(ri)){
+            throw new Error(`Question ${index + 1} correctMatches must be numeric indexes.`);
+          }
+          return [li, ri];
+        });
+      } else if(qtype.startsWith('chart-')){
+        const chartData = item.chartData || item.chart_data;
+        if(!chartData || typeof chartData !== 'object'){
+          throw new Error(`Question ${index + 1} requires chartData.`);
+        }
+        const labels = chartData.labels;
+        if(!Array.isArray(labels) || !labels.length){
+          throw new Error(`Question ${index + 1} chartData.labels must be an array.`);
+        }
+        const datasets = chartData.datasets || [];
+        if(!Array.isArray(datasets)){
+          throw new Error(`Question ${index + 1} chartData.datasets must be an array.`);
+        }
+        payload.chart_data = { labels: labels.map(v => String(v)), datasets };
+        const answerIndex = parseInt(item.correctAnswer ?? item.correct_answer, 10);
+        if(Number.isNaN(answerIndex)){
+          throw new Error(`Question ${index + 1} requires numeric correctAnswer.`);
+        }
+        payload.correct_answer = answerIndex;
+      } else {
+        throw new Error(`Unsupported qtype \"${qtype}\" in JSON import (question ${index + 1}).`);
+      }
+      return payload;
+    }
+
+    async function handleJsonUpload(){
+      if(state.bulk.busy) return;
+      const fileInput = byId('bulk-json-file');
+      if(!fileInput || !fileInput.files.length){
+        return alert('Choose a JSON file to upload.');
+      }
+      const modeSel = byId('bulk-mode');
+      const mode = modeSel ? modeSel.value : 'append';
+      state.bulk.busy = true;
+      const uploadBtn = byId('bulk-upload-btn');
+      if(uploadBtn){
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+      }
+      setBulkStatus('Processing file...', 'info');
+      try{
+        const file = fileInput.files[0];
+        const raw = await file.text();
+        let parsed;
+        try {
+          parsed = JSON.parse(raw);
+        } catch(err){
+          throw new Error('The selected file is not valid JSON.');
+        }
+        const questions = Array.isArray(parsed.questions) ? parsed.questions : [];
+        if(!questions.length){
+          throw new Error('No questions found in JSON payload.');
+        }
+        const sortedQuestions = questions.slice().sort((a,b)=> (a.order||0) - (b.order||0));
+        let targetGameId;
+        if(mode === 'new'){
+          const gameData = parsed.game || {};
+          const gamePayload = {
+            title: (gameData.title || '').trim() || `Imported Quiz ${new Date().toISOString()}`,
+            description: gameData.description || '',
+            category: (gameData.category || '').toLowerCase(),
+            difficulty: (gameData.difficulty || '').toLowerCase(),
+            duration_minutes: parseInt(gameData.duration_minutes || gameData.duration || 15, 10) || 15,
+            max_points: parseInt(gameData.max_points || gameData.points || 10, 10) || 10,
+            is_active: !!gameData.is_active,
+          };
+          const created = await callApi('/api/games/', { method:'POST', data: gamePayload });
+          targetGameId = created.id;
+          setBulkStatus(`Created quiz \"${created.title}\" (ID ${targetGameId}). Importing questions...`, 'info');
+        } else {
+          const selectedId = byId('game') ? byId('game').value : '';
+          if(!selectedId){
+            throw new Error('Select a quiz to append questions before uploading.');
+          }
+          targetGameId = selectedId;
+        }
+        for(let i = 0; i < sortedQuestions.length; i += 1){
+          const payload = convertQuestionJson(sortedQuestions[i], i);
+          await callApi(`/api/games/${targetGameId}/questions/`, { method:'POST', data: payload });
+        }
+        setBulkStatus('Import complete.', 'success');
+        resetBulkImport();
+        await loadGames(targetGameId);
+      } catch(err){
+        console.error(err);
+        setBulkStatus(err?.message || 'Import failed.', 'error');
+      } finally {
+        state.bulk.busy = false;
+        const uploadBtnAgain = byId('bulk-upload-btn');
+        if(uploadBtnAgain){
+          uploadBtnAgain.disabled = false;
+          uploadBtnAgain.textContent = 'Upload';
+        }
       }
     }
 
     // Wire up
     document.addEventListener('DOMContentLoaded', ()=>{
-      loadGames(); showSections(); renderMc(); renderSides(); populatePairSelects(); renderLabels();
-      byId('qtype').addEventListener('change', ()=>{ showSections(); preview(); });
-      byId('game').addEventListener('change', loadSelectedIntoForm);
-      // TF default
+      renderMc();
+      renderSides();
+      renderPairs();
+      populatePairSelects();
+      renderLabels();
+      renderQuestionsList();
+      resetQuestionForm(true);
+      updateBulkTargetLabel();
+      loadGames();
+      showSections();
+      const typeSelect = byId('qtype');
+      if(typeSelect){
+        typeSelect.addEventListener('change', ()=>{ showSections(); preview(); });
+      }
+      const gameSelect = byId('game');
+      if(gameSelect){
+        gameSelect.addEventListener('change', loadSelectedIntoForm);
+      }
       const tfs = document.querySelectorAll('input[name="tf"]');
-      if(tfs[0]) tfs[0].checked = true;
-      tfs.forEach(el=> el.addEventListener('change', ()=>{ state.tf.correct = (el.value==='true'); preview(); }));
+      if(tfs.length){
+        tfs.forEach((el, idx)=>{
+          el.checked = idx === 0;
+          el.addEventListener('change', ()=>{ state.tf.correct = (el.value === 'true'); preview(); });
+        });
+      }
+      const bulkMode = byId('bulk-mode');
+      if(bulkMode){
+        bulkMode.addEventListener('change', updateBulkTargetLabel);
+      }
+      const bulkFile = byId('bulk-json-file');
+      if(bulkFile){
+        bulkFile.addEventListener('change', ()=> setBulkStatus(''));
+      }
     });
   </script>
+
+
+
+

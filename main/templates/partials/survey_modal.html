@@ -1,0 +1,200 @@
+{% load static %}
+<style>
+    .survey-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 11000;
+        backdrop-filter: blur(2px);
+    }
+
+    .survey-modal-overlay.active {
+        display: flex;
+    }
+
+    .survey-modal {
+        background: #ffffff;
+        border-radius: 18px;
+        max-width: min(720px, 92vw);
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 30px 50px rgba(17, 24, 39, 0.25);
+    }
+
+    .survey-modal__header {
+        padding: 22px 28px 16px;
+        background: linear-gradient(135deg, rgba(36, 173, 183, 0.12), rgba(245, 124, 0, 0.1));
+        border-bottom: 1px solid rgba(36, 173, 183, 0.2);
+    }
+
+    .survey-modal__header h2 {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+        color: #0f172a;
+    }
+
+    .survey-modal__header p {
+        margin: 0;
+        color: #4b5563;
+    }
+
+    .survey-modal__body {
+        padding: 22px 28px;
+        overflow-y: auto;
+    }
+
+    .survey-modal__actions {
+        padding: 18px 24px;
+        border-top: 1px solid rgba(15, 23, 42, 0.08);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        background: rgba(248, 250, 252, 0.95);
+    }
+
+    .survey-modal__form label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1f2937;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .survey-modal__form input[type="text"],
+    .survey-modal__form input[type="number"],
+    .survey-modal__form input[type="range"],
+    .survey-modal__form textarea,
+    .survey-modal__form select {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        margin-bottom: 14px;
+        font-size: 0.95rem;
+    }
+
+    .survey-modal__form textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    .survey-modal__form .question-block {
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+    }
+
+    .survey-choice-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .survey-choice-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .survey-choice-item label {
+        margin: 0;
+        font-weight: 500;
+        color: #1f2937;
+    }
+
+    .survey-modal__actions .btn {
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .survey-modal__actions .btn:active {
+        transform: scale(0.97);
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #d1d5db;
+        color: #374151;
+    }
+
+    .btn-primary {
+        background: #24adb7;
+        color: #ffffff;
+        box-shadow: 0 12px 20px rgba(36, 173, 183, 0.18);
+    }
+
+    .survey-modal__chart {
+        margin-top: 16px;
+    }
+
+    .survey-consent {
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        background: rgba(36, 173, 183, 0.12);
+        color: #0f5a60;
+    }
+
+    .survey-success {
+        text-align: center;
+    }
+
+    .survey-success h3 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+        color: #047857;
+    }
+
+    .survey-success p {
+        color: #4b5563;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+        .survey-modal {
+            border-radius: 0;
+            max-height: 100vh;
+        }
+
+        .survey-modal__header,
+        .survey-modal__body,
+        .survey-modal__actions {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+    }
+</style>
+
+<div class="survey-modal-overlay" id="surveyModal" aria-hidden="true">
+    <div class="survey-modal" role="dialog" aria-modal="true" aria-labelledby="surveyModalTitle">
+        <div class="survey-modal__header">
+            <h2 id="surveyModalTitle">Help us improve</h2>
+            <p id="surveyModalSubtitle">Share a quick response to unlock a better learning experience.</p>
+        </div>
+        <div class="survey-modal__body" id="surveyModalBody">
+            <div id="surveyPrompt" class="survey-prompt">
+                <p>We'd love to hear from you. Would you like to participate in a short survey?</p>
+            </div>
+            <div id="surveyConsent" class="survey-consent" style="display:none;"></div>
+            <form id="surveyForm" class="survey-modal__form" style="display:none;"></form>
+            <div id="surveySuccess" class="survey-success" style="display:none;"></div>
+            <div id="surveyCharts" class="survey-modal__chart"></div>
+        </div>
+        <div class="survey-modal__actions">
+            <button class="btn btn-outline" type="button" id="surveyLaterBtn">Maybe later</button>
+            <button class="btn btn-primary" type="button" id="surveyPrimaryBtn">Start survey</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,527 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #24adb7;
+            --primary-dark: #1d8c93;
+            --accent: #f57c00;
+            --bg: #f6f7fb;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --muted: #6b7280;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 24px 36px;
+            background: linear-gradient(135deg, rgba(36, 173, 183, 0.12), rgba(245, 124, 0, 0.06));
+            border-bottom: 1px solid rgba(36, 173, 183, 0.18);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        header p {
+            color: var(--muted);
+            margin-top: 6px;
+            max-width: 720px;
+            line-height: 1.5;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            padding: 24px 36px 48px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(36, 173, 183, 0.1);
+            box-shadow: 0 20px 30px rgba(36, 173, 183, 0.08);
+            padding: 20px 22px;
+        }
+
+        .card + .card {
+            margin-top: 16px;
+        }
+
+        .survey-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+        }
+
+        .survey-pill {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .survey-pill.active {
+            border-color: var(--primary);
+            box-shadow: 0 12px 20px rgba(36, 173, 183, 0.12);
+        }
+
+        .survey-pill h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .survey-pill span {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 10px;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 12px 18px rgba(36, 173, 183, 0.18);
+        }
+
+        .btn.secondary {
+            background: rgba(36, 173, 183, 0.12);
+            color: var(--primary-dark);
+            border: 1px solid rgba(36, 173, 183, 0.2);
+        }
+
+        .btn.danger {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .builder-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .builder-header h2 {
+            font-size: 1.4rem;
+            color: #0f172a;
+        }
+
+        form label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="range"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            color: #111827;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .grid-two {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .builder-section {
+            margin-bottom: 26px;
+        }
+
+        .builder-section h3 {
+            font-size: 1.1rem;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .question-card {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 14px;
+            padding: 16px;
+            background: #fff;
+            position: relative;
+        }
+
+        .question-card header {
+            background: none;
+            padding: 0;
+            border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-card header h4 {
+            font-size: 1rem;
+            color: #0f172a;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .question-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .alert {
+            background: rgba(36, 173, 183, 0.12);
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-state {
+            padding: 28px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.04);
+            border-radius: 14px;
+            border: 1px dashed rgba(15, 23, 42, 0.1);
+            color: var(--muted);
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(36, 173, 183, 0.12);
+            color: var(--primary-dark);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle input {
+            width: 40px;
+            height: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .survey-list {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Custom Survey Builder</h1>
+        <p>Create reusable surveys, toggle their availability for students, and monitor feedback in real-time. Use this tool to launch NPS check-ins, course feedback, onboarding journeys, or pulse checks without touching the quiz system.</p>
+    </header>
+
+    <main class="layout">
+        <section>
+            <div class="card builder-section">
+                <div class="builder-header">
+                    <h2>All Surveys</h2>
+                    <button class="btn primary" id="createSurveyBtn" type="button">
+                        <span>New survey</span>
+                    </button>
+                </div>
+                <div id="surveysEmpty" class="empty-state" style="display:none;">
+                    No surveys yet. Create your first survey to start collecting insights.
+                </div>
+                <div id="surveyList" class="survey-list"></div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:10px;">Quick Stats</h3>
+                <div id="surveyStats" class="empty-state" style="font-size:0.9rem;">
+                    Select a survey to see participant totals and completion rates.
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="card builder-section">
+                <div class="builder-header">
+                    <h2 id="builderTitle">Survey Details</h2>
+                    <div class="question-actions" id="builderActions" style="display:none;">
+                        <button class="btn secondary" id="duplicateSurveyBtn" type="button">Duplicate</button>
+                        <button class="btn danger" id="deleteSurveyBtn" type="button">Delete</button>
+                    </div>
+                </div>
+
+                <div id="builderIntro" class="empty-state">
+                    Choose a survey or create a new one to configure its content, target roles, and activation preferences.
+                </div>
+
+                <form id="surveyForm" style="display:none;">
+                    <div class="builder-section">
+                        <label for="surveyTitle">Title</label>
+                        <input id="surveyTitle" type="text" placeholder="e.g., Onboarding satisfaction pulse" required>
+                    </div>
+
+                    <div class="builder-section">
+                        <label for="surveyDescription">Description</label>
+                        <textarea id="surveyDescription" placeholder="Short description for internal context"></textarea>
+                    </div>
+
+                    <div class="builder-section grid-two">
+                        <div>
+                            <label for="surveyIntro">Intro message</label>
+                            <textarea id="surveyIntro" placeholder="Shown before the survey starts"></textarea>
+                        </div>
+                        <div>
+                            <label for="surveyOutro">Thank-you message</label>
+                            <textarea id="surveyOutro" placeholder="Shown after submission"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="builder-section">
+                        <label for="surveyConsent">Consent text</label>
+                        <textarea id="surveyConsent" placeholder="Optional consent statement shown before starting"></textarea>
+                    </div>
+
+                    <div class="builder-section grid-two">
+                        <div>
+                            <label>Require consent?</label>
+                            <div class="toggle">
+                                <input type="checkbox" id="surveyRequireConsent">
+                                <span class="muted">Participants must accept before continuing</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Active?</label>
+                            <div class="toggle">
+                                <input type="checkbox" id="surveyActive">
+                                <span class="muted">Show to learners when active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="builder-section">
+                        <label for="surveyRoles">Target roles (comma separated)</label>
+                        <input id="surveyRoles" type="text" placeholder="e.g., student,tutor (leave blank for everyone)">
+                    </div>
+
+                    <div class="builder-section grid-two">
+                        <div>
+                            <label for="surveyRemind">Remind later (hours)</label>
+                            <input id="surveyRemind" type="number" min="1" value="24">
+                        </div>
+                        <div>
+                            <label for="surveySlug">Slug</label>
+                            <input id="surveySlug" type="text" disabled>
+                        </div>
+                    </div>
+
+                    <div class="builder-section" style="display:flex; gap:12px; justify-content:flex-end;">
+                        <button class="btn secondary" id="resetSurveyBtn" type="button">Reset</button>
+                        <button class="btn primary" id="saveSurveyBtn" type="submit">Save changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card builder-section" id="questionsPanel" style="display:none;">
+                <div class="builder-header">
+                    <h2>Questions</h2>
+                    <button class="btn primary" id="addQuestionBtn" type="button">
+                        Add question
+                    </button>
+                </div>
+                <div id="questionsEmpty" class="empty-state">
+                    No questions yet. Add your first item to start building the survey.
+                </div>
+                <div id="questionsList" class="questions-list"></div>
+            </div>
+
+            <div class="card" id="questionEditor" style="display:none;">
+                <h3 style="margin-bottom:14px;">Question editor</h3>
+                <div id="questionAlert" class="alert" style="display:none;"></div>
+                <form id="questionForm">
+                    <div class="grid-two">
+                        <div>
+                            <label for="questionPrompt">Prompt</label>
+                            <textarea id="questionPrompt" required></textarea>
+                        </div>
+                        <div>
+                            <label for="questionHelp">Help text</label>
+                            <textarea id="questionHelp" placeholder="Optional guidance"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid-two" style="margin-top:16px;">
+                        <div>
+                            <label for="questionType">Type</label>
+                            <select id="questionType">
+                                <option value="short-text">Short text</option>
+                                <option value="long-text">Long text</option>
+                                <option value="single-choice">Single choice</option>
+                                <option value="multi-choice">Multiple choice</option>
+                                <option value="rating">Rating</option>
+                                <option value="number">Numeric input</option>
+                                <option value="scale">Scale (slider)</option>
+                                <option value="info">Info block</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="questionChart">Chart type</label>
+                            <select id="questionChart">
+                                <option value="">None</option>
+                                <option value="bar">Bar</option>
+                                <option value="line">Line</option>
+                                <option value="radar">Radar</option>
+                                <option value="pie">Pie</option>
+                                <option value="doughnut">Doughnut</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-two" style="margin-top:16px;">
+                        <div class="toggle">
+                            <input type="checkbox" id="questionRequired" checked>
+                            <label for="questionRequired" style="margin-bottom:0;">Required</label>
+                        </div>
+                        <div class="toggle">
+                            <input type="checkbox" id="questionScored">
+                            <label for="questionScored" style="margin-bottom:0;">Score this question</label>
+                        </div>
+                    </div>
+
+                    <div class="grid-two" style="margin-top:16px;">
+                        <div>
+                            <label for="questionMaxScore">Max score</label>
+                            <input id="questionMaxScore" type="number" step="0.5" min="0" value="0">
+                        </div>
+                        <div>
+                            <label for="questionOrder">Order</label>
+                            <input id="questionOrder" type="number" min="1" value="1">
+                        </div>
+                    </div>
+
+                    <div class="builder-section" id="questionOptionsSection" style="display:none;">
+                        <label>Options</label>
+                        <div id="questionOptions"></div>
+                        <button class="btn secondary" id="addOptionBtn" type="button" style="margin-top:10px;">Add option</button>
+                    </div>
+
+                    <div class="builder-section" id="questionScaleSection" style="display:none;">
+                        <label>Scale configuration</label>
+                        <div class="grid-two">
+                            <div>
+                                <label for="scaleMin">Minimum value</label>
+                                <input id="scaleMin" type="number" value="1">
+                            </div>
+                            <div>
+                                <label for="scaleMax">Maximum value</label>
+                                <input id="scaleMax" type="number" value="5">
+                            </div>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <label for="scaleStep">Step</label>
+                            <input id="scaleStep" type="number" value="1" min="0.1" step="0.1">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; justify-content:flex-end;">
+                        <button class="btn secondary" id="cancelQuestionBtn" type="button">Cancel</button>
+                        <button class="btn primary" id="saveQuestionBtn" type="submit">Save question</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <template id="optionTemplate">
+        <div class="option-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+            <input type="text" class="option-label" placeholder="Label" style="flex: 2;">
+            <input type="text" class="option-value" placeholder="Value (unique)" style="flex: 1.3;">
+            <input type="number" class="option-score" placeholder="Score" style="flex:0.8;">
+            <button class="btn danger remove-option" type="button">&times;</button>
+        </div>
+    </template>
+
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/survey-builder.js' %}"></script>
+</body>
+</html>

@@ -230,20 +230,66 @@
       </a>
       {% include "partials/chatbot_config.html" %}
       <div class="tile tile--wide">
-        <div class="tile-title">Quick Quiz Builder</div>
+        <div class="tile-title">Engagement Tools</div>
+        <p class="tile-subtitle">Launch surveys and quizzes from one place to keep students involved.</p>
+        {% include "partials/survey_admin_tools.html" %}
+        <div class="tile-title" style="margin-top:12px;">Quick Quiz Builder</div>
         <p class="tile-subtitle">Create or update games and questions without leaving this dashboard.</p>
         {% include "partials/quiz_builder.html" with initial_quizzes=quiz_bootstrap %}
       </div>
     </section>
   </div>
-  <script>
-    async function api(path,{method='GET',data,headers={}}={}){
-      const opts={method,headers:{'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/)||[])[1]||'',...headers}};
-      if(data!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(data)}
-      const res=await fetch(path,opts);const json=await res.json().catch(()=>({})); if(!res.ok) throw json; return json;
+  {% include 'partials/survey_modal.html' %}
+
+  
+<script>
+  async function api(path, { method = GET, data = undefined, headers = {} } = {}) {
+    const opts = { method, headers: { X-CSRFToken: (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '', ...headers } };
+    if (data !== undefined) {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(data);
     }
-    document.getElementById('logoutBtn').addEventListener('click', async ()=>{ try{ await api('/api/auth/logout',{method:'POST'});}catch(_){ } location.href='/administrator/login/';});
-  </script>
+    const res = await fetch(path, opts);
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw json;
+    return json;
+  }
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async (event) => {
+      event.preventDefault();
+      try {
+        await api('/api/auth/logout', { method: 'POST' });
+      } catch (_) {}
+      location.href = '/administrator/login/';
+    });
+  }
+
+  const previewBtn = document.getElementById('surveyPreviewBtn');
+  if (previewBtn) {
+    previewBtn.addEventListener('click', () => {
+      if (window.SurveyModal && typeof window.SurveyModal.adminPreview === 'function') {
+        window.SurveyModal.adminPreview();
+        return;
+      }
+      if (window.SurveyModal && typeof window.SurveyModal.preview === 'function') {
+        window.SurveyModal.preview();
+        return;
+      }
+      alert('Survey modal is not ready yet.');
+    });
+  }
+</script>
+
+  <script src="{% static 'js/survey-modal.js' %}"></script>
 </body>
 </html>
+
+
+
+
+
+
+
 
