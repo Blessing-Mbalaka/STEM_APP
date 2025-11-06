@@ -16,10 +16,14 @@ from main.views import (
     profiles as profiles_page,
     survey_builder,
 
+
+
+
     # game APIs
     api_games_list,
     api_game_detail,
     api_game_submit,
+    api_game_questions_manage,
     api_game_add_question,
     api_surveys_collection,
     api_survey_detail,
@@ -30,6 +34,9 @@ from main.views import (
     api_survey_responses,
     api_survey_analytics,
 )
+
+from main.views.game import api_game_question_manage
+from main.views.index import (resources as resources_page)
 
 
 # ✅ Auth views (single source of truth)
@@ -158,8 +165,8 @@ urlpatterns = [
     path("api/games/<int:pk>/submit/",     api_game_submit,       name="api_game_submit"),
     path("api/games/<int:pk>/questions/",  api_game_add_question, name="api_game_add_question"),
     path("api/games/<int:pk>/questions/manage/",              api_game_questions_manage,    name="api_game_questions_manage"),
-    path("api/games/<int:pk>/questions/<int:question_id>/manage/", api_game_question_manage, name="api_game_question_manage"),
 
+    path("api/games/<int:pk>/questions/<int:question_id>/manage/", api_game_question_manage, name="api_game_question_manage"),
     # ---------- Surveys ----------
     path("api/surveys/",                                api_surveys_collection,     name="api_surveys_collection"),
     path("api/surveys/next/",                           api_survey_next,            name="api_survey_next"),

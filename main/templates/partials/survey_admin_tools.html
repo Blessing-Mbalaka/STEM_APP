@@ -1,0 +1,47 @@
+<div class="survey-admin-tools">
+    <h2>Survey Administration</h2>
+    <p>Manage surveys and toggle their availability for students.</p>
+
+    <div class="survey-actions">
+        <button class="btn primary" onclick="createSurvey()">Create New Survey</button>
+        <button class="btn secondary" onclick="viewSurveyAnalytics()">View Analytics</button>
+    </div>
+
+    <div id="surveyList">
+        <h3>Existing Surveys</h3>
+        <ul>
+            <li>
+                Survey 1
+                <div class="toggle">
+                    <input type="checkbox" id="survey1Active" onchange="toggleSurvey(1)">
+                    <span class="muted">Active</span>
+                </div>
+            </li>
+            <li>
+                Survey 2
+                <div class="toggle">
+                    <input type="checkbox" id="survey2Active" onchange="toggleSurvey(2)">
+                    <span class="muted">Active</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    function createSurvey() {
+        alert("Redirecting to survey creation...");
+        // Add logic to redirect to survey creation page
+    }
+
+    function viewSurveyAnalytics() {
+        alert("Redirecting to survey analytics...");
+        // Add logic to redirect to survey analytics page
+    }
+
+    function toggleSurvey(surveyId) {
+        const isActive = document.getElementById(`survey${surveyId}Active`).checked;
+        alert(`Survey ${surveyId} is now ${isActive ? "active" : "inactive"}.`);
+        // Add logic to update the survey's active status in the backend
+    }
+</script>
