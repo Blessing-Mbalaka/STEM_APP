@@ -302,7 +302,7 @@
     return block;
   }
 
-  function renderForm() {
+function renderForm() {
     console.log('Rendering form with questions:', currentSurvey.questions); // Debug log
     form.innerHTML = ''; // Clear existing content
 
@@ -325,8 +325,13 @@
 
     form.appendChild(fragment);
 
-    // Attach event listener for form submission
-    form.addEventListener('submit', handleSubmit);
+    // Hide "Start Survey" and "Maybe Later" buttons
+    setPrimaryAction(null, null);
+    setLaterAction(null, null);
+
+    showElement(form, 'block'); // Show the form
+    hideElement(promptBlock); // Hide the prompt block
+
     console.log('Form rendered successfully and submit listener attached.');
 }
 
@@ -336,7 +341,12 @@
     blocks.forEach((block) => {
         const questionId = block.dataset.questionId;
         const qType = block.dataset.qtype;
+        const isRequired = block.dataset.required === 'true';
+
+        console.log(`Processing question block:`, { questionId, qType, isRequired }); // Debug log
+
         if (!questionId || qType === 'info') {
+            console.warn('Skipping question block due to missing attributes:', block); // Debug log
             return;
         }
 
@@ -346,6 +356,7 @@
             value = checked ? checked.value : null;
         } else if (qType === 'multi-choice') {
             value = Array.from(block.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
+            if (value.length === 0) value = null; // Allow null for empty multi-choice
         } else if (qType === 'scale') {
             const input = block.querySelector('input[type="range"]');
             value = input ? input.value : null;
@@ -357,12 +368,16 @@
             value = input ? input.value : null;
         }
 
-        if (value !== null) {
-            answers[questionId] = value;
+        // Log missing values for required questions
+        if (value === null && isRequired) {
+            console.warn(`Required question ${questionId} is missing a response.`); // Debug log
         }
+
+        // Include null values for optional questions
+        answers[questionId] = value;
     });
 
-    console.log('Extracted answers:', answers);
+    console.log('Extracted answers:', answers); // Debug log
     return answers;
   }
 
@@ -608,6 +623,8 @@
             'Content-Type': 'application/json',
             'X-CSRFToken': getCSRFToken(), // Add CSRF token here
         },
+         credentials: 'same-origin',
+         
     };
 
     const finalOptions = { ...defaultOptions, ...options };
