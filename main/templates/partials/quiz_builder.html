@@ -410,11 +410,7 @@
       }
     }
 
-    const initialQuizzes = {% if initial_quizzes %}{{ initial_quizzes|safe }}{% else %}null{% endif %};
-    if(initialQuizzes){ console.debug('Quiz builder bootstrap', initialQuizzes); }
-    if(Array.isArray(initialQuizzes) && initialQuizzes.length){
-      hydrateGames(initialQuizzes);
-    }
+  
 
     async function loadGames(selectId){
       const sel = byId('game');
@@ -1354,6 +1350,24 @@
       }
     });
   </script>
+
+
+
+
+  <script id="initial-quizzes" type="application/json">
+{% if initial_quizzes %}{{ initial_quizzes|safe }}{% else %}null{% endif %}
+</script>
+
+<script>
+  // Parse the JSON data from the script tag
+  const initialQuizzes = JSON.parse(document.getElementById('initial-quizzes').textContent || 'null');
+  if (initialQuizzes) {
+    console.debug('Quiz builder bootstrap', initialQuizzes);
+  }
+  if (Array.isArray(initialQuizzes) && initialQuizzes.length) {
+    hydrateGames(initialQuizzes);
+  }
+</script>
 
 
 

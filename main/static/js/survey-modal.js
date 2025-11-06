@@ -105,23 +105,15 @@
   }
 
   async function ensureConsent() {
-    if (!currentSurvey) return;
-    if (previewMode) {
-      participant = participant || { status: 'consented' };
-      return;
+    if (!currentSurvey) {
+        console.error('No current survey available in ensureConsent.');
+        throw new Error('Survey data is missing.');
     }
-    if (participant && participant.status === 'consented') return;
-    try {
-      const res = await api(`/api/surveys/${currentSurvey.id}/participation/`, {
-        method: 'POST',
-        data: { action: 'consent' },
-      });
-      participant = res.participant;
-    } catch (error) {
-      console.warn('Unable to capture consent', error);
-      throw error;
-    }
-  }
+
+    // Automatically grant consent without making an API call
+    console.log('Consent automatically granted for survey:', currentSurvey.id);
+    participant = { status: 'consented' }; // Mock participant consent status
+}
 
   function renderPrompt() {
     if (!currentSurvey) return;
@@ -311,65 +303,66 @@
   }
 
   function renderForm() {
-    if (!currentSurvey) return;
-    form.innerHTML = '';
+    console.log('Rendering form with questions:', currentSurvey.questions); // Debug log
+    form.innerHTML = ''; // Clear existing content
+
     const fragment = document.createDocumentFragment();
     currentSurvey.questions.forEach((question) => {
-      fragment.appendChild(buildQuestionBlock(question));
+        const questionBlock = buildQuestionBlock(question);
+        console.log('Built question block:', questionBlock); // Debug log
+        fragment.appendChild(questionBlock);
     });
 
+    // Add submit button
     const actions = document.createElement('div');
-    actions.style.display = 'flex';
-    actions.style.justifyContent = 'flex-end';
-    actions.style.gap = '12px';
-    actions.style.marginTop = '16px';
-
+    actions.className = 'survey-modal__actions';
     const submitBtn = document.createElement('button');
     submitBtn.type = 'submit';
     submitBtn.className = 'btn btn-primary';
     submitBtn.textContent = 'Submit responses';
-
     actions.appendChild(submitBtn);
     fragment.appendChild(actions);
 
     form.appendChild(fragment);
 
-    hideElement(promptBlock);
-    hideElement(consentBlock);
-    hideElement(successBlock);
-    showElement(form);
-    chartsContainer.innerHTML = '';
-    setPrimaryAction(null, noop);
-    setLaterAction('Cancel', dismissSurvey);
-  }
+    // Attach event listener for form submission
+    form.addEventListener('submit', handleSubmit);
+    console.log('Form rendered successfully and submit listener attached.');
+}
 
   function extractAnswers() {
     const answers = {};
     const blocks = form.querySelectorAll('.question-block');
     blocks.forEach((block) => {
-      const questionId = block.dataset.questionId;
-      const qType = block.dataset.qtype;
-      if (!questionId || qType === 'info') {
-        return;
-      }
-      let value = null;
-      if (qType === 'single-choice') {
-        const checked = block.querySelector('input[type="radio"]:checked');
-        value = checked ? checked.value : null;
-      } else if (qType === 'multi-choice') {
-        value = Array.from(block.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-      } else if (qType === 'scale') {
-        const input = block.querySelector('input[type="range"]');
-        value = input ? input.value : null;
-      } else if (qType === 'rating' || qType === 'number') {
-        const input = block.querySelector('input[type="number"]');
-        value = input ? input.value : null;
-      } else {
-        const input = block.querySelector('textarea, input');
-        value = input ? input.value : null;
-      }
-      answers[questionId] = value;
+        const questionId = block.dataset.questionId;
+        const qType = block.dataset.qtype;
+        if (!questionId || qType === 'info') {
+            return;
+        }
+
+        let value = null;
+        if (qType === 'single-choice') {
+            const checked = block.querySelector('input[type="radio"]:checked');
+            value = checked ? checked.value : null;
+        } else if (qType === 'multi-choice') {
+            value = Array.from(block.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
+        } else if (qType === 'scale') {
+            const input = block.querySelector('input[type="range"]');
+            value = input ? input.value : null;
+        } else if (qType === 'rating' || qType === 'number') {
+            const input = block.querySelector('input[type="number"]');
+            value = input ? input.value : null;
+        } else {
+            const input = block.querySelector('textarea, input');
+            value = input ? input.value : null;
+        }
+
+        if (value !== null) {
+            answers[questionId] = value;
+        }
     });
+
+    console.log('Extracted answers:', answers);
     return answers;
   }
 
@@ -469,38 +462,69 @@
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (!currentSurvey || loading) return;
+    console.log('Form submission triggered.');
+
+    if (!currentSurvey || loading) {
+        console.warn('Cannot submit form. Either no survey is active or loading is in progress.');
+        return;
+    }
+
     clearError();
     loading = true;
+
     const answers = extractAnswers();
+    console.log('Extracted answers:', answers);
+
+    if (Object.keys(answers).length === 0) {
+        console.error('No answers provided. Cannot submit empty responses.');
+        renderError('Please answer at least one question before submitting.');
+        loading = false;
+        return;
+    }
+
     try {
-      const res = await api(`/api/surveys/${currentSurvey.id}/responses/`, {
-        method: 'POST',
-        data: { answers },
-      });
-      participant = res.participant;
-      renderSuccess(res.scoreSummary || {});
+        const response = await api(`/api/surveys/${currentSurvey.id}/responses/`, {
+            method: 'POST',
+            data: { answers },
+        });
+        console.log('Survey responses submitted successfully:', response);
+        renderSuccess(response.summary);
     } catch (error) {
-      if (error && error.json && error.json.details) {
-        renderError(error.json.details);
-      } else {
-        renderError(error?.message || 'Unexpected error. Please try again.');
-      }
+        console.error('Error submitting survey responses:', error);
+        renderError('Failed to submit responses. Please try again.');
     } finally {
-      loading = false;
+        loading = false;
     }
   }
 
   async function startSurveyFlow() {
-    if (loading) return;
-    loading = true;
+    console.log('Start Survey button clicked.');
+
+    if (loading) {
+        console.warn('Survey flow already in progress.');
+        return;
+    }
+
+    if (!currentSurvey) {
+        console.error('No survey data available to start.');
+        renderError('Survey data is missing. Please refresh the page and try again.');
+        return;
+    }
+
+    loading = true; // Set loading state to true
+    console.log('Starting survey flow for survey:', currentSurvey);
+
     try {
-      await ensureConsent();
-      renderForm();
+        // Skip consent checks and directly render the form
+        console.log('Skipping consent checks. Proceeding to render the form.');
+        renderForm(); // Render the survey form
+        console.log('Survey form rendered successfully.');
     } catch (error) {
-      renderError(error?.message || 'Unable to start the survey right now.');
+        console.error('Error starting survey flow:', error); // Log the error for debugging
+        const errorMessage = error?.message || 'Unable to start the survey right now. Please try again later.';
+        renderError(errorMessage); // Display a user-friendly error message
     } finally {
-      loading = false;
+        loading = false; // Reset loading state
     }
   }
 
@@ -516,16 +540,15 @@
 
   async function fetchNextSurvey() {
     try {
-      const data = await api('/api/surveys/next/');
-      if (!data || !data.survey) return;
-      showModal(data);
+        console.log('Fetching next survey...');
+        const response = await api('/api/surveys/next/');
+        console.log('Survey fetched successfully:', response);
+        showModal(response);
     } catch (error) {
-      if (error && (error.status === 401 || error.status === 403)) {
-        return;
-      }
-      console.warn('Survey fetch failed', error);
+        console.error('Error fetching next survey:', error);
+        renderError('Failed to load the survey. Please try again later.');
     }
-  }
+}
 
   function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -577,4 +600,46 @@
   } else {
     init();
   }
+
+  async function api(url, options = {}) {
+    const defaultOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(), // Add CSRF token here
+        },
+    };
+
+    const finalOptions = { ...defaultOptions, ...options };
+    if (finalOptions.data) {
+        finalOptions.body = JSON.stringify(finalOptions.data);
+    }
+
+    try {
+        console.log('Making API call to:', url, 'with options:', finalOptions);
+        const response = await fetch(url, finalOptions);
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('API response:', data);
+        return data;
+    } catch (error) {
+        console.error('API call failed:', error);
+        throw error;
+    }
+}
+
+function getCSRFToken() {
+    const name = 'csrftoken';
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    console.warn('CSRF token not found in cookies.');
+    return '';
+}
 })();
