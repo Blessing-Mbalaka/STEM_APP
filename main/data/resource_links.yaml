@@ -1,582 +1,1292 @@
 [
   {
-    "title": "Solve for X",
+    "title": "Momentum",
     "description": "",
     "resource_type": "video",
-    "course": "Mathametics Paper 1| Everything You need to know",
+    "course": "Physical Science",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+    "url": "https://youtu.be/N5s6rbHdQVw?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
   },
   {
-    "title": "Term 1| The Nucleus & DNA",
+    "title": "The Nucleus and DNA",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Learn Xtra Live – Motion (Whole Show)",
-    "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
-  },
-  {
-    "title": "Mindset Learn – English Literature / Poetry Live Show",
-    "description": "Live show episodes on literature and poetry analysis",
-    "resource_type": "youtube",
-    "course": "English Home Language Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/playlist?list=PL…"
-  },
-  {
-    "title": "History Grade 11 / 12 – Context & Themes Review",
-    "description": "Overview of major historical themes (useful as bridging content)",
-    "resource_type": "youtube",
-    "course": "History Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
-  },
-  {
-    "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
-    "description": "Mindset Live show on physical geography topics",
-    "resource_type": "youtube",
-    "course": "Geography Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
-  },
-  {
-    "title": "Gr 12 Business Studies: Business Management (Live)",
-    "description": "Mindset Live show on business management functions",
-    "resource_type": "youtube",
-    "course": "Business Studies Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
-  },
-  {
-    "title": "Gr 12 Economics: Macro & Micro (Live)",
-    "description": "Mindset Live show on macro- and microeconomics",
-    "resource_type": "youtube",
-    "course": "Economics Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
-  },
-  {
-    "title": "Life Orientation – Study / Learning Styles (Grade 8-12)",
-    "description": "Video covering study skills, learning styles relevant for LO",
-    "resource_type": "youtube",
-    "course": "Life Orientation Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=d67d8DkBU2c"
-  },
-  {
-    "title": "Grade 12 Number Patterns| Sequences And Series| Exam Questions",
+    "title": "Trigonometry Identities / Transformations",
     "description": "",
     "resource_type": "video",
-    "course": "Mathametics Paper 1| Everything You need to know",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://youtu.be/sXwkDJw8izM"
+    "url": "https://youtu.be/1kQVqTQaUe8?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Companies: Interpretation of Financial Statements",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/195bg9zU_C0?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Entreprenurship",
+    "description": "",
+    "resource_type": "video",
+    "course": "Entreprenurship",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=pC5l5j2u9SQ"
+  },
+  {
+    "title": "Leadership",
+    "description": "",
+    "resource_type": "video",
+    "course": "Leadership",
+    "learning_style": "visual",
+    "url": "https://www.youtube.com/watch?v=qzoIAJYPQwo&t=82s"
+  },
+  {
+    "title": "Production Factors (Land) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/BfF1jVfrv1o"
+  },
+  {
+    "title": "Geography: How to properly prepare for your geography exams. Exam tips, study methods and guide.",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/SwdHzNhoGEg?list=PLnwKWO8a9WkQMCAOfaEV1yyImDpPu01AI"
+  },
+  {
+    "title": "Grade 12 Economics (P1) Circular Flow part 1",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/MFzSJTgBJzs?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P1): Legislation part 1",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/5fh1y7Kmg_c?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10-12 Mathematical literacy(P2):Cylinder",
+    "description": "",
+    "resource_type": "video",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/EQVU7MY97FA?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Taoism | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/6QyAFhmT11Y?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "Protein Synthesis & DNA Fingerprinting",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
-    "url": "https://youtu.be/l_keFeVOOUk?si=hhgzNu-CVz709rNL"
+    "url": "https://youtu.be/l_keFeVOOUk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Vertical Projectile Motion (Mindset / LearnXtra)",
-    "description": "Video on vertical projectile motion (displacement, velocity, acceleration graphs)",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=fQ1qK5pkOws"
-  },
-  {
-    "title": "English Home Language – Essay Writing (Mindset)",
-    "description": "Tips & strategies for NSC English essay writing",
-    "resource_type": "youtube",
-    "course": "English Home Language Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=…"
-  },
-  {
-    "title": "History Grade 12 Live – Mindset Learn",
-    "description": "Live show episodes on history topics for NSC",
-    "resource_type": "youtube",
-    "course": "History Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/playlist?list=PL…"
-  },
-  {
-    "title": "Gr 12 Economics: Exam Questions Live",
-    "description": "Worked exam questions for Economics NSC",
-    "resource_type": "youtube",
-    "course": "Economics Grade 12 (NSC)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=c-LKNUdqyc4"
-  },
-  {
-    "title": "Grade 12 Functions",
+    "title": "Sequences & Series II",
     "description": "",
     "resource_type": "video",
-    "course": "Mathametics Paper 1| Everything You need to know",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://youtu.be/VrBt9aKyLJA"
+    "url": "https://youtu.be/u2Z1PHq2skU?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Mechanics Revision",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/L-f3e0AwDQY?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Companies Ledger Accounts",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/nDE22XcI5Io?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Business Studies",
+    "description": "",
+    "resource_type": "video",
+    "course": "Leadership",
+    "learning_style": "visual",
+    "url": "https://youtu.be/69dLyztc-As"
+  },
+  {
+    "title": "Production Factors (Capital part 1) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/aLx2fx8T63w"
+  },
+  {
+    "title": "Geography Paper 2: Economic geography exam tips questions review",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ihlER-Wub0w?list=PLnwKWO8a9WkSE2zGdKt9NTE0pikoLK_Tr"
+  },
+  {
+    "title": "Grade 12 Economics(P1): Circular flow Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/25N1ZzbMipU?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies(P1): Legislation Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/YH8GViyOa-U?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10-12 Mathematical literacy(P2):The Circle",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/gGkouv2uTa8?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Judaism | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/7zrcQlKDfRE?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "Cell Division: Mitosis & Meiosis",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
-    "url": "https://youtu.be/fiqdfTQoOn4?si=PYbRXadGo-etaYIw"
+    "url": "https://youtu.be/fiqdfTQoOn4?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Work, Energy & Power (Grade 11 & 12)",
-    "description": "Covers work, energy, power relationships, conservative vs nonconservative forces",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=N9_aOJKdjq0"
-  },
-  {
-    "title": "Grade 12 Calculus",
+    "title": "Functions & Graphs",
     "description": "",
     "resource_type": "video",
-    "course": "Mathametics Paper 1| Everything You need to know",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?si=YBOEoZVtuVq-D17O&v=iN7C4X4xwnM&feature=youtube"
+    "url": "https://youtu.be/u_3wZBWLJKo?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
   },
   {
-    "title": "Strategies for Reproduction",
+    "title": "Vertical Projectile Motion",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Physical Science",
     "learning_style": "visual",
-    "url": "https://youtu.be/BXTumF5-0bo?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+    "url": "https://youtu.be/lDaqnoKxK8U?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
   },
   {
-    "title": "Work done by Non-Conservative Forces – Practice",
-    "description": "Worked example for work done by nonconservative forces",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=5mhEvh5kG90"
-  },
-  {
-    "title": "Grade 12 Probability",
+    "title": "Companies: Financial Statements & Income Statement",
     "description": "",
     "resource_type": "video",
-    "course": "Mathametics Paper 1| Everything You need to know",
+    "course": "Accounting",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?si=jXQAteRuCz0UfkuH&v=1IpyhSJvKiY&feature=youtu.be"
+    "url": "https://youtu.be/KDMS5ROpHiw?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
   },
   {
-    "title": "The Human Reproductive System: Male & Female Systems",
+    "title": "Production Factor (Capital) part 2. Grade 12 Agricultural Sciences",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Agricultural Science CAPS Grade 12",
     "learning_style": "visual",
-    "url": "The Human Reproductive System: Male & Female Systems"
+    "url": "https://youtu.be/LcI6DUDR3yE"
   },
   {
-    "title": "Momentum & Impulse (Mindset / LearnXtra)",
-    "description": "Impulse, momentum conservation, collisions",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=GrjMbTN_DVU"
-  },
-  {
-    "title": "Grade 12 Finance",
+    "title": "Global Weather Patterns",
     "description": "",
     "resource_type": "video",
-    "course": "Mathametics Paper 1| Everything You need to know",
+    "course": "Geography",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?si=mKf45rGyAk3mRZxg&v=JMnkUxtHJU8&feature=youtu.be"
+    "url": "https://youtu.be/5flypT2a1pI?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr12 Economics (P1): Business Cycles Part 1",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/iVLNd2nJoKM?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P1): Human Resource Function",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Kpxw3xbhOlg?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10-12 Mathematical literacy(P2): Perimeter and Area of Rectangle",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/c3tTC0MKu_E?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Islam | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/G-Bnq7PCv4o?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "Gametogenesis, Hormone Control Systems & Menopause",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/ee-cNlRDc-w?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Gr 12 Physics: Term 1 Revision (Mindset)",
-    "description": "Revision of mechanics & kinematics topics – exam style questions",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=T2DWu6uIL3o"
-  },
-  {
-    "title": "Human Reproduction Part I",
+    "title": "Inverse Functions & Graphs",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://youtu.be/Q2d-DiFAR94?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+    "url": "https://youtu.be/gvdLrGe2AWI?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
   },
   {
-    "title": "Electronics / Basics (New curriculum physics Unit 5)",
-    "description": "Introduction to electronics / circuits (currents, voltages) – for Grade 12 physics",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=Mu00LxeuH64"
-  },
-  {
-    "title": "Human Reproduction Part 2",
+    "title": "Organic Molecules",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/L9z0t2E4lGw?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Cash Flow Statements",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/dwRWDlHTFBg?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Grade 12 Agricultural Sciences Oestrus Cycle Phases",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/WGzTCOvM9W8"
+  },
+  {
+    "title": "Mid-Latitude & Tropical Cyclones",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/rNMJ0QdTEN0?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics (P1) Business Cycles part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/lADA8IYWSGk?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P1): Strategic management Part 1",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/RzP7L8bqofQ?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10-12 Mathematical Literacy: Grid Reference and General direction(P2)",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/3oPkYRaZECg?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Buddhism | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/q_BbHXxhJEQ?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
+  },
+  {
+    "title": "Human Reproduction II",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/akUXTf9h7Og?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Meter Bridge / Current Electricity",
-    "description": "Construction & working of meter bridge and principles of current electricity",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "title": "Exponents & Logarithms",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=GFsvaCnLtzA"
+    "url": "https://youtu.be/4Lpn9WYGzE0?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Organic Molecules: Functional Groups",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Uf5CvbOIP98?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Balance Sheet & Cash Flow Statement",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/4U9qTR11C_o?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Introduction to Internal Parasites. Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/hKmNY3uuOOk"
+  },
+  {
+    "title": "Factors that Influence Weather & Climate",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/veNDHnqX1Bk?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics (P1) Public Sector",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/N3PsM-__RVE?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P1): Sectors & Environments",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/BdvyMdPVEVw?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10-12 Mathematical literacy(P2): Symbols",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/uD5-kqXFVIc?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Hinduism | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/XeWpKqipc_w?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "Genetics: Inheritance & Terminology",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/AXQiN-boIzA?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Physics Exam Questions – Mindset / LearnXtra (Mechanics Section)",
-    "description": "Worked exam questions on mechanics & motion",
-    "resource_type": "youtube",
-    "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+    "title": "Graphs: From Linear to Log",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=tEV7O8ojZ6Y"
+    "url": "https://youtu.be/EFPoY3ZWqnY?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Organic Reactions",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/gyzkt5tXJ5Y?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Tapeworm (Internal Parasites) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/FONO8irK5Hk"
+  },
+  {
+    "title": "Mapwork Calculations made Simple: Grade 12 Geography",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/7DIOdS3MBRI?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics(P1): New Economic Paradigm, Phillip's Curve",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/pBGMHhtNnxA?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P1): Quality of performance",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/1mi5cu1Z5lo?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10 12 Mathematical literacy(P2): maps and scale calculations",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/WezRQxUxmc8?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Christianity | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/4sb0bYF3Bfo?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "Genetics: Mendel's Law",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/osV9taMkS48?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Genetics: Sex Determination, Blood Groups, Genetic Variation & Genetic Engineering",
+    "title": "Financial Maths I",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Mathematics",
     "learning_style": "visual",
-    "url": "https://youtu.be/BN_xkuewHgU?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+    "url": "https://youtu.be/k4EUWiqQynE?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Work - Energy",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/rcY8AdnvQZg?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Cash Flow Statements and Ratios",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/MiJEfuRHDiI?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Liverfluke (Internal Parasites) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/hIx5cmTGGig"
+  },
+  {
+    "title": "River Systems",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/bzLtEHICoxk?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics (P1): Foreign exchange market Part 1",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/uGhj2R2j0uA?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr12 Business Studies (P1): Quality Management Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Dtmf6A6INNA?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Gr10-12 Mathslit (P1):Quartiles and Interquartile range",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/saDF98YB5T0?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Baha'i Faith | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/BpvQt7tt8SU?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "The Nervous System",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/FwcDH5qIJhE?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Financial Maths II",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/_2wGMicFONM?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Doppler Effect",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/vDy7F_-p-dA?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Companies Financial Statements: Audit Reports",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/B5w5CcKjb6Q?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Prepotency. (Patterns of Inheritance) Basic Agricultural Genetics. Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/4rlOtza4KUg"
+  },
+  {
+    "title": "Fluvial Landforms",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/8aY12o7oIS0?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics(P1): Foreign Exchange market Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/QnFb1vXvTEA?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P2): Securities",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/XsoOIB6LtFM?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "GR 10-12:Mathslit(P1):Box and whiskers plot",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/5ziaidkRXs8?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "African Traditional Religion | Grade 12 Religion Studies",
+    "description": "",
+    "resource_type": "link",
+    "course": "Religion Studies",
+    "learning_style": "visual",
+    "url": "https://youtu.be/KS6SmQ9L7_A?list=PL-Yf6_ZdxMmRdDyjVvAVoigsvXogDCPoA"
   },
   {
     "title": "The Eye & Ear",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=qn5OvdG4jrM&list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY&index=13"
+    "url": "https://youtu.be/qn5OvdG4jrM?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Chemistry Revision",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/QymxDg6rxaw?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Financials/Asset Disposal/Ledgers/Audit Report",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ACXocMsN8o4?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Atavism. Grade 12 Agricultural Sciences. Basic Agricultural Genetics",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/jRmgI5ZnqpM"
+  },
+  {
+    "title": "Structural Landforms",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/NQ3OTRwCyRw?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Grade 12 Economics(P2): Perfect markets Part 1",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ExDs_KoFOhA?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies (P2): Insurance",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/X2DaYjQMRQE?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Gr10-12 Mathslit(P1):Mean, Mode, Median and Range",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/yIcm8EmfKgU?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
   },
   {
     "title": "Plant Responses to the Environment",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=09ffEn_k8Fg&list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY&index=14"
+    "url": "https://youtu.be/09ffEn_k8Fg?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "Biodiversity Part I",
-    "description": "Biodiversity and Speciation",
-    "resource_type": "video",
-    "course": "Life science",
-    "learning_style": "visual",
-    "url": "https://www.youtube.com/watch?v=mb_b7sJrFSE&list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY&index=15"
-  },
-  {
-    "title": "Biodiversity Part 2",
+    "title": "Trigonometry",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/KJwbkHNDXVk?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Rates of Reaction",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/A2wj6xPk204?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Cash Flows/Ratios/Corporate Governance",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/OAG1DVzXNmg?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Ways in which animals lose heat (Animal Shelter and Protection) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/wv93gBnzw6Q"
+  },
+  {
+    "title": "GIS & Map Projections",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/T6Hjwf_7ycE?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Grade 12 Economics (P2): Perfect markets Part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/FN0QFW0nESY?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr12 Business Studies (P1): Strategic management part 2",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/8XfPvtbNioo?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Grade 10-12 Mathematical literacy Dependent and independent variable",
+    "description": "",
+    "resource_type": "link",
+    "course": "Math Literacy",
+    "learning_style": "visual",
+    "url": "https://youtu.be/kWHwcSHJImk?list=PLclETtKRtT2Czkm7j95WauOqDBl-D5txB"
+  },
+  {
+    "title": "Biodiversity I",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/mb_b7sJrFSE?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "3D Trigonometry",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/BzrbmkQb-OM?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Chemical Equilibrium",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/3wXRzQZM1_I?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Bank Reconciliations",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ZtF_iKfrY90?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Relationship between hormones (Animal Reproduction) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/gF6SYr9wd74"
+  },
+  {
+    "title": "Climate and Weather, Fluvial Processes and Mapwork",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/-ZoFCIfxrEU?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics (P2): Oligopolies",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/HbzyEppzPGM?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr 12 Business Studies(P2): Creative thinking",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Q7NP_X5sa2g?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Biodiversity II",
+    "description": "",
+    "resource_type": "video",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/fPLrORbgbGk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+  },
+  {
+    "title": "Introduction to Differential Calculus",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/7Ufv0X5y0fc?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Electricity Revision",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Chmql4Sm4hA?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Debtors/Creditors Reconciliations",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ZYwK4aPn8Zc?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Lactation Curve (Animal Reproduction) Grade 12 Agricultural Sciences",
+    "description": "",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/urJB-c-_1rs"
+  },
+  {
+    "title": "Processes & Spatial Patterns",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/IRSrzH6aqDY?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics(P2): Monopolies",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/px2rU5yS8fg?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "GR 12 Business Studies(P2): Conflict Resolution",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/eFFsjR1AT6c?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
   },
   {
     "title": "The Endocrine System",
     "description": "",
     "resource_type": "video",
-    "course": "Life science",
+    "course": "Life Science",
     "learning_style": "visual",
     "url": "https://youtu.be/jRv2u6pTGIE?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
   },
   {
-    "title": "2023 Grades 10-12 Mathematics ATP Mediation",
+    "title": "Acids and Bases",
     "description": "",
-    "category": "Math",
-    "term": "atp",
-    "url": "/media/resources/math/3d14ac4693ca4775835db0e7ddc8611b.pptx"
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/zO21cK5hf40?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
   },
   {
-    "title": "2023-2024 Annual Teaching Plan",
+    "title": "Vat/Stock Valuation",
     "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/6beab3fb70b145b9823078b5839f283c.pdf"
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/sJDa94YLzcQ?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
   },
   {
-    "title": "2025 March Past Paper",
+    "title": "Milk Ejection (Animal Reproduction) Grade 12 Agricultural Sciences",
     "description": "",
-    "category": "Math",
+    "resource_type": "video",
+    "course": "Agricultural Science CAPS Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/I0P6UypGnXQ"
+  },
+  {
+    "title": "Sustainability",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/G3yQxrI9JEQ?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics (P2) Intervention as a consequence of market failure",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/9xYABQvvNf8?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "GR 12 Business Studies(P2): Team Development",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/WAlOcGFR0qk?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Calculus Applications I",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/SZeUtS3QTkQ?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Electric Circuits",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/3LC65zxIIgY?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Bank Reconciliation/Internal Controls/Stock Systems",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/LNpbRj5hYMQ?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Urban Settlements",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/QaC-SiKSbFM?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Gr 12 Economics (P2): Causes of Market Failure",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/G8G9zEYy6IA?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "GR 12 Business Studies(P2): Presentation & Data Response",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/YDLNzBiA0y4?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Calculus Applications II",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ShN5FXb9kls?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Electrodynamics",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/pXx96UT7ykU?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Cash Budgets/Projected Income Statement",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/d7z0XW3__Po?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "People & their Needs: Structure of the Economy",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/8t4_GhDgZG4?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Grade 12 Economics(P2): Comparing Market Structures",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/sUhg5agTai4?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "GR 12 Business Studies(P2): Management and Leadership",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/-_NU2LiWWqE?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Co-ordinate Geometry: Circles & Tangents",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Z5StYOXajVY?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Photoelectric Effect",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/9kRK6cRYwWk?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Manufacturing Accounts - Production Cost Statements/Break-Even Analysis Calculation",
+    "description": "",
+    "resource_type": "video",
+    "course": "Accounting",
+    "learning_style": "visual",
+    "url": "https://youtu.be/bctpUhw-sng?list=PLOaNAKtW5HLSxvCFvL5xYoTYELvzFeXPm"
+  },
+  {
+    "title": "Transport & Trade",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/LiJb0PXCG4I?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Grade 12 Economics(P2):Tourism",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/K7dPmT_GA8w?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "GR 12 Business Studies(P2). Ethics and Professionalism",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/G1Ut_7CI6oA?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Euclidean Geometry",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/HnVK3UeTGI4?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Optical Phenomena",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/SPjbXNZOxw8?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Globilisation & Food Security",
+    "description": "",
+    "resource_type": "video",
+    "course": "Geography",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ts0yOQmztmE?list=PLOaNAKtW5HLSqk9kDWhO8S0J4MRyEBSMl"
+  },
+  {
+    "title": "Grade 12 Economics(P2): Inflation",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/thafVzamqa8?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "GR 12 Business Studies(P2). CSR/CSI",
+    "description": "",
+    "resource_type": "video",
+    "course": "Business Studies Grade 12",
+    "learning_style": "visual",
+    "url": "https://youtu.be/mLCcDH5NLqg?list=PLclETtKRtT2Adk4T79GP7tFGRAn0U0t4f"
+  },
+  {
+    "title": "Statistics",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/dT8ASE3yYzg?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Electrochemical Reactions",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/uvVp57gIj98?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Gr12 Economics(P2) : Environmental Sustainability",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/Rg3DgbFmOGg?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Probability",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/UymCw9J9Q4c?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Chemical Industries",
+    "description": "",
+    "resource_type": "video",
+    "course": "Physical Science",
+    "learning_style": "visual",
+    "url": "https://youtu.be/nN4_xxCQDHg?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+  },
+  {
+    "title": "Gr12 Economics(P1): Industrial & Regional Development",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/44zHgk5V8KA?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Maths Fusion",
+    "description": "",
+    "resource_type": "video",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/AXZxgrKoSls?list=PLOaNAKtW5HLR8qg_42ZH1NfjH_bpAaWoN"
+  },
+  {
+    "title": "Gr12 Economics(P1): Growth and Development",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/JEW06ddQrpk?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Physics Textbook",
+    "description": "",
+    "resource_type": "document",
+    "course": "Physical Science",
+    "learning_style": "readwrite",
+    "url": "/media/course_resources/Gr12_PhysicalSciences_Learner_Eng.pdf"
+  },
+  {
+    "title": "Gr12 Economics(P1): Social & Economic Indicators",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/qwnPOczBQrY?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "Gr12 Economics(P1): Trade and competition",
+    "description": "",
+    "resource_type": "video",
+    "course": "Economics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/wFQNVGYrjy0?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "accounting-dbe-nsc-grade-12-past-exam-papers-p1-nov-question-paper-2024-afr",
+    "description": "",
+    "category": "Accounting",
     "term": "past_papers",
-    "url": "/media/resources/math/b7aca2023fa14ecfaf23e090d6417583.pdf"
+    "url": "/media/resources/accounting/3de905a9fb4b42e58cbb4732e193a800.pdf"
   },
   {
-    "title": "Annual Teaching plan",
+    "title": "accounting-dbe-nsc-grade-12-past-exam-papers-p1-nov-question-paper-2024-eng",
     "description": "",
-    "category": "History",
-    "term": "atp",
-    "url": "/media/resources/history/bff6499bb7bf4f55b0f4c1aef41cd95d.pdf"
+    "category": "Accounting",
+    "term": "past_papers",
+    "url": "/media/resources/accounting/957ef66386b44d22aa06f9c5b6b583f4.pdf"
   },
   {
-    "title": "Annual teaching plan",
+    "title": "Gr12 PhysicalSciences Learner Eng",
     "description": "",
-    "category": "Life Science",
-    "term": "atp",
-    "url": "/media/resources/life-science/43570ebc7ee84531ba669148db6a4300.pdf"
-  },
-  {
-    "title": "Beginning and Intermediate Algebra   Tyler Wallace",
-    "description": "A helpful Guide to grasping the fundamentals of Matths",
-    "category": "Math",
-    "term": "term1",
-    "url": "/media/resources/math/8ebb7476400a48568e12b19b8e8c769e.pdf"
-  },
-  {
-    "title": "Charles Dickens",
-    "description": "",
-    "category": "English",
+    "category": "Physics",
     "term": "other",
-    "url": "/media/resources/english/533d94079e794c5f916fc5b637eb32ad.pdf"
+    "url": "/media/resources/physics/48ecc6c1a30c4ac284033df18a1f460a.pdf"
   },
   {
-    "title": "Critical Theory",
-    "description": "Additional resources, useful for the analysis of Nazi Germany.",
-    "category": "History",
-    "term": "other",
-    "url": "/media/resources/history/edd12c05e469409eb9858a981004d113.pdf"
-  },
-  {
-    "title": "Eastern Cape",
-    "description": "English Grade 12 Eastern Cape.",
-    "category": "English",
-    "term": "past_papers",
-    "url": "/media/resources/english/de18d4767ce34958894e1988e8ec1cdb.pdf"
-  },
-  {
-    "title": "Eastern Cape",
-    "description": "Eastern Cape Grade 12",
-    "category": "English",
-    "term": "past_papers",
-    "url": "/media/resources/english/41d0fc8544bc45128bd4ca73b8877b6c.pdf"
-  },
-  {
-    "title": "English",
-    "description": "English Theatre",
-    "category": "English",
-    "term": "term3",
-    "url": "/media/resources/english/b7aff92ba2be457bb11825a3273dbe6f.pdf"
-  },
-  {
-    "title": "Geography past paper",
+    "title": "Life Sciences Grade 12 Textbook (2)",
     "description": "",
-    "category": "Geography",
-    "term": "past_papers",
-    "url": "/media/resources/geography/49c29fd38de24bb59c4bf21168f5cfc7.pdf"
-  },
-  {
-    "title": "Gr12-Geography-Study-Guide LR",
-    "description": "",
-    "category": "Geography",
-    "term": "atp",
-    "url": "/media/resources/geography/eee53e29527744f68422808331c7f919.pdf"
-  },
-  {
-    "title": "Grade 12 Math Textbook",
-    "description": "Gr12 Mathematics Learner Eng is available to view and download in PDF format on EduCoast. This resource is suitable for students, educators, and self-learners seeking to enhance their study or teaching materials. It can be previewed online or downloaded for offline access.",
-    "category": "Math",
+    "category": "Accounting",
     "term": "term1",
-    "url": "/media/resources/math/33eaa17a0318485c882bfe9850216b94.pdf"
+    "url": "/media/resources/accounting/dc2d155090c247818861d1cd4400d2cc.pdf"
   },
   {
-    "title": "June Past Exam Western Cape",
-    "description": "",
-    "category": "History",
-    "term": "past_papers",
-    "url": "/media/resources/history/5dcca220be94418c9efff558cbc7d05d.pdf"
-  },
-  {
-    "title": "Life Science Past Paper",
-    "description": "",
-    "category": "Life Science",
-    "term": "past_papers",
-    "url": "/media/resources/life-science/30e17a50ab5d45be8cf8561a886b6d44.pdf"
-  },
-  {
-    "title": "Life Sciences Grade 12 Textbook",
-    "description": "",
-    "category": "Life Science",
-    "term": "term1",
-    "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
-  },
-  {
-    "title": "Life-Sciences-Grade-12-NSC-P1-QP-September-2025-Northern-Cape",
-    "description": "",
-    "category": "Life Science",
-    "term": "other",
-    "url": "/media/resources/life-science/75629fc4dbcc495a833b738b51319e7a.pdf"
-  },
-  {
-    "title": "Past paper Term 4",
-    "description": "",
-    "category": "English",
-    "term": "term4",
-    "url": "/media/resources/english/1d4519a8821746199772ce4af9a3c894.pdf"
-  },
-  {
-    "title": "Physics Novemeber Past paper",
+    "title": "nsc-physical-sciences-ieb-nsc-grade-12-past-exam-papers-p1-question-paper-2024",
     "description": "",
     "category": "Physics",
     "term": "past_papers",
-    "url": "/media/resources/physics/461f2c575a994dd1ad23d03f8308db96.pdf"
+    "url": "/media/resources/physics/bb404b52e03a4007a166d4b24f9b0583.pdf"
   },
   {
-    "title": "Real Life Uses of Physics",
-    "description": "Hardcoded snapshot of emerging focus areas for 2024 planning.",
-    "category": "Physics",
-    "term": "other",
-    "url": "/media/resources/physics/afb8993616ae440aa06bf39eccf78409.pdf"
-  },
-  {
-    "title": "September 2025 Past Paper",
+    "title": "physical-sciences-dbe-nsc-grade-12-past-exam-papers-p1-may-june-question-paper-2024-eng",
     "description": "",
-    "category": "Math",
+    "category": "Physics",
     "term": "past_papers",
-    "url": "/media/resources/math/921a77ca4dff477d9e24b59c307d5b09.pdf"
-  },
-  {
-    "title": "Study Guide",
-    "description": "",
-    "category": "History",
-    "term": "term1",
-    "url": "/media/resources/history/edc3268c059b41e1ad4bc557f1284603.pdf"
-  },
-  {
-    "title": "Term Novel",
-    "description": "The Great Gatsby",
-    "category": "English",
-    "term": "term2",
-    "url": "/media/resources/english/2eacf86ffa174e75a60b3708e4aab59c.pdf"
-  },
-  {
-    "title": "Test",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/15ca1069e8ff474cbb96401d30ddfda5.pdf"
-  },
-  {
-    "title": "TextBook",
-    "description": "Open-source Textbook written by volunteers from https://www.siyavula.com/downloads/books/science/Gr12_PhysicalSciences_Learner_Eng.pdf",
-    "category": "Physics",
-    "term": "term1",
-    "url": "/media/resources/physics/4274184d34c34020ac42b5c1625992a9.pdf"
-  },
-  {
-    "title": "test (1)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/265661fb3c554a599ed5483d341901b5.pdf"
-  },
-  {
-    "title": "test (10)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/d3f92ef23a174374bccb6398710dac6c.pdf"
-  },
-  {
-    "title": "test (2)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/2a1034a856c243ca9321e38daa562a2f.pdf"
-  },
-  {
-    "title": "test (3)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/a776d775681c495e983cc1e62a3609dc.pdf"
-  },
-  {
-    "title": "test (4)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/2bf30b9da19c4d0aba65a0fdbb917ac6.pdf"
-  },
-  {
-    "title": "test (5)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/f6eb4ef128b64f6c8dc48248337264e8.pdf"
-  },
-  {
-    "title": "test (6)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/1bd343b35b894ae1b2a10b1e38a62076.pdf"
-  },
-  {
-    "title": "test (7)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/b55831df8e9143dab2bb96b2941d728b.pdf"
-  },
-  {
-    "title": "test (8)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/df9b0038473445758d5e74b1bc0f683c.pdf"
-  },
-  {
-    "title": "test (9)",
-    "description": "",
-    "category": "English",
-    "term": "term1",
-    "url": "/media/resources/english/76cfe28141bb4e969fa5e3eb9cb92673.pdf"
+    "url": "/media/resources/physics/4126208df91d4de3b6e5f96af59048d6.pdf"
   }
 ]
