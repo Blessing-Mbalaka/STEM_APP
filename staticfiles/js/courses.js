@@ -1,0 +1,794 @@
+/* static/js/courses.js — API-only renderer with inline Video, Audio, EPUB & PDF */
+(() => {
+  "use strict";
+
+  /* =============== Utilities =============== */
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";").map(c => c.trim());
+      for (const cookie of cookies) {
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function showBanner(msg) {
+    let el = document.getElementById("courses-error-banner");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "courses-error-banner";
+      el.style.cssText =
+        "margin:16px auto;max-width:900px;padding:12px 16px;border-radius:10px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;box-shadow:0 2px 6px rgba(0,0,0,.05);";
+      const container = document.querySelector(".container") || document.body;
+      container.insertBefore(el, container.firstChild.nextSibling);
+    }
+    el.textContent = msg;
+  }
+
+  function showEmptyState() {
+    const grid = document.getElementById("course-selection");
+    if (!grid) return;
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:24px;">
+        <h3>No courses available yet</h3>
+        <p style="opacity:.8">Once courses are added in the backend, they'll appear here automatically.</p>
+      </div>
+    `;
+  }
+
+  const ENTITY_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" };
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ENTITY_MAP[ch]);
+  }
+
+  function normalizeResourceUrl(raw) {
+    if (!raw) return "";
+    const value = String(raw).trim();
+    if (!value) return "";
+    if (value === "#" || value.startsWith("#")) return value;
+    if (/^(blob:|data:|mailto:|tel:|sms:)/i.test(value)) return value;
+    if (/^(https?:)?\/\//i.test(value)) {
+      return value.startsWith("//") ? "https:" + value : value;
+    }
+    if (value.startsWith("/")) return value;
+    if (/^\w[\w.-]+(\.[\w.-]+)+/i.test(value)) {
+      return "https://" + value.replace(/^\/*/, "");
+    }
+    if (/\.(mp4|webm|ogg|mp3|m4a|aac|wav|pdf|epub)(\?.*)?$/i.test(value)) {
+      return "/" + value.replace(/^\/*/, "");
+    }
+    return value;
+  }
+
+  function tryParseUrl(raw) {
+    if (!raw) return null;
+    try {
+      return new URL(raw, window.location.origin);
+    } catch {
+      try {
+        const normalized = normalizeResourceUrl(raw);
+        if (normalized) {
+          return new URL(normalized, window.location.origin);
+        }
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  const api = async (path, { method = "GET", data } = {}) => {
+    const csrftoken = getCookie("csrftoken");
+    const opts = { method, headers: {} };
+    if (csrftoken) opts.headers["X-CSRFToken"] = csrftoken;
+    if (data !== undefined) {
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(data);
+    }
+    const res = await fetch(path, opts);
+
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    const isJSON = ct.includes("application/json") || ct.includes("json");
+    if (!isJSON) {
+      const text = await res.text().catch(() => "");
+      const looksLikeLogin =
+        text.toLowerCase().includes("login") || text.toLowerCase().includes("<form");
+      throw new Error(
+        `Expected JSON from ${path} but got "${ct || "unknown"}"${
+          looksLikeLogin ? " (this looks like a login page)" : ""
+        }.`
+      );
+    }
+
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json?.error || res.statusText);
+    return json;
+  };
+
+  /* =============== State =============== */
+
+  let subjects = {};   // { key: { name, visual[], auditory[], readwrite[] } }
+  let currentSubject = "";
+  const hasSubjects = () => Object.keys(subjects).length > 0;
+
+  function inferCategoryFrom(key, subject) {
+    const cls = (subject && subject.classification) ? String(subject.classification).toLowerCase() : "";
+    if (cls === "stem" || cls === "steam" || cls === "general") return cls;
+    const k = (key || "").toLowerCase();
+    if (k.includes("stem")) return "stem";
+    if (k.includes("steam")) return "steam";
+    return "general";
+  }
+
+  /* =============== Type detection & thumbs =============== */
+
+  function extractYouTubeId(u) {
+    const url = tryParseUrl(u);
+    if (!url) return null;
+    const host = (url.hostname || "").toLowerCase();
+    if (host.includes("youtu.be")) {
+      return url.pathname.replace(/^\/+/, "").split(/[?#]/)[0] || null;
+    }
+    if (host.includes("youtube.com")) {
+      const v = url.searchParams.get("v");
+      if (v) return v;
+      const parts = url.pathname.split("/").filter(Boolean);
+      const embedIdx = parts.findIndex(p => p === "embed" || p === "shorts" || p === "live");
+      if (embedIdx !== -1 && parts[embedIdx + 1]) return parts[embedIdx + 1];
+      if (parts.length) {
+        const last = parts[parts.length - 1];
+        if (last && last !== "watch") return last;
+      }
+    }
+    return null;
+  }
+
+  function isVideoFile(u) { return /\.((mp4)|(webm)|(ogg))(\?.*)?$/i.test(u || ""); }
+  function isAudioFile(u) { return /\.(mp3|m4a|aac|ogg|wav)(\?.*)?$/i.test(u || ""); }
+  function isEpub(u)     { return /\.epub(\?.*)?$/i.test(u || ""); }
+  function isPdf(u)      { return /\.pdf(\?.*)?$/i.test(u || ""); }
+
+  function videoThumbnailFor(res) {
+    if (res.thumbnail) return res.thumbnail;
+    const source = res.url || res.file || "";
+    const isYT = /(?:youtube\.com|youtu\.be)/i.test(source);
+    if (res.resource_type === "youtube" || isYT) {
+      const id = extractYouTubeId(source);
+      if (id) return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    }
+    return null;
+  }
+
+  const YOUTUBE_ERROR_MESSAGES = {
+    "2": "The video link has invalid parameters.",
+    "5": "This browser cannot play the supplied video format.",
+    "101": "The video owner disabled playback on other websites.",
+    "150": "The video owner disabled playback on other websites.",
+    "151": "Playback is restricted for this video.",
+    "153": "Playback is restricted for this video."
+  };
+
+  const youtubePlayers = {};
+  let youtubeListenerAttached = false;
+
+  function ensureYouTubeListener() {
+    if (youtubeListenerAttached) return;
+    youtubeListenerAttached = true;
+    window.addEventListener("message", handleYouTubeIframeMessage, false);
+  }
+
+  function registerYouTubePlayer(id, meta) {
+    youtubePlayers[id] = meta;
+    ensureYouTubeListener();
+  }
+
+  function clearYouTubePlayer(id) {
+    if (!id) return;
+    delete youtubePlayers[id];
+  }
+
+  function handleYouTubeIframeMessage(event) {
+    if (!event || !event.data) return;
+    const origin = event.origin || "";
+    if (origin) {
+      try {
+        const hostname = new URL(origin).hostname.replace(/^www\./, "");
+        const allowed =
+          /(^|\.)youtube\.com$/i.test(hostname) ||
+          /(^|\.)youtube-nocookie\.com$/i.test(hostname);
+        if (!allowed) return;
+      } catch {
+        return;
+      }
+    }
+    let payload = event.data;
+    if (typeof payload === "string") {
+      const trimmed = payload.trim();
+      if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) return;
+      try {
+        payload = JSON.parse(trimmed);
+      } catch {
+        return;
+      }
+    }
+    if (!payload || typeof payload !== "object") return;
+    if (payload.event !== "onError") return;
+
+    const playerId = payload.id || (payload?.info && payload.info.id) || null;
+    let code = payload.info;
+    if (Array.isArray(code)) code = code[0];
+    if (typeof code !== "number" && typeof code !== "string") {
+      code = payload.errorCode;
+    }
+    renderYouTubeError(playerId, code);
+  }
+
+  function renderYouTubeError(playerId, code) {
+    if (!playerId) return;
+    const meta = youtubePlayers[playerId];
+    if (!meta || !meta.container) return;
+    clearYouTubePlayer(playerId);
+
+    const friendly = YOUTUBE_ERROR_MESSAGES[String(code)] || "This video can only be opened on YouTube.";
+    const friendlyHtml = escapeHtml(friendly);
+    const titleHtml = meta.title || "Video";
+    const hrefHtml = meta.href || "";
+    const bannerTitle = meta.title ? meta.title : "This video";
+    showBanner(`${bannerTitle} can only be viewed directly on YouTube.`);
+    meta.container.dataset.mounted = "error";
+    meta.container.innerHTML = `
+      <div class="video-error" style="display:flex;flex-direction:column;gap:8px;justify-content:center;height:150px;padding:12px;border-radius:8px;background:#fff3cd;border:1px solid #ffe8a1;color:#6b4f00;">
+        <div style="font-weight:600;">${titleHtml} can't play here.</div>
+        <div style="font-size:13px;line-height:1.4;">${friendlyHtml}${code ? ` (Error ${escapeHtml(String(code))})` : ""}</div>
+        ${hrefHtml ? `<a href="${hrefHtml}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#0c5460;font-weight:600;text-decoration:underline;">Watch on YouTube</a>` : ""}
+      </div>
+    `;
+  }
+
+  function buildYouTubeEmbedSrc(url) {
+    const id = extractYouTubeId(url);
+    if (!id) return null;
+    try {
+      const params = new URLSearchParams({
+        rel: "0",
+        modestbranding: "1",
+        playsinline: "1",
+        enablejsapi: "1",
+        origin: window.location.origin
+      });
+      return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+    } catch {
+      return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`;
+    }
+  }
+
+  /* =============== Inline players (video) =============== */
+
+  function mountInlinePlayer(container) {
+    if (!container) return;
+
+    if (container.dataset.playerId) {
+      clearYouTubePlayer(container.dataset.playerId);
+      delete container.dataset.playerId;
+    }
+
+    const kind = container.dataset.kind || "external";   // 'youtube' | 'file' | 'external'
+    const src  = container.dataset.src || "";
+    const poster = container.dataset.poster || "";
+    const href = container.dataset.href || "";
+
+    if (container.dataset.mounted === "1" && (kind === "youtube" || kind === "file")) {
+      return;
+    }
+
+    if (kind === "youtube" && src) {
+      const autoplaySrc = src.includes("?") ? `${src}&autoplay=1` : `${src}?autoplay=1`;
+      const playerId = `yt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      registerYouTubePlayer(playerId, {
+        container,
+        href,
+        title: container.dataset.title || ""
+      });
+      container.innerHTML = `
+        <iframe
+          id="${playerId}"
+          src="${escapeHtml(autoplaySrc)}"
+          title="YouTube video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          style="width:100%;height:150px;display:block;border:0;border-radius:8px"
+        ></iframe>`;
+      container.dataset.mounted = "1";
+      container.dataset.playerId = playerId;
+      return;
+    }
+
+    if (kind === "file" && src) {
+      container.innerHTML = `
+        <video
+          src="${escapeHtml(src)}"
+          ${poster ? `poster="${escapeHtml(poster)}"` : ""}
+          controls autoplay playsinline
+          style="width:100%;height:150px;display:block;object-fit:cover;border-radius:8px"
+        ></video>`;
+      container.dataset.mounted = "1";
+      return;
+    }
+
+    if (href && href !== "#") {
+      window.open(href, "_blank", "noopener");
+    } else {
+      showBanner("Unable to play this video inside the browser. The link might be unavailable.");
+    }
+  }
+
+  /* =============== EPUB Reader (overlay) =============== */
+
+  let epubLoaded = false;
+  let currentBook = null;
+  let currentRendition = null;
+  let currentFont = 100;
+
+  function loadEpubJs() {
+    if (epubLoaded || window.ePub) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://unpkg.com/epubjs/dist/epub.min.js";
+      s.async = true;
+      s.onload = () => { epubLoaded = true; resolve(); };
+      s.onerror = () => reject(new Error("Failed to load epub.js"));
+      document.head.appendChild(s);
+    });
+  }
+
+  function ensureEpubOverlay() {
+    if (document.getElementById("epub-overlay")) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "epub-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;";
+    overlay.innerHTML = `
+      <div id="epub-modal" style="background:#fff;width:92%;max-width:980px;height:80vh;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #eee">
+          <button id="epub-close" aria-label="Close" style="margin-right:auto;padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">Close</button>
+          <button id="epub-prev"  style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">&larr; Prev</button>
+          <button id="epub-next"  style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">Next &rarr;</button>
+          <div style="margin-left:12px;display:flex;align-items:center;gap:6px">
+            <button id="epub-smaller" style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">A-</button>
+            <button id="epub-bigger"  style="padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">A+</button>
+          </div>
+        </div>
+        <div id="epub-view" style="flex:1;min-height:0;background:#fafafa"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target.id === "epub-overlay") closeEpub();
+    });
+    document.getElementById("epub-close").addEventListener("click", closeEpub);
+    document.getElementById("epub-prev").addEventListener("click", () => currentRendition && currentRendition.prev());
+    document.getElementById("epub-next").addEventListener("click", () => currentRendition && currentRendition.next());
+    document.getElementById("epub-smaller").addEventListener("click", () => setEpubFont(currentFont - 10));
+    document.getElementById("epub-bigger").addEventListener("click",  () => setEpubFont(currentFont + 10));
+  }
+
+  function setEpubFont(size) {
+    currentFont = Math.max(60, Math.min(180, size));
+    if (currentRendition) currentRendition.themes.fontSize(currentFont + "%");
+  }
+
+  async function openEpub(url) {
+    try {
+      ensureEpubOverlay();
+      await loadEpubJs();
+      if (!window.ePub) throw new Error("epub.js is not available");
+
+      if (currentRendition && currentRendition.destroy) currentRendition.destroy();
+      currentBook = window.ePub(url);
+      currentRendition = currentBook.renderTo("epub-view", {
+        width: "100%",
+        height: "100%",
+        flow: "paginated"
+      });
+      currentRendition.display();
+      setEpubFont(currentFont);
+
+      document.getElementById("epub-overlay").style.display = "flex";
+    } catch (err) {
+      console.error("EPUB open failed:", err);
+      showBanner("Couldn't open EPUB. If it's hosted on another domain, enable CORS for it.");
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  }
+
+  function closeEpub() {
+    const overlay = document.getElementById("epub-overlay");
+    if (overlay) overlay.style.display = "none";
+    if (currentRendition && currentRendition.destroy) currentRendition.destroy();
+    currentBook = null;
+    currentRendition = null;
+  }
+
+  /* =============== PDF Viewer (overlay) =============== */
+
+  function ensurePdfOverlay() {
+    if (document.getElementById("pdf-overlay")) return;
+
+    const overlay = document.createElement("div");
+    overlay.id = "pdf-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;";
+    overlay.innerHTML = `
+      <div id="pdf-modal" style="background:#fff;width:92%;max-width:1100px;height:85vh;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #eee">
+          <button id="pdf-close" aria-label="Close" style="margin-right:auto;padding:6px 10px;border:0;border-radius:8px;background:#eee;cursor:pointer">Close</button>
+          <a id="pdf-open-tab" href="#" target="_blank" rel="noopener" style="padding:6px 10px;border:0;border-radius:8px;background:#eee;text-decoration:none;color:#333;cursor:pointer">Open in new tab</a>
+        </div>
+        <div style="flex:1;min-height:0;background:#fafafa">
+          <!-- Let the browser's built-in PDF viewer handle controls -->
+          <iframe id="pdf-frame" src="about:blank" title="PDF" style="border:0;width:100%;height:100%"></iframe>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target.id === "pdf-overlay") closePdf();
+    });
+    document.getElementById("pdf-close").addEventListener("click", closePdf);
+  }
+
+  function openPdf(url) {
+  ensurePdfOverlay();
+  const origin = window.location.origin.replace(/\/$/, "");
+  const mediaPrefixAbs = origin + "/media/";
+  let src = url;
+
+  // If it's a local media file, use the embed-safe endpoint
+  if (url.startsWith(mediaPrefixAbs)) {
+    const rel = url.slice(mediaPrefixAbs.length);        // course_resources/xyz.pdf
+    src = origin + "/media-pdf/" + rel;                  // our exempt route
+  } else if (url.startsWith("/media/")) {                // relative form
+    src = origin + "/media-pdf/" + url.slice("/media/".length);
+  }
+
+  document.getElementById("pdf-frame").src = src + "#view=FitH";
+  document.getElementById("pdf-open-tab").href = url;    // keep “Open in new tab” to the real URL
+  document.getElementById("pdf-overlay").style.display = "flex";
+}
+
+
+  function closePdf() {
+    const overlay = document.getElementById("pdf-overlay");
+    if (overlay) overlay.style.display = "none";
+    const frame = document.getElementById("pdf-frame");
+    if (frame) frame.src = "about:blank";
+  }
+
+  /* =============== API -> State =============== */
+
+  async function hydrateFromAPI() {
+    const data = await api("/api/courses/"); // trailing slash required
+
+    if (data?.subjects && typeof data.subjects === "object" && Object.keys(data.subjects).length > 0) {
+      subjects = {};
+      for (const [key, incoming] of Object.entries(data.subjects)) {
+        subjects[key] = {
+          name: incoming?.name || key,
+          classification: incoming?.classification || "",
+          visual: Array.isArray(incoming?.visual) ? incoming.visual : [],
+          auditory: Array.isArray(incoming?.auditory) ? incoming.auditory : [],
+          readwrite: Array.isArray(incoming?.readwrite) ? incoming.readwrite : []
+        };
+      }
+      return;
+    }
+
+    if (Array.isArray(data?.results) && data.results.length > 0) {
+      const obj = {};
+      for (const r of data.results) {
+        const key = ((r.subject || r.title || "general") + "").toLowerCase();
+        if (!obj[key]) obj[key] = { name: r.title || key, visual: [], auditory: [], readwrite: [] };
+      }
+      subjects = obj;
+      return;
+    }
+
+    subjects = {};
+  }
+
+  /* =============== Grid & Filters =============== */
+
+  function renderCourseGrid() {
+    const courseGrid = document.getElementById("course-selection");
+    if (!courseGrid) return;
+
+    courseGrid.innerHTML = "";
+
+    for (const [key, subject] of Object.entries(subjects)) {
+      const category = inferCategoryFrom(key, subject);
+      const iconClass = category === "stem" ? "fa-square-root-alt"
+                       : category === "steam" ? "fa-palette"
+                       : "fa-book-open";
+      const firstVisual = (subject.visual && subject.visual[0]) || {};
+      const duration = firstVisual.duration || "";
+      const level = firstVisual.level || "";
+
+      courseGrid.insertAdjacentHTML("beforeend", `
+        <div class="course-card ${category}" data-category="${category}">
+          <div class="course-category ${category}">
+            ${category.charAt(0).toUpperCase() + category.slice(1)}
+          </div>
+          <div class="course-icon ${category}">
+            <i class="fas ${iconClass}"></i>
+          </div>
+          <h3 class="course-name">${subject.name}</h3>
+          <p class="course-desc">${firstVisual.title ? String(firstVisual.title) : ""}</p>
+          <div class="course-details">
+            <div class="course-duration"><i class="far fa-clock"></i> ${duration}</div>
+            <div class="course-level">${level}</div>
+          </div>
+          <button class="start-button" data-subject="${key}">Start Learning</button>
+        </div>
+      `);
+    }
+
+    courseGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".start-button");
+      if (!btn) return;
+      selectSubject(btn.dataset.subject);
+    });
+
+    const filters = document.querySelectorAll(".category-filter");
+    filters.forEach(filter => {
+      filter.addEventListener("click", function () {
+        filters.forEach(f => f.classList.remove("active"));
+        this.classList.add("active");
+        filterCourses(this.getAttribute("data-category"));
+      });
+    });
+  }
+
+  function filterCourses(category) {
+    document.querySelectorAll(".course-card").forEach(card => {
+      card.style.display = (category === "all" || card.getAttribute("data-category") === category) ? "flex" : "none";
+    });
+  }
+
+  /* =============== Subject Flow =============== */
+
+  function selectSubject(subjectId) {
+    currentSubject = subjectId;
+    const sel = document.getElementById("course-selection");
+    const pane = document.getElementById("learning-styles");
+    const title = document.getElementById("selected-subject-title");
+
+    if (sel) sel.style.display = "none";
+    if (pane) pane.style.display = "block";
+    if (title) title.textContent = `${subjects[subjectId]?.name || subjectId} Resources`;
+
+    renderResources(subjectId);
+  }
+
+  function goBackToCourses() {
+    const sel = document.getElementById("course-selection");
+    const pane = document.getElementById("learning-styles");
+    if (sel) sel.style.display = "grid";
+    if (pane) pane.style.display = "none";
+  }
+
+  function showLearningStyle(a, b) {
+    let styleId, evt;
+    if (typeof a === "string") { styleId = a; evt = null; }
+    else { evt = a; styleId = b; }
+
+    document.querySelectorAll(".style-content").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll(".style-tab").forEach(t => t.classList.remove("active"));
+    const target = document.getElementById(`${styleId}-content`);
+    if (target) target.classList.add("active");
+    if (evt?.currentTarget) evt.currentTarget.classList.add("active");
+  }
+
+  /* =============== Resources (Video + Audio + EPUB + PDF) =============== */
+
+  function renderResources(subjectId) {
+    const subject = subjects[subjectId];
+    if (!subject) return;
+
+    // VISUAL (videos)
+    const videoGrid = document.querySelector("#visual-content .video-grid");
+    if (videoGrid) {
+      videoGrid.innerHTML = "";
+      (subject.visual || []).forEach(v => {
+        const rawUrl = v.url || v.file || "";
+        const href = normalizeResourceUrl(rawUrl) || "#";
+        const thumb = videoThumbnailFor(v);
+
+        const isYouTube = v.resource_type === "youtube" || /(?:youtube\.com|youtu\.be)/i.test(rawUrl || "");
+        let kind = "external";
+        let embedSrc = "";
+        if (isYouTube) {
+          embedSrc = buildYouTubeEmbedSrc(rawUrl) || "";
+          if (embedSrc) kind = "youtube";
+        } else if (isVideoFile(rawUrl) || isVideoFile(href)) {
+          embedSrc = href;
+          kind = embedSrc ? "file" : "external";
+        }
+
+        if (!embedSrc && kind !== "external" && href && href !== "#") {
+          kind = "external";
+        }
+
+        const safeKind = escapeHtml(kind);
+        const safeEmbed = escapeHtml(embedSrc);
+        const safePoster = escapeHtml(thumb || "");
+        const safeHref = escapeHtml(href);
+        const safeTitle = escapeHtml(v.title || "");
+        const safeDuration = escapeHtml(v.duration || "");
+        const hasLink = href && href !== "#";
+
+        videoGrid.insertAdjacentHTML("beforeend", `
+          <div class="video-card">
+            <div class="video-embed" data-kind="${safeKind}" data-src="${safeEmbed}" data-href="${safeHref}" data-poster="${safePoster}" data-title="${safeTitle}" style="position:relative;">
+              <div class="video-thumbnail js-play-video" role="button" tabindex="0" aria-label="Play video"
+                   style="cursor:pointer; ${thumb ? "background:none;padding:0" : ""}">
+                ${ thumb
+                    ? `<img src="${safePoster}" alt="Video thumbnail"
+                           style="display:block;width:100%;height:150px;object-fit:cover;border:0;border-radius:8px"/>`
+                    : `<i class="fas fa-play"></i>` }
+                <div class="play-overlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                  <span style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.5);">
+                    <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true" focusable="false" style="margin:auto;fill:#fff">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="video-info">
+              <div class="video-title">${safeTitle}</div>
+              <div class="video-duration">${safeDuration}</div>
+              ${ hasLink ? `<div class="video-actions" style="margin-top:6px;"><a href="${safeHref}" target="_blank" rel="noopener">Open in new tab</a></div>` : "" }
+            </div>
+          </div>
+        `);
+      });
+    }
+
+    // AUDITORY (audio)
+    const audioGrid = document.querySelector("#auditory-content .audio-grid");
+    if (audioGrid) {
+      audioGrid.innerHTML = "";
+      (subject.auditory || []).forEach(a => {
+        const href = a.url || a.file || "#";
+        if (isAudioFile(href)) {
+          audioGrid.insertAdjacentHTML("beforeend", `
+            <div class="audio-card">
+              <div class="audio-icon" style="background:#ffe08a">
+                <i class="fas fa-headphones"></i>
+              </div>
+              <div class="audio-info" style="flex:1">
+                <div class="audio-title">${a.title || ""}</div>
+                <div class="audio-duration">${a.duration || ""}</div>
+                <audio controls preload="none" style="width:100%;margin-top:8px">
+                  <source src="${href}">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            </div>
+          `);
+        } else {
+          // external platform (spotify/podcast page etc.)
+          audioGrid.insertAdjacentHTML("beforeend", `
+            <div class="audio-card">
+              <a class="audio-icon" href="${href}" target="_blank" rel="noopener">
+                <i class="fas fa-headphones"></i>
+              </a>
+              <div class="audio-info">
+                <div class="audio-title">${a.title || ""}</div>
+                <div class="audio-duration">${a.duration || ""}</div>
+              </div>
+            </div>
+          `);
+        }
+      });
+    }
+
+    // READ/WRITE (EPUB + PDF + others)
+    const materialGrid = document.querySelector("#readwrite-content .material-grid");
+    if (materialGrid) {
+      materialGrid.innerHTML = "";
+      (subject.readwrite || []).forEach(m => {
+        const href = m.url || m.file || "#";
+        const isBook = isEpub(href);
+        const isPdfDoc = isPdf(href);
+        materialGrid.insertAdjacentHTML("beforeend", `
+          <div class="material-card">
+            <a class="material-cover ${isBook ? "js-open-epub" : isPdfDoc ? "js-open-pdf" : ""}"
+               href="${href}" ${(!isBook && !isPdfDoc) ? 'target="_blank" rel="noopener"' : ""}>
+              <i class="fas fa-book"></i>
+            </a>
+            <div class="material-info">
+              <div class="material-title">${m.title || ""}</div>
+              <div class="material-author">${m.author || ""}</div>
+              <div class="material-pages">${m.pages || ""}</div>
+            </div>
+          </div>
+        `);
+      });
+    }
+  }
+
+  // Delegated events
+  function handlePlayClick(e) {
+    const play = e.target.closest(".js-play-video");
+    if (!play) return;
+    const container = play.closest(".video-embed");
+    mountInlinePlayer(container);
+  }
+
+  function handlePlayKeydown(e) {
+    const play = e.target.closest(".js-play-video");
+    if (!play) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      const container = play.closest(".video-embed");
+      mountInlinePlayer(container);
+    }
+  }
+
+  function handleEpubClick(e) {
+    const a = e.target.closest("a.js-open-epub");
+    if (!a) return;
+    const href = a.getAttribute("href");
+    if (!href) return;
+    e.preventDefault();
+    openEpub(href);
+  }
+
+  function handlePdfClick(e) {
+    const a = e.target.closest("a.js-open-pdf");
+    if (!a) return;
+    const href = a.getAttribute("href");
+    if (!href) return;
+    e.preventDefault();
+    openPdf(href);
+  }
+
+  /* =============== Boot =============== */
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    if (!document.getElementById("course-selection")) return;
+
+    try {
+      await hydrateFromAPI();
+      if (!hasSubjects()) {
+        showEmptyState();
+      } else {
+        renderCourseGrid();
+      }
+
+      // expose for inline handlers in template
+      window.selectSubject = selectSubject;
+      window.showLearningStyle = showLearningStyle;
+      window.goBackToCourses = goBackToCourses;
+      window.api = api;
+
+      // global listeners
+      document.addEventListener("click", handlePlayClick);
+      document.addEventListener("keydown", handlePlayKeydown);
+      document.addEventListener("click", handleEpubClick);
+      document.addEventListener("click", handlePdfClick);
+    } catch (err) {
+      console.error("[courses] API error:", err);
+      showBanner(err.message);
+      showEmptyState();
+    }
+  });
+})();
