@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     'main',
 ]
 
@@ -160,34 +159,26 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/profiles/"
 LOGOUT_REDIRECT_URL = "/login/"
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # Tutor/Admin access control
 # Only staff/superusers (or members of ADMINISTRATOR_GROUP_NAME) may access tutor tools
 TUTOR_ADMIN_REQUIRE_STAFF = True
 TUTOR_ADMIN_REQUIRE_TUTOR = False
 ADMINISTRATOR_GROUP_NAME = "Administrator"
-
 # Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 # Also ensure you have these for file uploads:
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-
 # Add email configuration
-
 # Email configuration
 if DEBUG == True:
     # Development: Print emails to the console
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
+elif DEBUG == False:
     # Production:
 
     #BiggyMan Take note the smtp swapped for the console backend.
