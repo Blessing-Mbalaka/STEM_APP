@@ -14,6 +14,8 @@ from .survey import (
     CustomUserSurveyResponse,
 )
 
+from .video_conferencing import Session
+
 __all__ = [
     "CustomUser", "Profile",
     "Game", "GameQuestion", "GameScore",
@@ -26,4 +28,5 @@ __all__ = [
     "CustomUserSurveyQuestion",
     "CustomUserSurveyParticipant",
     "CustomUserSurveyResponse",
+    "Session",
 ]
