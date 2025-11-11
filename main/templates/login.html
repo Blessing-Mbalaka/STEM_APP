@@ -210,6 +210,64 @@
             color: var(--white);
         }
 
+        #signupForm #tutorExtras {
+            display: none;
+        }
+
+        #signupForm.tutor-mode #tutorExtras {
+            display: block;
+        }
+
+        #tutorExtras {
+            border-radius: 16px;
+            border: 1px solid rgba(4, 22, 103, 0.15);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 12px 24px rgba(4, 22, 103, 0.08);
+        }
+
+        #tutorExtras p {
+            font-size: 0.85rem;
+            color: var(--dark-blue);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        #tutorExtras .form-group {
+            margin-bottom: 12px;
+        }
+
+        #tutorExtras label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        #tutorExtras textarea {
+            width: 100%;
+            border-radius: 12px;
+            border: 2px solid var(--blue);
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        #tutorExtras input[type="file"] {
+            width: 100%;
+            border-radius: 12px;
+            border: 2px dashed rgba(4, 22, 103, 0.25);
+            padding: 12px;
+            background: rgba(96, 184, 231, 0.08);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        #tutorExtras small {
+            font-size: 0.78rem;
+            color: #4c4f5d;
+        }
+
         .forgot-password {
             text-align: right;
             margin-bottom: 1rem;
@@ -333,7 +391,33 @@
             <div id="signupError" style="color:#b00020; font-size:0.9rem; margin: 6px 0; display:none;"></div>
             <div class="role-toggle">
                 <div class="role-option active" id="signupChildRole">I'm a Student</div>
-                <div class="role-option" id="signupParentRole">I'm Admin</div>
+                <div class="role-option" id="signupParentRole">I'm an Aspiring Tutor</div>
+            </div>
+            <div id="tutorExtras" style="margin-top:10px; padding:12px; border:1px solid rgba(4,22,103,0.2); border-radius:12px; background:#f7f9ff;">
+                <p style="font-size:0.9rem; color:#041667; margin-bottom:8px;">
+                    Aspiring tutors must provide a short motivation, an ID document, and at least one qualification. Supporting documents are optional, and you can add SACE certification if available.
+                </p>
+                <div class="form-group">
+                    <label for="tutorMotivation">Motivation</label>
+                    <textarea id="tutorMotivation" rows="3" placeholder="Tell us about your tutoring experience"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="tutorIdDocument">Identity Document (PDF required)</label>
+                    <input type="file" id="tutorIdDocument" accept=".pdf" />
+                </div>
+                <div class="form-group">
+                    <label for="tutorQualificationDocuments">Qualifications (PDF, you can upload multiple)</label>
+                    <input type="file" id="tutorQualificationDocuments" multiple accept=".pdf" />
+                </div>
+                <div class="form-group">
+                    <label for="tutorSupportingDocuments">Additional Supporting Documents (optional, PDF)</label>
+                    <input type="file" id="tutorSupportingDocuments" multiple accept=".pdf" />
+                </div>
+                <div class="form-group">
+                    <label for="tutorSaceDocuments">SACE Certificates (optional, PDF)</label>
+                    <input type="file" id="tutorSaceDocuments" multiple accept=".pdf" />
+                    <small style="display:block; margin-top:4px; color:#555;">Upload one or more SACE certificates if applicable.</small>
+                </div>
             </div>
             <button type="submit" class="auth-btn">Create Account</button>
         </form>
@@ -364,6 +448,10 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     const childRole = document.getElementById("childRole");
     const parentRole = document.getElementById("parentRole");
+    const signupChildRole = document.getElementById("signupChildRole");
+    const signupParentRole = document.getElementById("signupParentRole");
+    const tutorExtras = document.getElementById("tutorExtras");
+    const signupFormEl = document.getElementById("signupForm");
 
     childRole.addEventListener("click", function() {
         childRole.classList.add("active");
@@ -374,6 +462,96 @@ document.addEventListener("DOMContentLoaded", function() {
         parentRole.classList.add("active");
         childRole.classList.remove("active");
     });
-});</script>
+
+    function setSignupRole(isTutor) {
+        if (!signupChildRole || !signupParentRole) return;
+        if (isTutor) {
+            signupParentRole.classList.add("active");
+            signupChildRole.classList.remove("active");
+            if (tutorExtras) tutorExtras.style.display = "block";
+            if (signupFormEl) signupFormEl.classList.add("tutor-mode");
+        } else {
+            signupChildRole.classList.add("active");
+            signupParentRole.classList.remove("active");
+            if (tutorExtras) tutorExtras.style.display = "none";
+            if (signupFormEl) signupFormEl.classList.remove("tutor-mode");
+        }
+    }
+
+    if (signupChildRole && signupParentRole) {
+        signupChildRole.addEventListener("click", function (event) {
+            event.preventDefault();
+            setSignupRole(false);
+        });
+        signupParentRole.addEventListener("click", function (event) {
+            event.preventDefault();
+            setSignupRole(true);
+        });
+        // Initialize
+        setSignupRole(signupParentRole.classList.contains("active"));
+    }
+});
+</script>
+<script>
+(function fallbackLogin(){
+    function attachFallback(){
+        if (window.__stemLoginReady) return;
+        const loginForm = document.getElementById("loginForm");
+        if (!loginForm || loginForm.dataset.fallbackAttached === "1") return;
+        loginForm.dataset.fallbackAttached = "1";
+        const errorBox = document.getElementById("loginError");
+        const getCsrf = () => (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || "";
+        loginForm.addEventListener("submit", async function(e){
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            if (errorBox) { errorBox.textContent = ""; errorBox.style.display = "none"; }
+            if (!email || !password){
+                if (errorBox){ errorBox.textContent = "Email and password are required"; errorBox.style.display = "block"; }
+                return;
+            }
+            const btn = loginForm.querySelector('button[type="submit"]');
+            if (btn){ btn.disabled = true; btn.textContent = "Signing in..."; }
+            try{
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCsrf()
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({ username: email, password })
+                });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok){
+                    const status = res.status;
+                    let msg = json.error || "Login failed";
+                    if (status === 401) msg = "Invalid email or password";
+                    if (status === 403 && json.redirect){
+                        location.href = json.redirect;
+                        return;
+                    }
+                    if (errorBox){ errorBox.textContent = msg; errorBox.style.display = "block"; }
+                    return;
+                }
+                const redirect = json.redirect || "/index/";
+                location.href = redirect;
+            } catch(err){
+                if (errorBox){
+                    errorBox.textContent = "Network error. Please try again.";
+                    errorBox.style.display = "block";
+                }
+            } finally {
+                if (btn){ btn.disabled = false; btn.textContent = "Get Started!"; }
+            }
+        });
+    }
+    if (document.readyState === "complete" || document.readyState === "interactive"){
+        setTimeout(attachFallback, 400);
+    } else {
+        document.addEventListener("DOMContentLoaded", () => setTimeout(attachFallback, 400));
+    }
+})();
+</script>
 </body>
 </html>

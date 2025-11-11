@@ -1,5 +1,5 @@
 from django import forms
-from .models import TutorSession, Message
+from .models import TutorSession, TutorMessage
 
 class SessionBookingForm(forms.ModelForm):
     scheduled_time = forms.DateTimeField(
@@ -21,7 +21,7 @@ class SessionBookingForm(forms.ModelForm):
 
 class MessageForm(forms.ModelForm):
     class Meta:
-        model = Message
+        model = TutorMessage
         fields = ['subject', 'content']
         widgets = {
             'subject': forms.TextInput(attrs={'class': 'form-control'}),

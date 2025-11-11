@@ -14,10 +14,10 @@ from main.utils.roles import user_has_role, ROLE_ADMIN, ROLE_TUTOR
 
 # Import models (with fallback if they don't exist yet)
 try:
-    from main.models import TutorSession, Message
+    from main.models import TutorSession, TutorMessage
 except ImportError:
     TutorSession = None
-    Message = None
+    TutorMessage = None
 
 # Import forms (create simple fallback if forms don't exist)
 try:
@@ -316,7 +316,7 @@ def book_session(request):
 @login_required
 def send_message(request):
     """Send a message to tutor or student"""
-    if not Message:
+    if not TutorMessage:
         messages.error(request, 'Messaging system not available.')
         return redirect('dashboard')
     

@@ -1,0 +1,650 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
+    <style>
+        :root {
+            --primary: #b84300;
+            --primary-dark: #803103;
+            --muted: #6e625a;
+            --border: rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 18px 30px rgba(0, 0, 0, 0.08);
+            --radius: 18px;
+            --bg: #f8f5f1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: #1b1613;
+        }
+
+        .page-shell {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 80px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(184, 67, 0, 0.12), rgba(251, 188, 5, 0.08));
+            border: 1px solid rgba(184, 67, 0, 0.18);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: clamp(2rem, 3vw, 2.5rem);
+            color: var(--primary-dark);
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 640px;
+            color: rgba(0, 0, 0, 0.7);
+            line-height: 1.5;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 10px 18px rgba(184, 67, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--primary-dark);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .survey-dashboard {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: minmax(320px, 380px) 1fr;
+            gap: 24px;
+        }
+
+        .survey-panel {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .panel-header p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .survey-search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .survey-search input {
+            flex: 1;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            font-size: 0.95rem;
+        }
+
+        .survey-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .survey-card {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 14px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .survey-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 12px 18px rgba(184, 67, 0, 0.18);
+        }
+
+        .survey-card strong {
+            font-size: 1rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.active {
+            background: rgba(53, 180, 102, 0.18);
+            color: #1f8b48;
+        }
+
+        .badge.inactive {
+            background: rgba(190, 70, 70, 0.12);
+            color: #b84300;
+        }
+
+        .detail-panel {
+            padding: 24px 28px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detail-panel header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .detail-panel header p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            max-width: 720px;
+        }
+
+        .detail-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            background: linear-gradient(145deg, rgba(184, 67, 0, 0.05), rgba(255, 255, 255, 0.95));
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .stat-card strong {
+            font-size: 1.6rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-card {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            padding: 18px;
+            background: #fffdf9;
+        }
+
+        .chart-card h4 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            border: 1px dashed rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
+            padding: 32px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .insights {
+            margin-top: 32px;
+            padding: 24px 28px;
+        }
+
+        .insights h3 {
+            margin: 0 0 12px;
+        }
+
+        .insights-list {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--muted);
+        }
+
+        .status-banner {
+            font-size: 0.9rem;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #805a01;
+            background: rgba(251, 188, 5, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .survey-dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .survey-panel {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <section class="hero">
+            <div>
+                <h1>Survey Analytics</h1>
+                <p>
+                    Track participation, review question-level insights, and share tutor-ready talking points.
+                    Use the controls below to switch between surveys and surface the data you need in seconds.
+                </p>
+            </div>
+            <div class="hero-actions">
+                <a href="/administrator/" class="btn btn-secondary">Administrator Home</a>
+                <a href="/surveys/builder/" class="btn btn-secondary">Survey Builder</a>
+                <a href="/surveys/analytics/" class="btn btn-primary">Refresh Dashboard</a>
+            </div>
+        </section>
+
+        <section>
+            {% include "partials/analytics.html" with analytics=analytics %}
+        </section>
+
+        <section class="survey-dashboard">
+            <aside class="survey-panel card">
+                <div class="panel-header">
+                    <h2>Surveys ({{ total_surveys }})</h2>
+                    <p>Search and select a survey to load its live analytics.</p>
+                </div>
+                <div class="survey-search">
+                    <input id="surveySearch" type="search" placeholder="Search by title or slug">
+                    <button id="refreshSurveys" class="btn btn-secondary" type="button">Refresh</button>
+                </div>
+                <div id="surveyStatusMessage" class="status-banner" style="display:none;"></div>
+                <ul id="surveyList" class="survey-list"></ul>
+            </aside>
+
+            <section class="detail-panel card">
+                <header>
+                    <h2 id="detailTitle">Select a survey</h2>
+                    <p id="detailDescription">Pick a survey from the list to see participation stats and question-level breakdowns.</p>
+                </header>
+                <div class="detail-stats">
+                    <div class="stat-card">
+                        <span>Responses</span>
+                        <strong id="statResponses">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Participants</span>
+                        <strong id="statParticipants">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Completed</span>
+                        <strong id="statCompleted">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span>Pending</span>
+                        <strong id="statPending">0</strong>
+                    </div>
+                </div>
+                <div id="chartsHost" class="charts-grid">
+                    <div class="empty-state">
+                        Charts appear here once you select a survey that has responses.
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section class="insights card">
+            <h3>Quick talking points</h3>
+            <ul id="insightsList" class="insights-list">
+                <li>Choose a survey to surface highlights for your next tutor or admin briefing.</li>
+            </ul>
+        </section>
+    </div>
+
+    {{ initial_surveys|json_script:"initial-surveys-data" }}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const bootstrapData = JSON.parse(
+                document.getElementById("initial-surveys-data")?.textContent || "[]"
+            );
+
+            const surveyListEl = document.getElementById("surveyList");
+            const surveySearchEl = document.getElementById("surveySearch");
+            const refreshBtn = document.getElementById("refreshSurveys");
+            const statusMessageEl = document.getElementById("surveyStatusMessage");
+
+            const detailTitleEl = document.getElementById("detailTitle");
+            const detailDescriptionEl = document.getElementById("detailDescription");
+            const statResponsesEl = document.getElementById("statResponses");
+            const statParticipantsEl = document.getElementById("statParticipants");
+            const statCompletedEl = document.getElementById("statCompleted");
+            const statPendingEl = document.getElementById("statPending");
+            const chartsHostEl = document.getElementById("chartsHost");
+            const insightsListEl = document.getElementById("insightsList");
+
+            const state = {
+                surveys: bootstrapData,
+                filtered: bootstrapData,
+                selectedId: null,
+                chartInstances: [],
+                loading: false,
+            };
+
+            const formatDate = (value) => {
+                if (!value) return "N/A";
+                try {
+                    const date = new Date(value);
+                    return date.toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                    });
+                } catch (_error) {
+                    return value;
+                }
+            };
+
+            const showStatus = (message, tone = "info") => {
+                if (!message) {
+                    statusMessageEl.style.display = "none";
+                    return;
+                }
+                statusMessageEl.textContent = message;
+                statusMessageEl.style.display = "block";
+                statusMessageEl.style.background =
+                    tone === "error"
+                        ? "rgba(233, 90, 70, 0.2)"
+                        : "rgba(251, 188, 5, 0.2)";
+                statusMessageEl.style.color = tone === "error" ? "#b00020" : "#805a01";
+            };
+
+            const renderSurveyList = () => {
+                surveyListEl.innerHTML = "";
+                if (!state.filtered.length) {
+                    const empty = document.createElement("div");
+                    empty.className = "empty-state";
+                    empty.textContent = "No surveys match your search.";
+                    surveyListEl.appendChild(empty);
+                    return;
+                }
+
+                state.filtered.forEach((survey) => {
+                    const li = document.createElement("li");
+                    li.className = "survey-card";
+                    if (survey.id === state.selectedId) {
+                        li.classList.add("active");
+                    }
+                    li.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                            <strong>${survey.title || "Untitled survey"}</strong>
+                            <span class="badge ${survey.isActive ? "active" : "inactive"}">
+                                ${survey.isActive ? "Active" : "Inactive"}
+                            </span>
+                        </div>
+                        <span style="font-size:0.85rem;color:var(--muted);">
+                            Updated ${formatDate(survey.updatedAt)} · ${survey.questionCount || 0} questions
+                        </span>
+                    `;
+                    li.addEventListener("click", () => selectSurvey(survey.id));
+                    surveyListEl.appendChild(li);
+                });
+            };
+
+            const updateInsightList = (survey, analytics) => {
+                const highlights = [];
+                if (survey) {
+                    const roles = (survey.targetRoles || []).join(", ") || "all roles";
+                    highlights.push(`Target audience: ${roles}.`);
+                    highlights.push(`Consent ${survey.requireConsent ? "required" : "optional"}.`);
+                    highlights.push(`Last updated ${formatDate(survey.updatedAt)}.`);
+                }
+                if (analytics && Array.isArray(analytics.charts) && analytics.charts.length) {
+                    highlights.push(
+                        `Captured ${analytics.charts.length} chart${
+                            analytics.charts.length === 1 ? "" : "s"
+                        } from recent responses.`
+                    );
+                }
+                if (analytics && typeof analytics.responseCount === "number") {
+                    highlights.push(`${analytics.responseCount} total response(s) recorded.`);
+                }
+                insightsListEl.innerHTML = "";
+                if (!highlights.length) {
+                    insightsListEl.innerHTML =
+                        "<li>Select a survey to surface highlights.</li>";
+                    return;
+                }
+                highlights.forEach((text) => {
+                    const li = document.createElement("li");
+                    li.textContent = text;
+                    insightsListEl.appendChild(li);
+                });
+            };
+
+            const destroyCharts = () => {
+                state.chartInstances.forEach((chart) => chart.destroy());
+                state.chartInstances = [];
+            };
+
+            const renderCharts = (charts) => {
+                destroyCharts();
+                chartsHostEl.innerHTML = "";
+                if (!charts || !charts.length) {
+                    const empty = document.createElement("div");
+                    empty.className = "empty-state";
+                    empty.textContent =
+                        "No chartable responses yet. Encourage participants to complete the survey.";
+                    chartsHostEl.appendChild(empty);
+                    return;
+                }
+
+                charts.forEach((chartData) => {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "chart-card";
+                    const title = document.createElement("h4");
+                    title.textContent = chartData.prompt || "Question";
+                    const canvas = document.createElement("canvas");
+                    wrapper.appendChild(title);
+                    wrapper.appendChild(canvas);
+                    chartsHostEl.appendChild(wrapper);
+
+                    const instance = new Chart(canvas.getContext("2d"), {
+                        type: chartData.type || "bar",
+                        data: chartData.data || {},
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: "bottom",
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label(context) {
+                                            const label = context.label || "";
+                                            const value = context.formattedValue || context.raw || 0;
+                                            return `${label}: ${value}`;
+                                        },
+                                    },
+                                },
+                            },
+                            scales: chartData.type === "bar" ? {
+                                y: { beginAtZero: true },
+                            } : {},
+                        },
+                    });
+                    state.chartInstances.push(instance);
+                });
+            };
+
+            const setDetailMetrics = (survey, analytics) => {
+                detailTitleEl.textContent = survey
+                    ? survey.title || "Untitled survey"
+                    : "Select a survey";
+                detailDescriptionEl.textContent =
+                    survey?.description || "Pick a survey to see participation stats.";
+
+                const counts = survey?.participantCounts || {};
+                statParticipantsEl.textContent = counts.total ?? 0;
+                statCompletedEl.textContent = counts.completed ?? 0;
+                statPendingEl.textContent = counts.pending ?? 0;
+                statResponsesEl.textContent = analytics?.responseCount ?? counts.completed ?? 0;
+            };
+
+            const selectSurvey = async (surveyId) => {
+                if (!surveyId || surveyId === state.selectedId) {
+                    return;
+                }
+                state.selectedId = surveyId;
+                renderSurveyList();
+
+                const survey = state.surveys.find((item) => item.id === surveyId);
+                setDetailMetrics(survey, null);
+                renderCharts([]);
+                updateInsightList(survey, null);
+                showStatus("Loading analytics…");
+
+                try {
+                    const response = await fetch(`/api/surveys/${surveyId}/analytics/`, {
+                        headers: { "Accept": "application/json" },
+                        credentials: "same-origin",
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}`);
+                    }
+                    const payload = await response.json();
+                    setDetailMetrics(survey, payload);
+                    renderCharts(payload.charts || []);
+                    updateInsightList(survey, payload);
+                    showStatus("");
+                } catch (error) {
+                    console.error("Unable to load analytics", error);
+                    renderCharts([]);
+                    showStatus("Unable to load analytics. Please try again.", "error");
+                }
+            };
+
+            const applyFilter = () => {
+                const query = (surveySearchEl.value || "").trim().toLowerCase();
+                if (!query) {
+                    state.filtered = state.surveys.slice(0, 50);
+                } else {
+                    state.filtered = state.surveys.filter((survey) => {
+                        const haystack = `${survey.title || ""} ${survey.slug || ""}`.toLowerCase();
+                        return haystack.includes(query);
+                    });
+                }
+                renderSurveyList();
+            };
+
+            const refreshSurveys = async () => {
+                if (state.loading) return;
+                state.loading = true;
+                showStatus("Refreshing surveys…");
+                try {
+                    const response = await fetch("/api/surveys/?limit=100", {
+                        headers: { "Accept": "application/json" },
+                        credentials: "same-origin",
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}`);
+                    }
+                    const payload = await response.json();
+                    state.surveys = Array.isArray(payload.results) ? payload.results : [];
+                    applyFilter();
+                    showStatus(`Loaded ${state.surveys.length} survey(s).`);
+                } catch (error) {
+                    console.error("Unable to refresh surveys", error);
+                    showStatus("Unable to refresh surveys right now.", "error");
+                } finally {
+                    state.loading = false;
+                }
+            };
+
+            surveySearchEl.addEventListener("input", () => applyFilter());
+            refreshBtn.addEventListener("click", () => refreshSurveys());
+
+            applyFilter();
+
+            if (state.filtered.length) {
+                selectSurvey(state.filtered[0].id);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -218,7 +218,7 @@
       if (action === 'delete') {
         if (!confirm('Delete this resource?')) return;
         try {
-          await api(`/api/admin/resource-documents/${docId}`, { method: 'DELETE' });
+          await adminRequest(`/api/admin/resource-documents/${docId}`, { method: 'DELETE' });
           await fetchCategories();
           if (state.current) {
             await loadCategory(state.current.id);
@@ -238,7 +238,7 @@
           return;
         }
         try {
-          await api(`/api/admin/resource-documents/${docId}`, { method: 'PATCH', data: { title: trimmed } });
+          await adminRequest(`/api/admin/resource-documents/${docId}`, { method: 'PATCH', data: { title: trimmed } });
           await fetchCategories();
           if (state.current) {
             await loadCategory(state.current.id);
@@ -249,9 +249,32 @@
       }
     }
 
+    const getCsrfToken = () => (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+
+    const adminRequest = window.api
+      ? window.api
+      : async function localApi(path, { method = 'GET', data, headers = {} } = {}) {
+          const opts = {
+            method,
+            headers: { 'X-CSRFToken': getCsrfToken(), ...headers },
+            credentials: 'same-origin',
+          };
+          if (data !== undefined) {
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(data);
+          }
+          const res = await fetch(path, opts);
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const error = json && typeof json === 'object' ? json : { error: res.statusText || 'Request failed' };
+            throw error;
+          }
+          return json;
+        };
+
     async function fetchCategories() {
       try {
-        const data = await api('/api/admin/resource-categories');
+        const data = await adminRequest('/api/admin/resource-categories');
         state.categories = data.results || [];
         state.terms = data.terms || [];
         if (!state.current && state.categories.length) {
@@ -266,7 +289,7 @@
     async function loadCategory(categoryId) {
       try {
         const params = new URLSearchParams({ category: categoryId });
-        const data = await api(`/api/admin/resource-documents?${params.toString()}`);
+        const data = await adminRequest(`/api/admin/resource-documents?${params.toString()}`);
         renderDocuments(data);
         renderCategories();
       } catch (err) {
@@ -278,7 +301,7 @@
       const name = prompt('Subject name');
       if (!name) return;
       try {
-        await api('/api/admin/resource-categories', { method: 'POST', data: { name } });
+        await adminRequest('/api/admin/resource-categories', { method: 'POST', data: { name } });
         await fetchCategories();
       } catch (err) {
         alert(err?.error || 'Could not create subject');

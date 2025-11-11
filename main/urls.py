@@ -15,6 +15,7 @@ from main.views import (
     add_question as add_question_page,
     profiles as profiles_page,
     survey_builder,
+    survey_analytics_dashboard,
 
 
 
@@ -125,6 +126,9 @@ from main.views.adminui import (
     api_admin_resource_upload,
     api_admin_resource_document_detail,
     api_admin_chatbot_config,
+    admin_tutor_applications_page,
+    api_admin_tutor_applications,
+    api_admin_tutor_application_detail,
 )
 
 urlpatterns = [
@@ -141,7 +145,9 @@ urlpatterns = [
     path("games/",        games_page,          name="games"),
     path("games/add/",    add_question_page,   name="add_question"),
     path("profiles/",     profiles_page,       name="profiles"),
-    path("surveys/builder/", survey_builder,   name="survey_builder"),
+    path("surveys/builder/",   survey_builder,             name="survey_builder"),
+    path("surveys/analytics/", survey_analytics_dashboard, name="survey_analytics_dashboard"),
+    path("awaiting-activation/",              auth_views.awaiting_activation_page,  name="awaiting_activation"),
 
     # ---------- Auth ----------
     path("login/",                        auth_views.login_page,          name="login"),
@@ -232,6 +238,7 @@ urlpatterns = [
     path("administrator/users/",                admin_users_page,                    name="administrator_users_page"),
     path("administrator/approvals/",            admin_approvals_page,                name="administrator_approvals_page"),
     path("administrator/resources/",            admin_resources_page,                name="administrator_resources_page"),
+    path("administrator/tutor-applications/",   admin_tutor_applications_page,       name="administrator_tutor_applications_page"),
     path("api/admin/resource-categories",       api_admin_resource_categories,       name="api_admin_resource_categories"),
     path("api/admin/resource-categories/<int:pk>",
                                               api_admin_resource_category_detail,    name="api_admin_resource_category_detail"),
@@ -240,6 +247,9 @@ urlpatterns = [
                                               api_admin_resource_document_detail,    name="api_admin_resource_document_detail"),
     path("api/admin/resource-upload",           api_admin_resource_upload,           name="api_admin_resource_upload"),
     path("api/admin/chatbot-config",            api_admin_chatbot_config,            name="api_admin_chatbot_config"),
+    path("api/admin/tutor-applications/",       api_admin_tutor_applications,        name="api_admin_tutor_applications"),
+    path("api/admin/tutor-applications/<int:pk>/",
+                                              api_admin_tutor_application_detail,   name="api_admin_tutor_application_detail"),
     path("api/admin/users",                     api_admin_users,                     name="api_admin_users"),
     path("api/admin/users/<int:pk>",            api_admin_user_update,               name="api_admin_user_update"),
     path("api/admin/content/pending",           api_admin_content_pending,           name="api_admin_content_pending"),

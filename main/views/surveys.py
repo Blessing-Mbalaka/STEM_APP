@@ -18,6 +18,7 @@ from ..models import (
     CustomUserSurveyQuestion,
     CustomUserSurveyResponse,
 )
+from ..utils.analytics import collect_dashboard_metrics
 from ..utils.roles import (
     ROLE_ADMIN,
     ROLE_ANONYMOUS,
@@ -340,6 +341,25 @@ def survey_builder(request):
     if not _ensure_admin(request.user):
         return HttpResponseForbidden("Only administrators can access the survey builder.")
     return render(request, "SurveyBuilder.html")
+
+
+@login_required
+def survey_analytics_dashboard(request):
+    if not _ensure_admin(request.user):
+        return HttpResponseForbidden("Only administrators can access survey analytics.")
+
+    surveys_qs = CustomUserSurvey.objects.all().order_by("-updated_at", "-created_at")
+    initial_surveys = [
+        _survey_to_dict(survey, include_questions=False, include_counts=True)
+        for survey in surveys_qs[:25]
+    ]
+
+    context = {
+        "analytics": collect_dashboard_metrics(),
+        "initial_surveys": initial_surveys,
+        "total_surveys": surveys_qs.count(),
+    }
+    return render(request, "SurveyAnalytics.html", context)
 
 
 @login_required

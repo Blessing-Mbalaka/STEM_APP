@@ -1240,12 +1240,44 @@
     "url": "https://youtu.be/qwnPOczBQrY?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
   },
   {
+    "title": "song mp3 test",
+    "description": "",
+    "resource_type": "audio",
+    "course": "Mathematics",
+    "learning_style": "visual",
+    "url": "https://youtu.be/ko70cExuzZM?list=RDCLAK5uy_kmPRjHDECIcuVwnKsx2Ng7fyNgFKWNJFs"
+  },
+  {
     "title": "Gr12 Economics(P1): Trade and competition",
     "description": "",
     "resource_type": "video",
     "course": "Economics",
     "learning_style": "visual",
     "url": "https://youtu.be/wFQNVGYrjy0?list=PLclETtKRtT2BPtwXTlkBBt9AEutnTitu8"
+  },
+  {
+    "title": "audio test",
+    "description": "",
+    "resource_type": "audio",
+    "course": "Mathematics",
+    "learning_style": "auditory",
+    "url": "https://youtu.be/ko70cExuzZM?list=RDCLAK5uy_kmPRjHDECIcuVwnKsx2Ng7fyNgFKWNJFs"
+  },
+  {
+    "title": "testpdf555",
+    "description": "",
+    "resource_type": "document",
+    "course": "Mathematics",
+    "learning_style": "readwrite",
+    "url": "test"
+  },
+  {
+    "title": "pdf link",
+    "description": "",
+    "resource_type": "document",
+    "course": "Mathematics",
+    "learning_style": "readwrite",
+    "url": "https://www.emerald.com/dts/article-pdf/2/4/376/289551/dts-01-2023-0003.pdf"
   },
   {
     "title": "accounting-dbe-nsc-grade-12-past-exam-papers-p1-nov-question-paper-2024-afr",
@@ -1288,5 +1320,47 @@
     "category": "Physics",
     "term": "past_papers",
     "url": "/media/resources/physics/4126208df91d4de3b6e5f96af59048d6.pdf"
+  },
+  {
+    "title": "s (1)",
+    "description": "s",
+    "category": "Accounting",
+    "term": "other",
+    "url": "/media/resources/accounting/6312f07c1e464515b1e353b705cf2971.pdf"
+  },
+  {
+    "title": "s (2)",
+    "description": "s",
+    "category": "Accounting",
+    "term": "other",
+    "url": "/media/resources/accounting/00579b222fc54bbe98c4179cd36252a9.pdf"
+  },
+  {
+    "title": "s (3)",
+    "description": "s",
+    "category": "Accounting",
+    "term": "other",
+    "url": "/media/resources/accounting/9ad10e95de2a4c19a6a4716ff6f18b8f.pdf"
+  },
+  {
+    "title": "s (4)",
+    "description": "s",
+    "category": "Accounting",
+    "term": "other",
+    "url": "/media/resources/accounting/497402171b3f4016981045a14aa349b5.pdf"
+  },
+  {
+    "title": "s (5)",
+    "description": "s",
+    "category": "Accounting",
+    "term": "other",
+    "url": "/media/resources/accounting/80fa5e650e2c478b97ca2c6c71d91942.pdf"
+  },
+  {
+    "title": "s (6)",
+    "description": "s",
+    "category": "Accounting",
+    "term": "other",
+    "url": "/media/resources/accounting/9c374dd1efbd49d4b13868f016bd2d0d.pdf"
   }
 ]

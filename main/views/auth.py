@@ -4,8 +4,11 @@ from __future__ import annotations
 import json
 from random import randint
 
+import os
+
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.http import JsonResponse, HttpRequest
+from django.shortcuts import render
 from django.utils.text import slugify
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.db.models import Sum, Avg
@@ -13,12 +16,23 @@ from django.views.decorators.http import require_http_methods
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils import timezone
 from main.utils.roles import (
     get_primary_role,
     get_user_roles,
     ROLE_ADMIN,
     ROLE_TUTOR,
 )
+from ..models.tutor import TutorApplication, TutorApplicationDocument
+
+ALLOWED_DOC_EXTENSIONS = {".pdf"}
+
+
+def _is_allowed_file(upload) -> bool:
+    if not upload:
+        return False
+    ext = os.path.splitext(getattr(upload, "name", "") or "")[1].lower()
+    return ext in ALLOWED_DOC_EXTENSIONS
 
 User = get_user_model()
 
@@ -37,6 +51,11 @@ def login_page(request: HttpRequest):
             target = "/index/"
         return redirect(target)
     return render(request, "login.html")
+
+
+def awaiting_activation_page(request: HttpRequest):
+    """Simple informational page for pending tutors."""
+    return render(request, "AwaitingActivation.html")
 
 
 @require_http_methods(["POST"])
@@ -70,7 +89,14 @@ def api_login(request: HttpRequest):
     if not user:
         return JsonResponse({"error": "Invalid credentials"}, status=401)
     if not user.is_active:
-        return JsonResponse({"error": "Account pending activation by an administrator"}, status=403)
+        redirect_url = "/awaiting-activation/"
+        return JsonResponse(
+            {
+                "error": "Account pending activation by an administrator",
+                "redirect": redirect_url,
+            },
+            status=403,
+        )
 
     login(request, user)
     role = get_primary_role(user)
@@ -86,19 +112,39 @@ def api_login(request: HttpRequest):
 @require_http_methods(["POST"])
 @csrf_protect
 def api_register(request: HttpRequest):
-    """Create an account. Username optional; derived from email/display_name if omitted."""
-    try:
-        payload = json.loads(request.body.decode("utf-8"))
-    except Exception:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    """Create an account. Supports JSON and multipart (for tutor docs)."""
+    is_multipart = request.content_type and "multipart/form-data" in request.content_type.lower()
+    content_type = (request.content_type or "").lower()
+    is_multipart = "multipart/form-data" in content_type
+    if is_multipart:
+        data = request.POST
+        id_document = request.FILES.get("id_document")
+        qualification_documents = list(request.FILES.getlist("qualification_documents"))
+        supporting_documents = list(request.FILES.getlist("supporting_documents"))
+        sace_documents = list(request.FILES.getlist("sace_documents"))
+    else:
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            return JsonResponse({"error": "Invalid payload"}, status=400)
+        id_document = None
+        qualification_documents = []
+        supporting_documents = []
+        sace_documents = []
 
-    username = (payload.get("username") or "").strip()
-    password = payload.get("password") or ""
-    email = (payload.get("email") or "").strip()
-    first_name = (payload.get("first_name") or payload.get("firstName") or "").strip()
-    last_name = (payload.get("last_name") or payload.get("lastName") or "").strip()
-    display_name = (payload.get("display_name") or f"{first_name} {last_name}" or username or (email.split("@")[0] if email else "")).strip()
-    role = (payload.get("role") or "").strip().lower()  # 'student' or 'tutor'
+    username = (data.get("username") or "").strip()
+    password = data.get("password") or ""
+    email = (data.get("email") or "").strip()
+    first_name = (data.get("first_name") or data.get("firstName") or "").strip()
+    last_name = (data.get("last_name") or data.get("lastName") or "").strip()
+    display_name = (
+        data.get("display_name")
+        or f"{first_name} {last_name}"
+        or username
+        or (email.split("@")[0] if email else "")
+    ).strip()
+    role = (data.get("role") or "").strip().lower()
+    motivation = (data.get("motivation") or data.get("tutor_motivation") or "").strip()
 
     if not password:
         return JsonResponse({"error": "password required"}, status=400)
@@ -117,7 +163,6 @@ def api_register(request: HttpRequest):
     if User.objects.filter(username__iexact=username).exists():
         return JsonResponse({"error": "Username already taken"}, status=409)
 
-    # Enforce unique email if provided
     if email and User.objects.filter(email__iexact=email).exists():
         return JsonResponse({"error": "Email already in use"}, status=409)
 
@@ -127,38 +172,108 @@ def api_register(request: HttpRequest):
         email=email or None,
     )
     # Set names if provided
+    fields_to_update = []
     if hasattr(user, "first_name") and first_name:
         user.first_name = first_name
+        fields_to_update.append("first_name")
     if hasattr(user, "last_name") and last_name:
         user.last_name = last_name
-    if hasattr(user, "display_name"):
+        fields_to_update.append("last_name")
+    if hasattr(user, "display_name") and display_name:
         user.display_name = display_name
+        fields_to_update.append("display_name")
+
     # Auto-activate students; tutors require approval
-    if role == 'tutor':
-        if hasattr(user, 'is_tutor'):
-            user.is_tutor = True
-        user.is_active = False
-        user.save()
-        pending_msg = "Registration successful. Your tutor account is pending admin approval."
-        return JsonResponse({
-            "ok": True,
-            "message": pending_msg,
-            "role": get_primary_role(user),
-        })
-    else:
-        # Default: student
-        user.is_active = True
-        user.save()
-        # Optionally auto-login students
-        login(request, user)
-        role_name = get_primary_role(user)
-        if role_name == ROLE_ADMIN:
-            redirect_to = "/administrator/"
-        elif role_name == ROLE_TUTOR:
-            redirect_to = "/tutor/admin/"
+    if role == "tutor":
+        validation_errors = {}
+        if not is_multipart:
+            validation_errors["documents"] = "Attach your tutor documents (identity document and qualifications)."
+        if not id_document:
+            validation_errors["id_document"] = "Identity document (PDF) is required."
+        elif not _is_allowed_file(id_document):
+            validation_errors["id_document"] = "Identity document must be a PDF file."
+
+        if not qualification_documents:
+            validation_errors["qualification_documents"] = "Upload at least one qualification as a PDF."
         else:
-            redirect_to = "/index/"
-        return JsonResponse({"ok": True, "redirect": redirect_to, "role": role_name})
+            for doc in qualification_documents:
+                if not _is_allowed_file(doc):
+                    validation_errors["qualification_documents"] = "All qualification documents must be PDF files."
+                    break
+
+        for doc in supporting_documents:
+            if not _is_allowed_file(doc):
+                validation_errors["supporting_documents"] = "Supporting documents must be PDF files."
+                break
+
+        for doc in sace_documents:
+            if not _is_allowed_file(doc):
+                validation_errors["sace_documents"] = "SACE certificates must be PDF files."
+                break
+
+        if validation_errors:
+            user.delete()
+            return JsonResponse(
+                {"error": "Tutor application incomplete.", "details": validation_errors},
+                status=400,
+            )
+
+        user.is_active = False
+        if hasattr(user, "is_tutor"):
+            user.is_tutor = False
+        user.save(update_fields=["is_active", "is_tutor", *fields_to_update])
+
+        application = TutorApplication.objects.create(user=user, motivation=motivation)
+
+        TutorApplicationDocument.objects.create(
+            application=application,
+            file=id_document,
+            original_name=getattr(id_document, "name", ""),
+            doc_type=TutorApplicationDocument.DOC_ID,
+        )
+        for doc in qualification_documents:
+            TutorApplicationDocument.objects.create(
+                application=application,
+                file=doc,
+                original_name=getattr(doc, "name", ""),
+                doc_type=TutorApplicationDocument.DOC_QUALIFICATION,
+            )
+        for doc in supporting_documents:
+            TutorApplicationDocument.objects.create(
+                application=application,
+                file=doc,
+                original_name=getattr(doc, "name", ""),
+                doc_type=TutorApplicationDocument.DOC_SUPPORTING,
+            )
+        for doc in sace_documents:
+            TutorApplicationDocument.objects.create(
+                application=application,
+                file=doc,
+                original_name=getattr(doc, "name", ""),
+                doc_type=TutorApplicationDocument.DOC_SACE,
+            )
+        pending_msg = "Registration successful. Your tutor application is pending review."
+        return JsonResponse(
+            {
+                "ok": True,
+                "message": pending_msg,
+                "redirect": "/awaiting-activation/",
+                "role": get_primary_role(user),
+            }
+        )
+
+    # Default: student
+    user.is_active = True
+    user.save(update_fields=["is_active", *fields_to_update] if fields_to_update else ["is_active"])
+    login(request, user)
+    role_name = get_primary_role(user)
+    if role_name == ROLE_ADMIN:
+        redirect_to = "/administrator/"
+    elif role_name == ROLE_TUTOR:
+        redirect_to = "/tutor/admin/"
+    else:
+        redirect_to = "/index/"
+    return JsonResponse({"ok": True, "redirect": redirect_to, "role": role_name})
 
 
 @require_http_methods(["POST"])

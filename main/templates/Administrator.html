@@ -221,6 +221,13 @@
           <p class="tile-subtitle">Design courses, quizzes, and session resources</p>
         </div>
       </a>
+      <a class="tile" href="/administrator/tutor-applications/">
+        <span class="tile-icon"><i class="fas fa-user-check"></i></span>
+        <div>
+          <div class="tile-title">Tutor Applications</div>
+          <p class="tile-subtitle">Review aspiring tutors and approve their access</p>
+        </div>
+      </a>
       <a class="tile" href="/administrator/resources/">
         <span class="tile-icon"><i class="fas fa-folder-open"></i></span>
         <div>
@@ -243,10 +250,16 @@
 
   
 <script>
-  async function api(path, { method = GET, data = undefined, headers = {} } = {}) {
-    const opts = { method, headers: { X-CSRFToken: (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '', ...headers } };
+  const adminCSRF = () => (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+
+  async function adminApi(path, { method = "GET", data = undefined, headers = {} } = {}) {
+    const opts = {
+      method,
+      headers: { "X-CSRFToken": adminCSRF(), ...headers },
+      credentials: "same-origin",
+    };
     if (data !== undefined) {
-      opts.headers['Content-Type'] = 'application/json';
+      opts.headers["Content-Type"] = "application/json";
       opts.body = JSON.stringify(data);
     }
     const res = await fetch(path, opts);
@@ -260,7 +273,7 @@
     logoutBtn.addEventListener('click', async (event) => {
       event.preventDefault();
       try {
-        await api('/api/auth/logout', { method: 'POST' });
+        await adminApi('/api/auth/logout', { method: 'POST' });
       } catch (_) {}
       location.href = '/administrator/login/';
     });

@@ -1,52 +1,15 @@
 <div class="survey-admin-tools">
     <h2>Survey Administration</h2>
-    <p>Manage surveys and toggle their availability for students.</p>
+    <p class="muted">
+        Launch the builder to create questions, then open analytics to review live participation trends.
+    </p>
 
     <div class="survey-actions">
-        <button class="btn primary" onclick="createSurvey()">Create New Survey</button>
-        <button class="btn secondary" onclick="viewSurveyAnalytics()">View Analytics</button>
+        <a class="btn primary" href="/surveys/builder/">Open Survey Builder</a>
+        <a class="btn secondary" href="/surveys/analytics/">Open Analytics Dashboard</a>
     </div>
 
-    <div id="surveyList">
-        <h3>Existing Surveys</h3>
-        <ul>
-            <li>
-                Survey 1
-                <div class="toggle">
-                    <input type="checkbox" id="survey1Active" onchange="toggleSurvey(1)">
-                    <span class="muted">Active</span>
-                </div>
-            </li>
-            <li>
-                Survey 2
-                <div class="toggle">
-                    <input type="checkbox" id="survey2Active" onchange="toggleSurvey(2)">
-                    <span class="muted">Active</span>
-                </div>
-            </li>
-        </ul>
+    <div class="survey-footnote">
+        Need to share a quick report? Use the analytics dashboard to export talking points for tutors.
     </div>
 </div>
-
-<script>
-    function createSurvey() {
-        alert("Redirecting to survey creation...");
-        window.location.href = "/surveys/builder/";
-    }
-
-    function createSurvey() {
-        alert("Redirecting to survey creation...");
-        window.location.href = "/surveys/builder/";
-    }
-
-    function viewSurveyAnalytics() {
-        alert("Redirecting to survey analytics...");
-        window.location.href = "/surveys/analytics/";
-    }
-
-    function toggleSurvey(surveyId) {
-        const isActive = document.getElementById(`survey${surveyId}Active`).checked;
-        alert(`Survey ${surveyId} is now ${isActive ? "active" : "inactive"}.`);
-        // Add logic to update the survey's active status in the backend
-    }
-</script>

@@ -10,6 +10,7 @@ from .files import pdf_embed
 from .tutor import confirm_session, video_session, complete_session, tutor_dashboard, book_session, api_tutor_courses, api_tutor_course_detail, api_tutor_course_add_resource, api_tutor_course_thumbnail, api_tutor_course_reorder, tutor_admin  
 from .surveys import (
     survey_builder,
+    survey_analytics_dashboard,
     api_surveys_collection,
     api_survey_detail,
     api_survey_questions,
@@ -52,6 +53,7 @@ __all__ = [
     "complete_session",
     "api_classes_list","api_class_reserve","api_class_unreserve","api_me_classes",
     "survey_builder",
+    "survey_analytics_dashboard",
     "api_surveys_collection",
     "api_survey_detail",
     "api_survey_questions",

@@ -56,12 +56,13 @@ def api_courses(request):
         }
         resources = CourseResource.objects.filter(course=course)
         for res in resources:
+            file_url = request.build_absolute_uri(res.file.url) if res.file else None
             entry = {
                 "title": res.title,
                 "description": res.description,
                 "resource_type": res.resource_type,
                 "url": res.url,
-                "file": res.file.url if res.file else None
+                "file": file_url,
             }
             # Add extra fields for read/write
             if res.learning_style == "readwrite":

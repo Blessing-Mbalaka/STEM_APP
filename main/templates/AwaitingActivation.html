@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Pending Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #041667;
+      --accent: #24adb7;
+      --border: rgba(4, 22, 103, 0.15);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(120deg, rgba(4,22,103,0.06), rgba(36,173,183,0.08)), url("{% static 'images/wallpaper9.jpg' %}") center/cover no-repeat fixed;
+      min-height: 100vh;
+      color: #1f1f2b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(4,22,103,0.12);
+      max-width: 560px;
+      width: 100%;
+      padding: 32px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(36, 173, 183, 0.12);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      color: var(--primary);
+    }
+    p {
+      line-height: 1.6;
+      color: #4a4a5d;
+      margin-bottom: 1rem;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(4,22,103,0.25);
+    }
+    .btn.secondary {
+      background: rgba(36,173,183,0.12);
+      color: var(--accent);
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    ul {
+      margin: 12px 0 0 20px;
+      color: #4a4a5d;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10 10.011 10.011 0 0 1-10 10Zm-1-5h2v2h-2Zm0-10h2v8h-2Z"/></svg>
+      Application received
+    </span>
+    <h1>Thanks for applying to tutor!</h1>
+    <p>
+      Your application is in review. Our administrator team verifies every aspiring tutor to keep the
+      learning community safe. We will email you once your account is approved.
+    </p>
+    <p>What to expect:</p>
+    <ul>
+      <li>Document review typically takes 1&ndash;2 business days.</li>
+      <li>We may reach out via email if we need clarification.</li>
+      <li>You will gain full tutor access once your status changes to approved.</li>
+    </ul>
+    <div class="actions">
+      <a class="btn primary" href="/login/">Back to Login</a>
+      <a class="btn secondary" href="mailto:stemappza@gmail.com">Need help? Contact us</a>
+    </div>
+  </div>
+</body>
+</html>

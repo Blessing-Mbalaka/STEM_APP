@@ -15,6 +15,7 @@ from main.models import (
     ResourceCategory, ResourceDocument,
     CustomUserSurvey, CustomUserSurveyQuestion,
     CustomUserSurveyParticipant, CustomUserSurveyResponse,
+    TutorApplication, TutorApplicationDocument,
 )
 
 @admin.register(CustomUser)
@@ -144,6 +145,22 @@ class CustomUserSurveyAdmin(admin.ModelAdmin):
         self.message_user(request, f"Deactivated {updated} survey(s).")
 
     deactivate_surveys.short_description = "Deactivate selected surveys"
+
+
+@admin.register(TutorApplication)
+class TutorApplicationAdmin(admin.ModelAdmin):
+    list_display = ("user", "status", "created_at", "reviewed_at")
+    list_filter = ("status",)
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("created_at", "updated_at", "reviewed_at")
+
+
+@admin.register(TutorApplicationDocument)
+class TutorApplicationDocumentAdmin(admin.ModelAdmin):
+    list_display = ("application", "doc_type", "original_name", "created_at")
+    list_filter = ("doc_type",)
+    search_fields = ("original_name", "application__user__username")
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(CustomUserSurveyParticipant)

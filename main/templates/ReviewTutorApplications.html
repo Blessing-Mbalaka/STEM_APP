@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Tutor Applications</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    :root {
+      --primary: #24adb7;
+      --dark: #041667;
+      --muted: #6b6f85;
+      --border: rgba(4, 22, 103, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f6f7fb;
+      margin: 0;
+      padding: 32px 20px 60px;
+      color: #1d1f2a;
+    }
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 6px;
+      color: var(--dark);
+    }
+    p.description {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 34px rgba(4, 22, 103, 0.08);
+      padding: 20px;
+    }
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    select, button, textarea {
+      font: inherit;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+    }
+    .applications {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .application {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+    .application header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(36, 173, 183, 0.15);
+      color: var(--dark);
+      text-transform: capitalize;
+    }
+    .badge.pending { background: rgba(255, 196, 87, 0.2); color: #8a5200; }
+    .badge.approved { background: rgba(50, 205, 122, 0.2); color: #1b8141; }
+    .badge.rejected { background: rgba(239, 92, 84, 0.15); color: #b0180a; }
+    .docs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .docs a {
+      text-decoration: none;
+      color: var(--primary);
+      font-size: 0.9rem;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(36,173,183,0.12);
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 180px;
+    }
+    .actions button {
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .actions button.approve {
+      background: #1f9f63;
+      color: #fff;
+    }
+    .actions button.reject {
+      background: #d9534f;
+      color: #fff;
+    }
+    .empty {
+      text-align: center;
+      padding: 36px 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Review Tutor Applications</h1>
+    <p class="description">Review aspiring tutors, download their documents, and approve them when you are ready.</p>
+
+    <div class="card">
+      <div class="filters">
+        <label style="display:flex;flex-direction:column;font-size:0.85rem;color:var(--muted);">
+          Status
+          <select id="statusFilter">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="all">All</option>
+          </select>
+        </label>
+        <button id="refreshBtn" type="button"><i class="fas fa-sync"></i> Refresh</button>
+      </div>
+      <div id="applicationsList" class="applications"></div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/api.js' %}"></script>
+  <script>
+    const listEl = document.getElementById("applicationsList");
+    const filterEl = document.getElementById("statusFilter");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    const getCsrfToken = () => (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || "";
+
+    const adminRequest = window.api
+      ? window.api
+      : async function request(path, { method = "GET", data, headers = {} } = {}) {
+          const opts = {
+            method,
+            headers: { "X-CSRFToken": getCsrfToken(), ...headers },
+            credentials: "same-origin",
+          };
+          if (data !== undefined) {
+            opts.headers["Content-Type"] = "application/json";
+            opts.body = JSON.stringify(data);
+          }
+          const res = await fetch(path, opts);
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) throw json;
+          return json;
+        };
+
+    async function fetchApplications() {
+      listEl.innerHTML = "<div class='empty'>Loading applications...</div>";
+      try {
+        const params = new URLSearchParams();
+        if (filterEl.value && filterEl.value !== "all") params.set("status", filterEl.value);
+        const data = await adminRequest(`/api/admin/tutor-applications/?${params.toString()}`);
+        renderApplications(data.results || []);
+      } catch (error) {
+        listEl.innerHTML = `<div class="empty">${error?.error || "Unable to load applications."}</div>`;
+      }
+    }
+
+    function renderApplications(applications) {
+      if (!applications.length) {
+        listEl.innerHTML = "<div class='empty'>No applications match this filter yet.</div>";
+        return;
+      }
+      listEl.innerHTML = "";
+      applications.forEach((app) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "application";
+        const docs = (app.documents || []).map((doc, index) => {
+          const label = doc.originalName || doc.name || `Document ${index + 1}`;
+          const type = (doc.docType || "supporting").replace("_", " ");
+          return `<a href="${doc.url}" target="_blank" rel="noopener">${label} <small style="display:block;color:#788096;">${type}</small></a>`;
+        }).join("") || "<span style='color:#9aa0b1;'>No documents uploaded.</span>";
+        wrapper.innerHTML = `
+          <div>
+            <header>
+              <strong>${app.user.displayName || app.user.email || app.user.username}</strong>
+              <span class="badge ${app.status}">${app.status}</span>
+              <small style="color:var(--muted);">Submitted ${app.createdAt}</small>
+            </header>
+            <p style="margin:10px 0 6px; color:#2d2f3b;">${app.motivation || "No motivation provided."}</p>
+            <div class="docs">${docs}</div>
+          </div>
+          <div class="actions">
+            <button class="approve" data-action="approve" data-id="${app.id}" ${app.status !== "pending" ? "disabled" : ""}>Approve</button>
+            <button class="reject" data-action="reject" data-id="${app.id}" ${app.status !== "pending" ? "disabled" : ""}>Reject</button>
+          </div>
+        `;
+        listEl.appendChild(wrapper);
+      });
+    }
+
+    async function handleAction(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const action = button.getAttribute("data-action");
+      const id = button.getAttribute("data-id");
+      const confirmText = action === "approve" ? "Approve this tutor?" : "Reject this tutor?";
+      if (!confirm(confirmText)) return;
+      let notes = "";
+      if (action === "reject") {
+        notes = prompt("Add a note for the applicant (optional)", "") || "";
+      }
+      button.disabled = true;
+      try {
+        await adminRequest(`/api/admin/tutor-applications/${id}/`, {
+          method: "PATCH",
+          data: { action, notes },
+        });
+        await fetchApplications();
+      } catch (error) {
+        alert(error?.error || "Unable to update application.");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    listEl.addEventListener("click", handleAction);
+    filterEl.addEventListener("change", fetchApplications);
+    if (refreshBtn) refreshBtn.addEventListener("click", fetchApplications);
+    document.addEventListener("DOMContentLoaded", fetchApplications);
+  </script>
+</body>
+</html>

@@ -10,6 +10,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils import timezone
 
 from main.utils.roles import (
     get_primary_role,
@@ -17,6 +18,7 @@ from main.utils.roles import (
     user_has_role,
     ROLE_ADMIN,
 )
+from ..models.tutor import TutorApplication
 
 User = get_user_model()
 
@@ -39,6 +41,34 @@ def _serialize_user(u):
         'role': get_primary_role(u),
         'roles': sorted(get_user_roles(u)),
         'joined': getattr(u, 'date_joined', None).isoformat() if getattr(u, 'date_joined', None) else ''
+    }
+
+
+def _serialize_application(app: TutorApplication) -> dict:
+    user = app.user
+    documents = [
+        {
+            "id": doc.id,
+            "url": doc.file.url if doc.file else "",
+            "originalName": doc.original_name or "",
+            "name": doc.file.name if doc.file else "",
+            "docType": doc.doc_type,
+        }
+        for doc in app.documents.all()
+    ]
+    return {
+        "id": app.id,
+        "status": app.status,
+        "motivation": app.motivation,
+        "notes": app.notes,
+        "createdAt": app.created_at.strftime("%d %b %Y"),
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "displayName": getattr(user, "display_name", "") or "",
+        },
+        "documents": documents,
     }
 
 
@@ -243,6 +273,13 @@ def admin_resources_page(request: HttpRequest):
     return render(request, "AdminResources.html")
 
 
+@login_required
+def admin_tutor_applications_page(request: HttpRequest):
+    if not _require_admin(request):
+        return HttpResponseForbidden("Forbidden")
+    return render(request, "ReviewTutorApplications.html")
+
+
 @require_http_methods(["GET", "POST"])
 @login_required
 def api_admin_resource_categories(request: HttpRequest):
@@ -441,6 +478,60 @@ def api_admin_resource_document_detail(request: HttpRequest, pk: int):
     if changed:
         doc.save()
     return JsonResponse({"ok": True})
+
+
+@require_http_methods(["GET"])
+@login_required
+def api_admin_tutor_applications(request: HttpRequest):
+    if not _require_admin(request):
+        return JsonResponse({"error": "forbidden"}, status=403)
+    status = (request.GET.get("status") or "pending").strip().lower()
+    qs = TutorApplication.objects.select_related("user").prefetch_related("documents").order_by("-created_at")
+    if status and status != "all":
+        qs = qs.filter(status=status)
+    results = [_serialize_application(app) for app in qs]
+    return JsonResponse({"results": results})
+
+
+@require_http_methods(["PATCH"])
+@login_required
+def api_admin_tutor_application_detail(request: HttpRequest, pk: int):
+    if not _require_admin(request):
+        return JsonResponse({"error": "forbidden"}, status=403)
+    application = get_object_or_404(TutorApplication.objects.select_related("user"), pk=pk)
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    action = (payload.get("action") or "").strip().lower()
+    notes = (payload.get("notes") or "").strip()
+    if action not in {"approve", "reject"}:
+        return JsonResponse({"error": "Unknown action"}, status=400)
+
+    user = application.user
+    if action == "approve":
+        application.status = TutorApplication.STATUS_APPROVED
+        user.is_active = True
+        if hasattr(user, "is_tutor"):
+            user.is_tutor = True
+    else:
+        application.status = TutorApplication.STATUS_REJECTED
+        user.is_active = False
+        if hasattr(user, "is_tutor"):
+            user.is_tutor = False
+
+    user_fields = ["is_active"]
+    if hasattr(user, "is_tutor"):
+        user_fields.append("is_tutor")
+    user.save(update_fields=user_fields)
+
+    application.notes = notes
+    application.reviewed_by = request.user
+    application.reviewed_at = timezone.now()
+    application.save(update_fields=["status", "notes", "reviewed_by", "reviewed_at", "updated_at"])
+
+    return JsonResponse({"ok": True, "application": _serialize_application(application)})
 
 
 @require_http_methods(["GET", "PATCH"])
