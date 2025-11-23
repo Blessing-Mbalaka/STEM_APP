@@ -1,6 +1,7 @@
 import json
 
-from django.test import TestCase
+from django.core import mail
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .models import (
@@ -180,3 +181,26 @@ class GameQuestionManageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertFalse(GameQuestion.objects.filter(pk=self.question.id).exists())
 
+
+class AuthPasswordResetTests(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="alice",
+            email="alice@example.com",
+            password="pass123",
+        )
+
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_forgot_password_sends_email_with_reset_link(self):
+        payload = {"identifier": self.user.email}
+        resp = self.client.post(
+            reverse("api_forgot_password"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertIn(self.user.email, email.to)
+        self.assertIn("/reset-password/", email.body)
+        self.assertIn("reset your", email.subject.lower())

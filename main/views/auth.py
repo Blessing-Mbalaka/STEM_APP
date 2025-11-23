@@ -7,6 +7,8 @@ from random import randint
 import os
 
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import JsonResponse, HttpRequest
 from django.shortcuts import render
 from django.utils.text import slugify
@@ -384,7 +386,34 @@ def api_forgot_password(request: HttpRequest):
     except Exception:
         base = ''
     link = f"{base}/reset-password/{uidb64}/{token}/"
-    # Print to terminal for now
+    # Email the link if we have an address; keep console log for diagnostics
+    if getattr(user, "email", None):
+        subject = "Reset your STEM LMS password"
+        plain_msg = (
+            f"Hi {getattr(user, 'display_name', '') or user.username},\n\n"
+            "We received a request to reset your password. Use the link below to choose a new one:\n"
+            f"{link}\n\n"
+            "If you didn't request this, you can safely ignore this email."
+        )
+        html_msg = (
+            f"<p>Hi {getattr(user, 'display_name', '') or user.username},</p>"
+            "<p>We received a request to reset your password. Use the link below to choose a new one:</p>"
+            f'<p><a href="{link}">{link}</a></p>'
+            "<p>If you didn't request this, you can safely ignore this email.</p>"
+        )
+        try:
+            send_mail(
+                subject=subject,
+                message=plain_msg,
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                recipient_list=[user.email],
+                html_message=html_msg,
+                fail_silently=False,
+            )
+        except Exception as exc:
+            print(f"[ERROR] Failed to send reset email for {user.username}: {exc}")
+            return JsonResponse({"error": "Could not send reset email. Please try again later."}, status=500)
+
     print(f"[DEV] Password reset link for {user.username}: {link}")
 
     return JsonResponse({"ok": True, "message": "If the account exists, a reset link has been sent."})

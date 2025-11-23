@@ -1248,6 +1248,14 @@
     "url": "https://youtu.be/ko70cExuzZM?list=RDCLAK5uy_kmPRjHDECIcuVwnKsx2Ng7fyNgFKWNJFs"
   },
   {
+    "title": "test",
+    "description": "",
+    "resource_type": "document",
+    "course": "Physical Science",
+    "learning_style": "readwrite",
+    "url": "/media/course_resources/DPS2023-2-1Mbalaka.pdf"
+  },
+  {
     "title": "Gr12 Economics(P1): Trade and competition",
     "description": "",
     "resource_type": "video",

@@ -1,5 +1,4 @@
 // forum.js
-
 async function loadCategories(){
   const sel = document.getElementById("category");
   if (!sel) return;
