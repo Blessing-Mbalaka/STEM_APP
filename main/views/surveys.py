@@ -186,6 +186,18 @@ def _ensure_order_gapless(survey: CustomUserSurvey) -> None:
         order += 1
 
 
+def _is_question_answerable(question: CustomUserSurveyQuestion) -> bool:
+    """
+    Return False for non-interactive/fieldless questions so they don't block submission.
+    """
+    if question.qtype == "info":
+        return False
+    if question.qtype in {"single-choice", "multi-choice"}:
+        has_options = bool(question.option_scores() or question.option_labels())
+        return has_options
+    return True
+
+
 def _evaluate_score(
     question: CustomUserSurveyQuestion,
     value: Any,
@@ -776,7 +788,7 @@ def api_survey_responses(request, pk: int):
     question_lookup = {str(q.id): q for q in survey.questions.order_by("order", "id")}
 
     for key, question in question_lookup.items():
-        if question.qtype == "info":
+        if not _is_question_answerable(question):
             continue
         value = answers.get(key)
         if value in (None, "") and question.is_required:
