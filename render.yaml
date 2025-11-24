@@ -15,7 +15,7 @@ services:
       - key: EMAIL_HOST_PASSWORD
         value: ddtz gltz vscj loab  # From your .env or settings
       - key: DATABASE_URL
-        value: postgresql://chieta_test_user:ltAr7jomBQzxUESgLVBFo4wBmwVM62gu@dpg-d4bp2j0gjchc73ctsju0-a.oregon-postgres.render.com/chieta_test
+        value: postgresql://postgres:iXbMSrOdytpHmWpuTwMHCLEMeqRPeuTK@nozomi.proxy.rlwy.net:17568/railway
       - key: ALLOWED_HOSTS
         value: stem-app.onrender.com,localhost,127.0.0.1,stem-app-production.up.railway.app
       - key: GOOGLE_ANALYTICS_ID
