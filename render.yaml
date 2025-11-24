@@ -32,3 +32,9 @@ services:
         value: True
       - key: DEFAULT_FROM_EMAIL
         value: STEM LMS <stemappza@gmail.com>
+      - key: CLOUDINARY_CLOUD_NAME
+        value: your-cloud-name
+      - key: CLOUDINARY_API_KEY
+        value: your-api-key
+      - key: CLOUDINARY_API_SECRET
+        value: your-api-secret
