@@ -138,16 +138,10 @@ function initLoginPage() {
         location.href = redirect;
       } catch (e) {
         const status = e.status || 0;
-        const payload = e && e.json ? e.json : {};
         let msg = formatApiError(e, 'Login failed');
-        if (status === 401) {
-          if (payload.redirect) {
-            location.href = payload.redirect;
-            return;
-          }
-          msg = 'Invalid email or password';
-        }
+        if (status === 401) msg = 'Invalid email or password';
         if (status === 403) {
+          const payload = e && e.json ? e.json : {};
           if (payload.redirect) {
             location.href = payload.redirect;
             return;

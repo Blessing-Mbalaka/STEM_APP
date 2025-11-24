@@ -11,7 +11,7 @@ send_mail(
     'Password Reset Request',
     'Click the link below to reset your password: http://example.com/reset/',
     'stemappza@gmail.com',
-    ['bjmbalaka@gmail.com'],
+    ['bjmbalaka@gmail.com'], #Sending to myself for testing, swap it out with your email if you wish.
     fail_silently=False,
 )
-print("Test email sent."
+print("Test email sent.")
