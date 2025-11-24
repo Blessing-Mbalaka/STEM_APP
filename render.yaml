@@ -3,7 +3,7 @@ services:
   - type: web
     name: stem-app  # Choose a unique name for your service
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
     startCommand: gunicorn stem_app.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_SETTINGS_MODULE
@@ -11,11 +11,11 @@ services:
       - key: DEBUG
         value: False
       - key: SECRET_KEY
-        value: your-secret-key-here  # Replace with a secure key (generate with `python -c "import secrets; print(secrets.token_urlsafe(50))"`)
+        value: Xn7l6EHITDDEv7ndKjLDFwW4fyLOLPWVDDTFA5tFSnEdFlPyn9HlXEPf7WJQsJA-XdA
       - key: EMAIL_HOST_PASSWORD
-        value: your-app-password  # From your .env or settings
-      # - key: DATABASE_URL
-      #   value: your-database-url  # Will be added when you add PostgreSQL in Render
+        value: ddtz gltz vscj loab  # From your .env or settings
+      - key: DATABASE_URL
+        value: postgresql://chieta_test_user:ltAr7jomBQzxUESgLVBFo4wBmwVM62gu@dpg-d4bp2j0gjchc73ctsju0-a.oregon-postgres.render.com/chieta_test
       - key: ALLOWED_HOSTS
         value: stem-app.onrender.com,localhost,127.0.0.1
       - key: GOOGLE_ANALYTICS_ID
@@ -23,7 +23,7 @@ services:
       - key: GEMINI_API_KEY
         value: your-gemini-key  # Optional
       - key: EMAIL_HOST_USER
-        value: your-email@gmail.com
+        value: stemappza@gmail.com
       - key: EMAIL_HOST
         value: smtp.gmail.com
       - key: EMAIL_PORT
@@ -31,4 +31,4 @@ services:
       - key: EMAIL_USE_TLS
         value: True
       - key: DEFAULT_FROM_EMAIL
-        value: your-email@gmail.com
+        value: STEM LMS <stemappza@gmail.com>
