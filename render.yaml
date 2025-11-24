@@ -14,8 +14,8 @@ services:
         value: your-secret-key-here  # Replace with a secure key (generate with `python -c "import secrets; print(secrets.token_urlsafe(50))"`)
       - key: EMAIL_HOST_PASSWORD
         value: your-app-password  # From your .env or settings
-      - key: DATABASE_URL
-        value: your-database-url  # Provided by Render for PostgreSQL
+      # - key: DATABASE_URL
+      #   value: your-database-url  # Will be added when you add PostgreSQL in Render
       - key: ALLOWED_HOSTS
         value: stem-app.onrender.com,localhost,127.0.0.1
       - key: GOOGLE_ANALYTICS_ID
