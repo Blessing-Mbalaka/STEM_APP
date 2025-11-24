@@ -17,7 +17,7 @@ services:
       - key: DATABASE_URL
         value: postgresql://chieta_test_user:ltAr7jomBQzxUESgLVBFo4wBmwVM62gu@dpg-d4bp2j0gjchc73ctsju0-a.oregon-postgres.render.com/chieta_test
       - key: ALLOWED_HOSTS
-        value: stem-app.onrender.com,localhost,127.0.0.1
+        value: stem-app.onrender.com,localhost,127.0.0.1,stem-app-production.up.railway.app
       - key: GOOGLE_ANALYTICS_ID
         value: your-ga-id  # Optional
       - key: GEMINI_API_KEY
