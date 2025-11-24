@@ -33,8 +33,8 @@ services:
       - key: DEFAULT_FROM_EMAIL
         value: STEM LMS <stemappza@gmail.com>
       - key: CLOUDINARY_CLOUD_NAME
-        value: your-cloud-name
+        value: dn091unmd
       - key: CLOUDINARY_API_KEY
-        value: your-api-key
+        value: 418881533664368
       - key: CLOUDINARY_API_SECRET
-        value: your-api-secret
+        value: your-api-secret-here  # Replace with actual API secret from Cloudinary
