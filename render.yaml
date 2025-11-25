@@ -28,7 +28,7 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: stem_app.settings
       - key: DEBUG
-        value: "False"              # env vars are strings
+        value: "True"              # env vars are strings
       - key: SECRET_KEY
         value: "Xn7l6EHITDDEv7ndKjLDFwW4fyLOLPWVDDTFA5tFSnEdFlPyn9HlXEPf7WJQsJA-XdA"
       - key: ALLOWED_HOSTS
