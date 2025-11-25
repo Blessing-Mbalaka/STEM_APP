@@ -29,6 +29,8 @@ services:
         value: stem_app.settings
       - key: DEBUG
         value: "False"              # env vars are strings
+      - key: SECRET_KEY
+        value: "Xn7l6EHITDDEv7ndKjLDFwW4fyLOLPWVDDTFA5tFSnEdFlPyn9HlXEPf7WJQsJA-XdA"
       - key: ALLOWED_HOSTS
         value: ".onrender.com,localhost,127.0.0.1"
 
@@ -63,3 +65,5 @@ services:
         value: "418881533664368"
       - key: CLOUDINARY_API_SECRET
         value: "q3P4-VQTlPMva7FdtXP1J6vuUU4"  # consider fromSecret
+      - key: GEMINI_API_KEY
+        value: "AIzaSyB2IyI2KVqDLexX2AdqPMP6aeja23aZCKw"
