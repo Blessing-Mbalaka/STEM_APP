@@ -1,38 +1,65 @@
 # render.yaml
 services:
   - type: web
-    name: stem-app  # Choose a unique name for your service
+    name: stem-app
     env: python
-    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
+    plan: starter               # optional; pick your plan
+    autoDeploy: true            # optional
+
+    # Build happens in an isolated environment; OK to run collectstatic here.
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+
+    # Run the app with Gunicorn (your wsgi module name may differ)
     startCommand: gunicorn stem_app.wsgi:application --bind 0.0.0.0:$PORT
+
+    # Run DB migrations AFTER the service is up (build env may not reach DB)
+    postDeployCommand: python manage.py migrate
+
+    # Attach a Persistent Disk for MEDIA files
+    disks:
+      - name: media
+        mountPath: /var/data/media
+        sizeGB: 5
+
     envVars:
+      # --- Core Django ---
       - key: DJANGO_SETTINGS_MODULE
         value: stem_app.settings
       - key: DEBUG
-        value: False
-      - key: SECRET_KEY
-        value: Xn7l6EHITDDEv7ndKjLDFwW4fyLOLPWVDDTFA5tFSnEdFlPyn9HlXEPf7WJQsJA-XdA
-      - key: EMAIL_HOST_PASSWORD
-        value: ddtz gltz vscj loab  # From your .env or settings
-      - key: DATABASE_URL
-        value: postgresql://stem_app_user:H27a3fiKfi0AXOuSGtKTKSCjpieGRrRT@dpg-d4iesnmr433s739v5nq0-a/stem_app
+        value: "False"              # env vars are strings
       - key: ALLOWED_HOSTS
-        value: stem-app.onrender.com,localhost,127.0.0.1
-     # Optional
-       # Optional
-      - key: EMAIL_HOST_USER
-        value: stemappza@gmail.com
+        value: ".onrender.com,localhost,127.0.0.1"
+
+      # --- Database ---
+      - key: DATABASE_URL           # prefer setting this in the Render dashboard
+        value: "postgresql://stem_app_user:H27a3fiKfi0AXOuSGtKTKSCjpieGRrRT@dpg-d4iesnmr433s739v5nq0-a/stem_app"
+
+      # --- Media (optional: if your settings read this) ---
+      - key: MEDIA_ROOT
+        value: "/var/data/media"
+      - key: MEDIA_URL
+        value: "/media/"
+
+      # --- Email (quote values with spaces; better: use fromSecret) ---
       - key: EMAIL_HOST
-        value: smtp.gmail.com
+        value: "smtp.gmail.com"
       - key: EMAIL_PORT
-        value: 587
+        value: "587"
       - key: EMAIL_USE_TLS
-        value: True
+        value: "True"
+      - key: EMAIL_HOST_USER
+        value: "stemappza@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        value: "ddtz gltz vscj loab"          # consider fromSecret
       - key: DEFAULT_FROM_EMAIL
-        value: STEM LMS <stemappza@gmail.com>
+        value: "STEM LMS <stemappza@gmail.com>"
+
+      # --- Cloudinary (strongly recommended to move to secrets) ---
       - key: CLOUDINARY_CLOUD_NAME
-        value: dn091unmd
+        value: "dn091unmd"
       - key: CLOUDINARY_API_KEY
-        value: 418881533664368
+        value: "418881533664368"
       - key: CLOUDINARY_API_SECRET
-        value: q3P4-VQTlPMva7FdtXP1J6vuUU4 # Replace with actual API secret from Cloudinary
+        value: "q3P4-VQTlPMva7FdtXP1J6vuUU4"  # consider fromSecret
