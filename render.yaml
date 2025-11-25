@@ -17,11 +17,9 @@ services:
       - key: DATABASE_URL
         value: postgresql://stem_app_user:H27a3fiKfi0AXOuSGtKTKSCjpieGRrRT@dpg-d4iesnmr433s739v5nq0-a/stem_app
       - key: ALLOWED_HOSTS
-        value: stem-app.onrender.com,localhost,127.0.0.1,stem-app-production.up.railway.app
-      - key: GOOGLE_ANALYTICS_ID
-        value: your-ga-id  # Optional
-      - key: GEMINI_API_KEY
-        value: your-gemini-key  # Optional
+        value: stem-app.onrender.com,localhost,127.0.0.1
+     # Optional
+       # Optional
       - key: EMAIL_HOST_USER
         value: stemappza@gmail.com
       - key: EMAIL_HOST
