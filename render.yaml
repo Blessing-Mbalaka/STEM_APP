@@ -32,11 +32,11 @@ services:
       - key: SECRET_KEY
         value: "Xn7l6EHITDDEv7ndKjLDFwW4fyLOLPWVDDTFA5tFSnEdFlPyn9HlXEPf7WJQsJA-XdA"
       - key: ALLOWED_HOSTS
-        value: ".onrender.com,localhost,127.0.0.1"
+        value: "stem-app-sqb4.onrender.com,.onrender.com,localhost,127.0.0.1"
 
       # --- Database ---
       - key: DATABASE_URL           # prefer setting this in the Render dashboard
-        value: "postgresql://stem_app_user:H27a3fiKfi0AXOuSGtKTKSCjpieGRrRT@dpg-d4iesnmr433s739v5nq0-a/stem_app"
+        value: "postgresql://stem_app_user:H27a3fiKfi0AXOuSGtKTKSCjpieGRrRT@dpg-d4iesnmr433s739v5nq0-a.oregon-postgres.render.com/stem_app"
 
       # --- Media (optional: if your settings read this) ---
       - key: MEDIA_ROOT
