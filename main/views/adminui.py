@@ -531,6 +531,14 @@ def api_admin_tutor_application_detail(request: HttpRequest, pk: int):
     application.reviewed_at = timezone.now()
     application.save(update_fields=["status", "notes", "reviewed_by", "reviewed_at", "updated_at"])
 
+    # Send notification email based on approval/rejection
+    if action == "approve":
+        from main.utils.mail import send_tutor_approval_email
+        send_tutor_approval_email(user)
+    else:
+        from main.utils.mail import send_tutor_rejection_email
+        send_tutor_rejection_email(user, notes=notes if notes else None)
+
     return JsonResponse({"ok": True, "application": _serialize_application(application)})
 
 

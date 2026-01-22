@@ -25,6 +25,7 @@ from main.utils.roles import (
     ROLE_ADMIN,
     ROLE_TUTOR,
 )
+from main.utils.mail import send_learner_welcome_email, send_tutor_application_received_email
 from ..models.tutor import TutorApplication, TutorApplicationDocument
 
 ALLOWED_DOC_EXTENSIONS = {".pdf"}
@@ -254,6 +255,10 @@ def api_register(request: HttpRequest):
                 original_name=getattr(doc, "name", ""),
                 doc_type=TutorApplicationDocument.DOC_SACE,
             )
+        
+        # Send confirmation email to tutor applicant
+        send_tutor_application_received_email(user)
+        
         pending_msg = "Registration successful. Your tutor application is pending review."
         return JsonResponse(
             {
@@ -267,6 +272,10 @@ def api_register(request: HttpRequest):
     # Default: student
     user.is_active = True
     user.save(update_fields=["is_active", *fields_to_update] if fields_to_update else ["is_active"])
+    
+    # Send welcome email to new learner
+    send_learner_welcome_email(user)
+    
     login(request, user)
     role_name = get_primary_role(user)
     if role_name == ROLE_ADMIN:
