@@ -223,7 +223,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'stemappza@gmail.com'
-EMAIL_HOST_PASSWORD = 'ddtz gltz vscj loab'  # Your app password
+EMAIL_HOST_PASSWORD = 'ddtz gltz vscj loab'  # This works but you can swap  app password
 DEFAULT_FROM_EMAIL = 'STEM LMS <stemappza@gmail.com>'
 
 
