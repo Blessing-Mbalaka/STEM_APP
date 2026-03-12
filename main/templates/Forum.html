@@ -972,6 +972,7 @@
         </div>
     </div>
 
+    <script src="{% static 'js/chatbot.js' %}"></script>
     <script>
 // ================= CSRF + API =================
 function getCookie(name){
@@ -1054,9 +1055,6 @@ function showChatbotMaintenance() {
   if (botInput) {
     botInput.value = '';
     botInput.disabled = true;
-  }
-  if (botSendBtn) {
-    botSendBtn.disabled = true;
   }
   if (subjectOnlyToggle) {
     subjectOnlyToggle.checked = false;
@@ -1565,36 +1563,50 @@ async function submitQuestion(){
 
       // If chatbot disabled from server config, show maintenance UI
       if (chatbotDisabled) showChatbotMaintenance();
-    });
 
-        // Ensure close button reliably hides the bot panel
-     const closeBot = document.getElementById('close-bot');
-    closeBot?.addEventListener('click', (e) => {
-      e.preventDefault();
-      const bc = document.getElementById('bot-chat');
-      if (bc) {
-        bc.classList.remove('active', 'chatbot-disabled');
-      }
-    });
+      // Chatbot event listeners
+      const closeBot = document.getElementById('close-bot');
+      closeBot?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const bc = document.getElementById('bot-chat');
+        if (bc) {
+          bc.classList.remove('active', 'chatbot-disabled');
+        }
+      });
 
-          // open bot on Ask AI button click
       askBotBtn?.addEventListener('click', (e) => {
         e?.preventDefault();
-        // If maintenance mode, show maintenance UI instead of opening chat
         if (chatbotDisabled) {
           showChatbotMaintenance();
           return;
         }
         if (botChat) {
-          // toggle open state, ensure not left in disabled state
           const isOpen = botChat.classList.toggle('active');
           botChat.classList.remove('chatbot-disabled');
-          // focus input after animation
           setTimeout(() => botInput?.focus(), 120);
-          // if opening and messages area exists, scroll to bottom
           if (isOpen && botMessages) botMessages.scrollTop = botMessages.scrollHeight;
         }
       });
+
+      botSendBtn?.addEventListener('click', (e) => {
+        if (chatbotDisabled) {
+          showChatbotMaintenance();
+          return;
+        }
+        window.sendBotMessage();
+      });
+
+      botInput?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (chatbotDisabled) {
+            showChatbotMaintenance();
+            return;
+          }
+          window.sendBotMessage();
+        }
+      });
+    });
 
     </script>
 </body>

@@ -15,16 +15,9 @@ except Exception as exc:  # pragma: no cover - configuration should succeed
     LOG.warning("Gemini API configuration failed: %s", exc)
 
 FALLBACK_MODEL_SEQUENCE = [
-    "gemini-2.5-flash-latest",
-    "gemini-2.5-flash-001",
-    "gemini-2.0-flash-exp",
+    "gemini-2.5-flash",
+    "gemini-flash-latest",
     "gemini-2.0-flash",
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-flash",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-pro",
-    "gemini-pro",
-    "gemini-1.0-pro",
 ]
 
 
@@ -54,7 +47,7 @@ def _expand_model_candidates(primary: str | None, fallbacks: list[str]) -> list[
 
 def ask_gemini(
     prompt: str,
-    model_name: str = "gemini-2.5-flash-latest",
+    model_name: str = "gemini-2.5-flash",
     system_prompt: str | None = None,
     timeout: int = 30,
 ) -> str:
@@ -107,15 +100,15 @@ def ask_gemini(
             continue
 
     if any("API_KEY" in err.upper() for err in errors):
-        return "Gemini API key not configured. Please ask your admin to set it up."
+        return "Gemini API key is invalid or has been disabled. Please contact your admin to verify the API key."
     if any("QUOTA" in err.upper() or "LIMIT" in err.upper() for err in errors):
-        return "API quota exceeded. Please try again later."
+        return "Quota exceeded. Please try again later."
 
     if errors:
-        merged = "; ".join(errors[-3:])
+        merged = "; ".join(errors[-2:])
         return (
-            "Sorry, there was an error with the AI service "
-            f"(tried {', '.join(tried_models)}): {merged}"
+            "Sorry, I'm temporarily unable to generate a response. "
+            f"Please try again in a moment or contact your admin if the problem persists."
         )
 
     return "Sorry, there was an unexpected error with the AI service."

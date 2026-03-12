@@ -65,5 +65,7 @@ services:
         value: "418881533664368"
       - key: CLOUDINARY_API_SECRET
         value: "q3P4-VQTlPMva7FdtXP1J6vuUU4"  # consider fromSecret
-      - key: GEMINI_API_KEY
-        value: "AIzaSyB2IyI2KVqDLexX2AdqPMP6aeja23aZCKw"
+      
+      # SECURITY: GEMINI_API_KEY is set via Render dashboard, NOT hardcoded
+      # To configure: Render dashboard → select service → Environment → Add GEMINI_API_KEY
+      # Do NOT paste the key value here - it will be exposed on GitHub!

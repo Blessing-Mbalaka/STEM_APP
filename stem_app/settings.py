@@ -226,7 +226,8 @@ EMAIL_HOST_USER = 'stemappza@gmail.com'
 EMAIL_HOST_PASSWORD = 'ddtz gltz vscj loab'  # This works but you can swap  app password
 DEFAULT_FROM_EMAIL = 'STEM LMS <stemappza@gmail.com>'
 
-
+# Google Generative AI (Gemini) Configuration
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 
 # if DEBUG == True:
 #     # Development: Print emails to the console
