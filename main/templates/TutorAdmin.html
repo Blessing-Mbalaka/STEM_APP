@@ -395,6 +395,24 @@
       }
     }
   </style>
+  <style>
+    .workspace-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin:20px 0}
+    .workspace-tile{appearance:none;border:1px solid rgba(4,22,103,.12);background:#fff;border-radius:16px;padding:18px;text-align:left;color:#041667;cursor:pointer;box-shadow:0 7px 22px rgba(4,22,103,.07);transition:.18s ease;text-decoration:none}
+    .workspace-tile:hover,.workspace-tile.active{transform:translateY(-2px);border-color:#3157d5;box-shadow:0 10px 26px rgba(49,87,213,.16)}
+    .workspace-tile i{display:block;font-size:24px;margin-bottom:12px;color:#3157d5}
+    .workspace-tile strong{display:block;font-size:16px;margin-bottom:4px}
+    .workspace-tile span{font-size:12px;color:#667085;line-height:1.35}
+    .workspace-panel{display:none}
+    .workspace-panel.active{display:block;animation:panelIn .18s ease}
+    .workspace-panel .card{max-width:980px;margin:0 auto}
+    #courses-workspace .dashboard-layout{grid-template-columns:240px minmax(0,1fr)}
+    #courses-workspace .content-grid{grid-template-columns:1fr}
+    #builder-workspace .card{max-width:980px}
+    .workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 18px}
+    .workspace-heading h2{margin:0;color:#041667}
+    @keyframes panelIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    @media(max-width:760px){#courses-workspace .dashboard-layout{grid-template-columns:1fr}.workspace-tiles{grid-template-columns:repeat(2,1fr)}.workspace-tile{padding:14px}}
+  </style>
 </head>
 
 <body>
@@ -415,8 +433,21 @@
       </div>
     </header>
 
-    {% include "partials/analytics.html" with analytics=analytics %}
+    <nav class="workspace-tiles" aria-label="Tutor workspace">
+      <button class="workspace-tile active" type="button" data-workspace="overview"><i class="fas fa-chart-pie"></i><strong>Overview</strong><span>Performance and activity</span></button>
+      <button class="workspace-tile" type="button" data-workspace="courses"><i class="fas fa-book-open"></i><strong>Courses</strong><span>Browse and create courses</span></button>
+      <button class="workspace-tile" type="button" data-workspace="builder"><i class="fas fa-tools"></i><strong>Course Builder</strong><span>Edit content and resources</span></button>
+      <button class="workspace-tile" id="schedulerTile" type="button"><i class="fas fa-calendar-plus"></i><strong>Schedule Class</strong><span>Create a free or paid class</span></button>
+      <button class="workspace-tile" type="button" data-workspace="payments"><i class="fas fa-receipt"></i><strong>Payments</strong><span>Review payment proofs</span></button>
+      <a class="workspace-tile" href="/messages/"><i class="fas fa-envelope"></i><strong>Messages</strong><span>Chat with your students</span></a>
+    </nav>
 
+    <section id="overview-workspace" class="workspace-panel active">
+      {% include "partials/analytics.html" with analytics=analytics %}
+    </section>
+
+    <section id="courses-workspace" class="workspace-panel">
+    <div class="workspace-heading"><h2>Courses</h2></div>
     <div class="dashboard-layout">
       <aside class="card nav-card">
         <div class="sidebar-title">Messages and Course Filter</div>
@@ -435,7 +466,7 @@
       </aside>
 
       <div class="content-grid">
-        <div class="card">
+        <div class="card" id="coursesCard">
           <h3>Courses</h3>
           <div id="courses" class="list"></div>
           <hr class="section-divider">
@@ -463,7 +494,13 @@
           <div class="row row-end"><button id="createCourse" class="btn">Create</button></div>
         </div>
 
-        <div class="card">
+      </div>
+    </div>
+    </section>
+
+    <section id="builder-workspace" class="workspace-panel">
+      <div class="workspace-heading"><h2>Course Builder</h2><button class="btn secondary" type="button" data-workspace="courses">Choose another course</button></div>
+        <div class="card" id="builderCard">
           <h3 id="builderTitle">Builder</h3>
           <div id="builderEmpty" class="muted">Select a course from the left to edit</div>
           <div id="builder" style="display:none;">
@@ -540,8 +577,7 @@
             <div class="row row-end"><button id="addResource" class="btn">Add</button></div>
           </div>
         </div>
-      </div>
-    </div>
+    </section>
   </div>
 
   <script src="{% static 'js/api.js' %}"></script>
@@ -549,6 +585,16 @@
     let state = { courses: [], current: null };
     let currentUser = null;
     function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+
+    function activateWorkspace(name) {
+      document.querySelectorAll('.workspace-panel').forEach(panel => panel.classList.toggle('active', panel.id === `${name}-workspace`));
+      document.querySelectorAll('.workspace-tile[data-workspace]').forEach(tile => tile.classList.toggle('active', tile.dataset.workspace === name));
+      if (name === 'payments') loadPaymentRequests();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    document.querySelectorAll('[data-workspace]').forEach(control => {
+      control.addEventListener('click', () => activateWorkspace(control.dataset.workspace));
+    });
 
     async function hydrateUserHeader() {
       try {
@@ -623,6 +669,7 @@
       // Update publish button label if present
       const pubBtn = document.getElementById('publishToggle');
       if (pubBtn) pubBtn.textContent = c.is_active ? 'Unpublish' : 'Publish';
+      activateWorkspace('builder');
     }
     function renderResources() {
       const list = document.getElementById('resourceList'); list.innerHTML = '';
@@ -803,6 +850,8 @@
           modal.style.display = 'flex';
         });
         closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        const schedulerTile = document.getElementById('schedulerTile');
+        if (schedulerTile) schedulerTile.addEventListener('click', () => openBtn.click());
       }
       const createBtn = document.getElementById('msc-create');
       if (createBtn) {
@@ -815,15 +864,39 @@
             location: document.getElementById('msc-link').value,
             capacity: parseInt(document.getElementById('msc-cap').value || '0', 10) || 0,
             description: document.getElementById('msc-desc').value
+            ,price: document.getElementById('msc-price').value
+            ,language: document.getElementById('msc-language').value
           };
           if (!payload.course_id || !payload.starts_at || !payload.ends_at) { alert('Course, start, end are required'); return; }
           try {
             await api('/api/tutor/classes', { method: 'POST', data: payload });
             alert('Class scheduled');
             modal.style.display = 'none';
+            loadPaymentRequests();
           } catch (e) { alert(e?.json?.error || 'Failed to schedule'); }
         });
       }
+      await loadPaymentRequests();
+    });
+
+    async function loadPaymentRequests() {
+      const host = document.getElementById('paymentRequests');
+      if (!host) return;
+      try {
+        const data = await api('/api/tutor/payment-requests');
+        host.innerHTML = (data.results || []).map(r => `<div class="row" style="align-items:center;border-bottom:1px solid #ddd;padding:8px 0">
+          <span style="flex:1"><strong>${r.student}</strong> — ${r.class_title} (R${r.price}) — ${r.payment_status}</span>
+          <a class="btn secondary" href="/messages/?recipient=${r.student_id}&subject=${encodeURIComponent('Payment proof for ' + r.class_title)}">Messages</a>
+          <button class="btn payment-action" data-id="${r.id}" data-status="approved">Release</button>
+          <button class="btn secondary payment-action" data-id="${r.id}" data-status="rejected">Reject</button>
+        </div>`).join('') || '<p>No paid-class payment requests yet.</p>';
+      } catch (e) { host.innerHTML = '<p>Could not load payment requests.</p>'; }
+    }
+    document.addEventListener('click', async (e) => {
+      const button = e.target.closest('.payment-action');
+      if (!button) return;
+      await api(`/api/tutor/payment-requests/${button.dataset.id}`, {method:'PATCH', data:{payment_status:button.dataset.status}});
+      await loadPaymentRequests();
     });
   </script>
 
@@ -852,12 +925,19 @@
       <div class="row"><label>Ends</label><input id="msc-end" type="datetime-local"></div>
       <div class="row"><label>Link</label><input id="msc-link" type="text" placeholder="Teams/Zoom/YouTube Live"></div>
       <div class="row"><label>Capacity</label><input id="msc-cap" type="number" value="0"></div>
+      <div class="row"><label>Price (ZAR)</label><input id="msc-price" type="number" min="0" step="0.01" value="0"><small>Use 0 for a free class.</small></div>
+      <div class="row"><label>Language</label><select id="msc-language"><option value="">Not specified</option>{% for language in request.user.languages %}<option>{{ language }}</option>{% endfor %}</select></div>
       <div class="row"><label>Description</label><textarea id="msc-desc"></textarea></div>
       <div class="row row-end">
         <button id="msc-create" class="btn">Create</button>
       </div>
     </div>
   </div>
+  <section id="payments-workspace" class="workspace-panel" style="max-width:1100px;margin:24px auto;padding:18px;background:white;border-radius:12px">
+    <div class="workspace-heading"><h2>Paid class payment requests</h2></div>
+    <p>Open the student's messages to review their proof, then release or reject access.</p>
+    <div id="paymentRequests"></div>
+  </section>
 </body>
 
 </html>

@@ -13,6 +13,12 @@ class ClassSession(TimeStamped):
     capacity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="classes_created")
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    language = models.CharField(max_length=50, blank=True, default="")
+
+    @property
+    def is_paid(self):
+        return self.price is not None and self.price > 0
 
     class Meta:
         ordering = ["starts_at"]
@@ -33,6 +39,13 @@ class Reservation(TimeStamped):
     session = models.ForeignKey(ClassSession, on_delete=models.CASCADE, related_name="reservations")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="reservations")
     status = models.CharField(max_length=20, choices=STATUS, default="reserved")
+    PAYMENT_STATUS = (
+        ("not_required", "Not required"),
+        ("pending", "Awaiting payment verification"),
+        ("approved", "Payment approved"),
+        ("rejected", "Payment rejected"),
+    )
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default="not_required")
 
     class Meta:
         unique_together = ("session", "user")

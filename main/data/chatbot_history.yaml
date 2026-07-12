@@ -15070,5 +15070,285 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2026-07-12T18:30:07.765609+00:00",
+    "user": {
+      "id": 23,
+      "username": "bjmbalakaaaaa@gmail.com"
+    },
+    "question": "hi",
+    "answer": "Gemini API key is invalid or has been disabled. Please contact your admin to verify the API key.",
+    "sources": [
+      {
+        "title": "Hawaii An island state of the United States, in the Pacific Ocean about 2,000 miles southwest of the U.S.",
+        "url": "https://duckduckgo.com/Hawaii",
+        "snippet": "Hawaii An island state of the United States, in the Pacific Ocean about 2,000 miles southwest of the U.S.",
+        "excerpt": "Hawaii An island state of the United States, in the Pacific Ocean about 2,000 miles southwest of the U.S."
+      },
+      {
+        "title": "Hindi An Indo-Aryan language written in the Devanagari script.",
+        "url": "https://duckduckgo.com/Hindi",
+        "snippet": "Hindi An Indo-Aryan language written in the Devanagari script.",
+        "excerpt": "Hindi An Indo-Aryan language written in the Devanagari script."
+      },
+      {
+        "title": "Hainan An island and the southern-most province of China consisting of the eponymous Hainan Island and...",
+        "url": "https://duckduckgo.com/Hainan",
+        "snippet": "Hainan An island and the southern-most province of China consisting of the eponymous Hainan Island and...",
+        "excerpt": "Hainan An island and the southern-most province of China consisting of the eponymous Hainan Island and..."
+      },
+      {
+        "title": "Hello Internet An audio podcast hosted by educational YouTube content creators Brady Haran and CGP Grey.",
+        "url": "https://duckduckgo.com/Hello_Internet",
+        "snippet": "Hello Internet An audio podcast hosted by educational YouTube content creators Brady Haran and CGP Grey.",
+        "excerpt": "Hello Internet An audio podcast hosted by educational YouTube content creators Brady Haran and CGP Grey."
+      },
+      {
+        "title": "Hi (magazine) A glossy, teen lifestyle publication targeted at Middle Eastern and Muslim youth.",
+        "url": "https://duckduckgo.com/Hi_(magazine)",
+        "snippet": "Hi (magazine) A glossy, teen lifestyle publication targeted at Middle Eastern and Muslim youth.",
+        "excerpt": "Hi (magazine) A glossy, teen lifestyle publication targeted at Middle Eastern and Muslim youth."
+      },
+      {
+        "title": "Hi Records An American soul music and rhythm & blues label founded in Memphis, Tennessee in 1957 by singer...",
+        "url": "https://duckduckgo.com/Hi_Records",
+        "snippet": "Hi Records An American soul music and rhythm & blues label founded in Memphis, Tennessee in 1957 by singer...",
+        "excerpt": "Hi Records An American soul music and rhythm & blues label founded in Memphis, Tennessee in 1957 by singer..."
+      },
+      {
+        "title": "Hi (Elizabeth Barraclough album) The second album by the American musician Elizabeth Barraclough, released in 1979.",
+        "url": "https://duckduckgo.com/Hi_(Elizabeth_Barraclough_album)",
+        "snippet": "Hi (Elizabeth Barraclough album) The second album by the American musician Elizabeth Barraclough, released in 1979.",
+        "excerpt": "Hi (Elizabeth Barraclough album) The second album by the American musician Elizabeth Barraclough, released in 1979."
+      },
+      {
+        "title": "Hi (Texas album) A South Korean girl group formed in 2014 by Woollim Entertainment and is the company's first girl...",
+        "url": "https://duckduckgo.com/Lovelyz",
+        "snippet": "Hi (Texas album) A South Korean girl group formed in 2014 by Woollim Entertainment and is the company's first girl...",
+        "excerpt": "Hi (Texas album) A South Korean girl group formed in 2014 by Woollim Entertainment and is the company's first girl..."
+      },
+      {
+        "title": "\"Hi\" (song) The Israeli entry in the Eurovision Song Contest 1983, performed in Hebrew by Ofra Haza.",
+        "url": "https://duckduckgo.com/Hi_(song)",
+        "snippet": "\"Hi\" (song) The Israeli entry in the Eurovision Song Contest 1983, performed in Hebrew by Ofra Haza.",
+        "excerpt": "\"Hi\" (song) The Israeli entry in the Eurovision Song Contest 1983, performed in Hebrew by Ofra Haza."
+      },
+      {
+        "title": "Hi (EP) The second British single and the first US single taken from Psapp's The Only Thing I Ever Wanted.",
+        "url": "https://duckduckgo.com/Hi_(EP)",
+        "snippet": "Hi (EP) The second British single and the first US single taken from Psapp's The Only Thing I Ever Wanted.",
+        "excerpt": "Hi (EP) The second British single and the first US single taken from Psapp's The Only Thing I Ever Wanted."
+      },
+      {
+        "title": "Hi~ A 2015 repackage of South Korean girl group Lovelyz' 2014 album Girls' Invasion.",
+        "url": "https://duckduckgo.com/Hi%7E",
+        "snippet": "Hi~ A 2015 repackage of South Korean girl group Lovelyz' 2014 album Girls' Invasion.",
+        "excerpt": "Hi~ A 2015 repackage of South Korean girl group Lovelyz' 2014 album Girls' Invasion."
+      },
+      {
+        "title": "Hi (cuneiform) The cuneiform hi/he sign, has many uses in both the 14th century BC Amarna letters and the Epic...",
+        "url": "https://duckduckgo.com/Hi_(cuneiform)",
+        "snippet": "Hi (cuneiform) The cuneiform hi/he sign, has many uses in both the 14th century BC Amarna letters and the Epic...",
+        "excerpt": "Hi (cuneiform) The cuneiform hi/he sign, has many uses in both the 14th century BC Amarna letters and the Epic..."
+      },
+      {
+        "title": "Hi (kana) Hi is one of the Japanese kana, which each represent one mora.",
+        "url": "https://duckduckgo.com/Hi_(kana)",
+        "snippet": "Hi (kana) Hi is one of the Japanese kana, which each represent one mora.",
+        "excerpt": "Hi (kana) Hi is one of the Japanese kana, which each represent one mora."
+      },
+      {
+        "title": "Hi (Armenian letter) The 21st letter of the Armenian alphabet.",
+        "url": "https://duckduckgo.com/Hi_(Armenian_letter)",
+        "snippet": "Hi (Armenian letter) The 21st letter of the Armenian alphabet.",
+        "excerpt": "Hi (Armenian letter) The 21st letter of the Armenian alphabet."
+      },
+      {
+        "title": "Harlem International Film Festival An annual five-day film festival in Harlem, New York. The first festival took place i",
+        "url": "https://duckduckgo.com/Harlem_International_Film_Festival",
+        "snippet": "Harlem International Film Festival An annual five-day film festival in Harlem, New York. The first festival took place in 2005.",
+        "excerpt": "Harlem International Film Festival An annual five-day film festival in Harlem, New York. The first festival took place in 2005."
+      },
+      {
+        "title": "Hostelling International A non-governmental, not-for-profit organisation working with UNESCO and the World Tourism...",
+        "url": "https://duckduckgo.com/Hostelling_International",
+        "snippet": "Hostelling International A non-governmental, not-for-profit organisation working with UNESCO and the World Tourism...",
+        "excerpt": "Hostelling International A non-governmental, not-for-profit organisation working with UNESCO and the World Tourism..."
+      },
+      {
+        "title": "Houston Industries Incorporated GenOn Energy, Inc., based in Houston, Texas, United States, is an energy company that pr",
+        "url": "https://duckduckgo.com/GenOn_Energy",
+        "snippet": "Houston Industries Incorporated GenOn Energy, Inc., based in Houston, Texas, United States, is an energy company that provides...",
+        "excerpt": "Houston Industries Incorporated GenOn Energy, Inc., based in Houston, Texas, United States, is an energy company that provides..."
+      },
+      {
+        "title": "Hi River A river in northwestern China and southeastern Kazakhstan.",
+        "url": "https://duckduckgo.com/Ili_River",
+        "snippet": "Hi River A river in northwestern China and southeastern Kazakhstan.",
+        "excerpt": "Hi River A river in northwestern China and southeastern Kazakhstan."
+      },
+      {
+        "title": "Hotel Indonesia The Hotel Indonesia Kempinski Jakarta is one of the oldest and best-known hotels in Jakarta...",
+        "url": "https://duckduckgo.com/Hotel_Indonesia",
+        "snippet": "Hotel Indonesia The Hotel Indonesia Kempinski Jakarta is one of the oldest and best-known hotels in Jakarta...",
+        "excerpt": "Hotel Indonesia The Hotel Indonesia Kempinski Jakarta is one of the oldest and best-known hotels in Jakarta..."
+      },
+      {
+        "title": "Hydrogen iodide A diatomic molecule and hydrogen halide.",
+        "url": "https://duckduckgo.com/Hydrogen_iodide",
+        "snippet": "Hydrogen iodide A diatomic molecule and hydrogen halide.",
+        "excerpt": "Hydrogen_iodide at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      },
+      {
+        "title": "Health informatics The study and implementation of computer science to improve communication, understanding, and...",
+        "url": "https://duckduckgo.com/Health_informatics",
+        "snippet": "Health informatics The study and implementation of computer science to improve communication, understanding, and...",
+        "excerpt": "Health informatics The study and implementation of computer science to improve communication, understanding, and..."
+      },
+      {
+        "title": "Historical institutionalism A new institutionalist social science approach that emphasizes how timing, sequences and pat",
+        "url": "https://duckduckgo.com/Historical_institutionalism",
+        "snippet": "Historical institutionalism A new institutionalist social science approach that emphasizes how timing, sequences and path...",
+        "excerpt": "Historical institutionalism A new institutionalist social science approach that emphasizes how timing, sequences and path..."
+      },
+      {
+        "title": "Hormonal imprinting A phenomenon which takes place at the first encounter between a hormone and its developing...",
+        "url": "https://duckduckgo.com/Hormonal_imprinting",
+        "snippet": "Hormonal imprinting A phenomenon which takes place at the first encounter between a hormone and its developing...",
+        "excerpt": "Hormonal imprinting A phenomenon which takes place at the first encounter between a hormone and its developing..."
+      },
+      {
+        "title": "Hemagglutination inhibition Method for quantifying the relative concentration of viruses, bacteria, or antibodies.",
+        "url": "https://duckduckgo.com/Hemagglutination_inhibition",
+        "snippet": "Hemagglutination inhibition Method for quantifying the relative concentration of viruses, bacteria, or antibodies.",
+        "excerpt": "Hemagglutination inhibition Method for quantifying the relative concentration of viruses, bacteria, or antibodies."
+      },
+      {
+        "title": "Human interface The space where interactions between humans and machines occur.",
+        "url": "https://duckduckgo.com/user_interface",
+        "snippet": "Human interface The space where interactions between humans and machines occur.",
+        "excerpt": "Human interface The space where interactions between humans and machines occur."
+      },
+      {
+        "title": "Hi Brigham An American football lineman who played eight seasons with the Columbus Panhandles, including one...",
+        "url": "https://duckduckgo.com/Hi_Brigham",
+        "snippet": "Hi Brigham An American football lineman who played eight seasons with the Columbus Panhandles, including one...",
+        "excerpt": "Hi Brigham An American football lineman who played eight seasons with the Columbus Panhandles, including one..."
+      },
+      {
+        "title": "Hi Brown An American producer of radio and television programs.",
+        "url": "https://duckduckgo.com/Himan_Brown",
+        "snippet": "Hi Brown An American producer of radio and television programs.",
+        "excerpt": "Hi Brown An American producer of radio and television programs."
+      },
+      {
+        "title": "Humorous Interpretation An event in competitive middle and high school forensics leagues such as the National Christian.",
+        "url": "https://duckduckgo.com/Humorous_Interpretation",
+        "snippet": "Humorous Interpretation An event in competitive middle and high school forensics leagues such as the National Christian...",
+        "excerpt": "Humorous Interpretation An event in competitive middle and high school forensics leagues such as the National Christian..."
+      },
+      {
+        "title": "H I region A cloud in the interstellar medium composed of neutral atomic hydrogen, in addition to the local...",
+        "url": "https://duckduckgo.com/H_I_region",
+        "snippet": "H I region A cloud in the interstellar medium composed of neutral atomic hydrogen, in addition to the local...",
+        "excerpt": "H I region A cloud in the interstellar medium composed of neutral atomic hydrogen, in addition to the local..."
+      },
+      {
+        "title": "Hydrogen-1 In physics, an isotope of hydrogen with one proton and zero neutrons (also known as protium).",
+        "url": "https://duckduckgo.com/Hydrogen-1",
+        "snippet": "Hydrogen-1 In physics, an isotope of hydrogen with one proton and zero neutrons (also known as protium).",
+        "excerpt": "Hydrogen-1 In physics, an isotope of hydrogen with one proton and zero neutrons (also known as protium)."
+      },
+      {
+        "title": "H&I See related meanings for the word 'H&I'.",
+        "url": "https://duckduckgo.com/d/H%26I",
+        "snippet": "H&I See related meanings for the word 'H&I'.",
+        "excerpt": "H&amp;I at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      },
+      {
+        "title": "High See related meanings for the word 'High'.",
+        "url": "https://duckduckgo.com/d/High",
+        "snippet": "High See related meanings for the word 'High'.",
+        "excerpt": "High at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      },
+      {
+        "title": "HY See related meanings for the word 'HY'.",
+        "url": "https://duckduckgo.com/d/HY",
+        "snippet": "HY See related meanings for the word 'HY'.",
+        "excerpt": "HY at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        },
+        {
+          "title": "Gr 12 Business Studies: Business Management (Live)",
+          "description": "Mindset Live show on business management functions",
+          "resource_type": "youtube",
+          "course": "Business Studies Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
+        },
+        {
+          "title": "Gr 12 Economics: Macro & Micro (Live)",
+          "description": "Mindset Live show on macro- and microeconomics",
+          "resource_type": "youtube",
+          "course": "Economics Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
+        }
+      ]
+    }
   }
 ]

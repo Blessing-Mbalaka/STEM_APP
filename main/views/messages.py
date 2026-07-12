@@ -42,6 +42,8 @@ def api_messages_list(request):
         "created_at": m.created_at.isoformat(),
         "course": m.related_course.title if m.related_course_id else None,
         "session_id": m.related_session_id,
+        "attachment_url": m.attachment.url if m.attachment else None,
+        "attachment_name": m.attachment.name.rsplit("/", 1)[-1] if m.attachment else None,
     } for m in qs]
     return JsonResponse({"results": data})
 
@@ -81,10 +83,15 @@ def api_messages_recipients(request):
 @require_http_methods(["POST"])
 @login_required
 def api_messages_create(request):
-    try:
-        payload = json.loads(request.body.decode("utf-8"))
-    except Exception:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    if "multipart/form-data" in (request.content_type or ""):
+        payload = request.POST
+        attachment = request.FILES.get("attachment")
+    else:
+        try:
+            payload = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        attachment = None
     try:
         recipient_id = int(payload.get("recipient_id"))
     except Exception:
@@ -93,8 +100,10 @@ def api_messages_create(request):
     recipient = get_object_or_404(CustomUser, pk=recipient_id)
     subject = (payload.get("subject") or "").strip()
     body = (payload.get("body") or "").strip()
-    if not body:
-        return JsonResponse({"error": "body required"}, status=400)
+    if not body and not attachment:
+        return JsonResponse({"error": "body or attachment required"}, status=400)
+    if attachment and attachment.size > 10 * 1024 * 1024:
+        return JsonResponse({"error": "attachment must be 10 MB or smaller"}, status=400)
     related_course = None
     related_session = None
     try:
@@ -115,6 +124,7 @@ def api_messages_create(request):
         body=body,
         related_course=related_course,
         related_session=related_session,
+        attachment=attachment,
     )
     return JsonResponse({"id": m.id})
 

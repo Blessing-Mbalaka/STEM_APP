@@ -304,6 +304,7 @@
             <label>Message</label><textarea id="body"></textarea>
           </div>
           <div class="row" style="justify-content: flex-end;">
+            <input id="attachment" type="file" accept="image/*,.pdf" aria-label="Attach payment proof or document">
             <button id="send" class="btn primary"><i class="fas fa-paper-plane"></i> Send</button>
           </div>
           <div id="sendNote" class="muted" style="display:none;">Sent!</div>
@@ -401,6 +402,7 @@
             <div class="muted">${created}</div>
           </div>
           <div style="margin-top:6px; white-space:pre-wrap;">${m.body}</div>
+          ${m.attachment_url ? `<div style="margin-top:8px"><a href="${m.attachment_url}" target="_blank" rel="noopener"><i class="fas fa-paperclip"></i> ${m.attachment_name || 'View attachment'}</a></div>` : ''}
           <div class="row" style="justify-content:flex-end; margin-top:8px;">
             <button class="btn secondary reply">Reply</button>
           </div>`;
@@ -434,12 +436,24 @@
     const rid = parseInt(document.getElementById('recipient').value || '0', 10);
     const subject = document.getElementById('subject').value.trim();
     const body = document.getElementById('body').value.trim();
-    if (!rid || !body) { alert('Recipient and message are required'); return; }
+    const selectedAttachment = document.getElementById('attachment').files[0];
+    if (!rid || (!body && !selectedAttachment)) { alert('Recipient and a message or attachment are required'); return; }
 
     try {
-      await api('/api/messages/send', { method: 'POST', data: { recipient_id: rid, subject, body } });
+      const attachment = document.getElementById('attachment').files[0];
+      if (attachment) {
+        const fd = new FormData();
+        fd.append('recipient_id', rid); fd.append('subject', subject); fd.append('body', body); fd.append('attachment', attachment);
+        const relatedSession = getParam('related_session'); if (relatedSession) fd.append('related_session', relatedSession);
+        const csrf = (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '';
+        const res = await fetch('/api/messages/send', {method:'POST', credentials:'same-origin', headers:{'X-CSRFToken':csrf}, body:fd});
+        if (!res.ok) throw await res.json();
+      } else {
+        await api('/api/messages/send', { method: 'POST', data: { recipient_id: rid, subject, body, related_session: getParam('related_session') || null } });
+      }
       document.getElementById('subject').value = '';
       document.getElementById('body').value = '';
+      document.getElementById('attachment').value = '';
       const note = document.getElementById('sendNote');
       note.style.display = 'block';
       setTimeout(() => note.style.display = 'none', 1500);

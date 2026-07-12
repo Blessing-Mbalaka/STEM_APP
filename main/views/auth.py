@@ -29,6 +29,11 @@ from main.utils.mail import send_learner_welcome_email, send_tutor_application_r
 from ..models.tutor import TutorApplication, TutorApplicationDocument
 
 ALLOWED_DOC_EXTENSIONS = {".pdf"}
+SA_OFFICIAL_LANGUAGES = {
+    "Afrikaans", "English", "isiNdebele", "isiXhosa", "isiZulu",
+    "Sepedi", "Sesotho", "Setswana", "siSwati", "Tshivenda", "iTsonga",
+    "Xitsonga", "South African Sign Language",
+}
 
 
 def _is_allowed_file(upload) -> bool:
@@ -148,6 +153,11 @@ def api_register(request: HttpRequest):
     ).strip()
     role = (data.get("role") or "").strip().lower()
     motivation = (data.get("motivation") or data.get("tutor_motivation") or "").strip()
+    if is_multipart:
+        languages = [value.strip() for value in data.getlist("languages") if value.strip()]
+    else:
+        raw_languages = data.get("languages") or []
+        languages = raw_languages if isinstance(raw_languages, list) else [raw_languages]
 
     if not password:
         return JsonResponse({"error": "password required"}, status=400)
@@ -189,6 +199,9 @@ def api_register(request: HttpRequest):
     # Auto-activate students; tutors require approval
     if role == "tutor":
         validation_errors = {}
+        invalid_languages = set(languages) - SA_OFFICIAL_LANGUAGES
+        if invalid_languages:
+            validation_errors["languages"] = "Choose only South African official languages."
         if not is_multipart:
             validation_errors["documents"] = "Attach your tutor documents (identity document and qualifications)."
         if not id_document:
@@ -222,9 +235,10 @@ def api_register(request: HttpRequest):
             )
 
         user.is_active = False
+        user.languages = list(dict.fromkeys(languages)) or None
         if hasattr(user, "is_tutor"):
             user.is_tutor = False
-        user.save(update_fields=["is_active", "is_tutor", *fields_to_update])
+        user.save(update_fields=["is_active", "is_tutor", "languages", *fields_to_update])
 
         application = TutorApplication.objects.create(user=user, motivation=motivation)
 

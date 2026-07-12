@@ -1160,7 +1160,7 @@ function openBookingModal(cls){
 }
 
 async function reserveClass(id){
-  await api(`/api/classes/${id}/reserve`, { method: "POST" });
+  return await api(`/api/classes/${id}/reserve`, { method: "POST" });
 }
 
 async function unreserveClass(id){
@@ -1215,13 +1215,15 @@ function setupEvents(){
   bookingForm.addEventListener('submit', async (e)=> {
     e.preventDefault();
     try{
-      await reserveClass(selectedClassId);
+      const booking = await reserveClass(selectedClassId);
       bookingModal.style.display='none';
       await loadClasses();
       renderTutors();
       renderBookings(bookingFilter.value);
       renderCalendar();
-      alert('Session booked! A confirmation email will be sent with your Teams link.');
+      alert(booking.requires_payment
+        ? 'Booking requested. Please send your proof of payment to the tutor. The class link will only be released after the tutor confirms the funds were received.'
+        : 'Session booked! Your free class is available in your bookings.');
     }catch(err){
       alert(err.message || "Failed to reserve (are you logged in?)");
     }

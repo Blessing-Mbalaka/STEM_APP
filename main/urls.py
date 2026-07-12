@@ -56,6 +56,8 @@ from main.views.tutorspage import (
 from main.views.classes import (
     api_tutor_classes,
     api_tutor_class_detail,
+    api_tutor_payment_requests,
+    api_tutor_payment_request_detail,
 )
 
 # Courses / Resources APIs
@@ -204,6 +206,8 @@ urlpatterns = [
     path("api/me/classes",                      api_me_classes,          name="api_me_classes"),
     path("api/tutor/classes",                   api_tutor_classes,       name="api_tutor_classes"),
     path("api/tutor/classes/<int:pk>",          api_tutor_class_detail,  name="api_tutor_class_detail"),
+    path("api/tutor/payment-requests",          api_tutor_payment_requests, name="api_tutor_payment_requests"),
+    path("api/tutor/payment-requests/<int:pk>", api_tutor_payment_request_detail, name="api_tutor_payment_request_detail"),
 
     # ---------- Messages ----------
     path("api/messages",                        api_messages_list,       name="api_messages_list"),

@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods, require_GET
 from django.contrib.auth.decorators import login_required
-from ..models import ClassSession, Reservation
+from ..models import ClassSession, Reservation, Message
 from django.utils.timezone import now
 from django.utils import timezone
 from django.conf import settings
@@ -30,7 +30,8 @@ def api__list(request):
             "id": s.id,
             "title": getattr(s, "title", "") or (s.course.title if getattr(s, "course", None) else ""),
             "course": s.course.title if getattr(s, "course", None) else None,
-            "location": getattr(s, "location", "") or "",
+            # Never expose a paid class link until this student's proof is approved.
+            "location": (getattr(s, "location", "") or "") if (not s.is_paid or (user_reserved and Reservation.objects.filter(user=request.user, session=s, payment_status="approved").exists())) else "",
             "starts_at": s.starts_at.isoformat() if getattr(s, "starts_at", None) else None,
             "ends_at": s.ends_at.isoformat() if getattr(s, "ends_at", None) else None,
             "capacity": getattr(s, "capacity", None),
@@ -42,6 +43,20 @@ def api__list(request):
             "when": s.starts_at.isoformat() if getattr(s, "starts_at", None) else "",
             "subject": s.course.title if getattr(s, "course", None) else (getattr(s, "title", "") or ""),
             "remaining": remaining,
+            "price": str(s.price) if s.price is not None else None,
+            "is_paid": s.is_paid,
+            "language": s.language or "",
+            "tutor_languages": getattr(s.created_by, "languages", []) if s.created_by else [],
+            "payment_status": (Reservation.objects.filter(user=request.user, session=s).values_list("payment_status", flat=True).first() if user_reserved else None),
+            "proof_sent": bool(
+                request.user.is_authenticated
+                and Message.objects.filter(
+                    sender=request.user,
+                    recipient=s.created_by,
+                    related_session=s,
+                    attachment__isnull=False,
+                ).exclude(attachment="").exists()
+            ),
         })
     return JsonResponse({"results": data})
 
@@ -64,8 +79,11 @@ def api_class_reserve(request, pk: int):
             return JsonResponse({"error": "Class is full"}, status=400)
 
     # idempotent create
-    Reservation.objects.get_or_create(user=request.user, session=session)
-    return JsonResponse({"ok": True})
+    reservation, created = Reservation.objects.get_or_create(user=request.user, session=session)
+    if created and session.is_paid:
+        reservation.payment_status = "pending"
+        reservation.save(update_fields=["payment_status"])
+    return JsonResponse({"ok": True, "payment_status": reservation.payment_status, "requires_payment": session.is_paid})
 
 @login_required
 @require_http_methods(["DELETE"])

@@ -165,6 +165,40 @@
             color: var(--primary-orange);
         }
 
+        .search-box {
+            display: grid !important;
+            grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(130px, 1fr));
+            gap: 10px !important;
+            width: min(100%, 760px);
+            padding: 12px;
+            background: linear-gradient(135deg, #fff8f1, #ffffff);
+            border: 1px solid #efd8c6;
+            border-radius: 14px;
+            box-shadow: 0 5px 16px rgba(128, 49, 3, 0.08);
+        }
+        .search-box input, .search-box select {
+            width: 100% !important;
+            min-height: 44px;
+            padding: 10px 12px !important;
+            border: 1px solid #d8c2b2;
+            border-radius: 10px;
+            background: #fff;
+            color: var(--dark-gray);
+            font: inherit;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .search-box input:focus, .search-box select:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(184, 67, 0, .13);
+        }
+        #tutorSearch { padding-left: 14px !important; }
+        @media (max-width: 900px) {
+            .section-header { align-items: stretch; flex-direction: column; }
+            .search-box { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 520px) { .search-box { grid-template-columns: 1fr; } }
+
         /* Tutor Cards */
         .tutors-grid {
             display: grid;
@@ -712,9 +746,11 @@
         <div id="tutors-section" class="section active">
             <div class="section-header">
                 <h2 class="section-title">Available Tutors</h2>
-                <div class="search-box">
-                    <input type="text" placeholder="" class="btn-secondary"
-                        style="padding: 10px 15px; width: 250px;">
+                <div class="search-box" style="display:flex;gap:8px;flex-wrap:wrap">
+                    <input id="tutorSearch" type="search" placeholder="Search tutor or subject" class="btn-secondary" style="padding:10px 15px;width:220px;">
+                    <select id="priceFilter" class="btn-secondary"><option value="all">All prices</option><option value="free">Free</option><option value="paid">Paid</option></select>
+                    <select id="languageFilter" class="btn-secondary"><option value="">All languages</option></select>
+                    <input id="maxPriceFilter" type="number" min="0" step="1" placeholder="Maximum price" class="btn-secondary" style="width:140px">
                 </div>
             </div>
 
@@ -936,7 +972,7 @@ async function loadClasses(){
     reserved: !!(c.reserved || c.user_reserved || c.is_reserved || false),
   }));
    // Derive myBookings and calendarEvents
-  myBookings = classesList.map(c => ({
+  myBookings = classesList.filter(c => c.reserved).map(c => ({
     id: c.id,
     tutorId: c.id,
     title: c.title || (c.course ? `${c.course} Session` : (c.subject || 'Session')),
@@ -946,6 +982,7 @@ async function loadClasses(){
     subject: c.subject || '',
     status: 'upcoming',
     meetingLink: c.location || '#',
+    paymentStatus: c.payment_status,
     slotId: c.id
   }));
  
@@ -960,12 +997,23 @@ async function loadClasses(){
 // ======= Render: Tutors =======
 function renderTutors(){
   tutorsGrid.innerHTML = '';
-  if (!classesList.length){
+  const query = (document.getElementById('tutorSearch').value || '').toLowerCase();
+  const priceMode = document.getElementById('priceFilter').value;
+  const language = document.getElementById('languageFilter').value;
+  const maxRaw = document.getElementById('maxPriceFilter').value;
+  const filteredClasses = classesList.filter(c => {
+    const matchesText = !query || `${c.tutor} ${c.subject} ${c.title}`.toLowerCase().includes(query);
+    const matchesPrice = priceMode === 'all' || (priceMode === 'free' ? !c.is_paid : c.is_paid);
+    const matchesLanguage = !language || c.language === language || (c.tutor_languages || []).includes(language);
+    const matchesMax = maxRaw === '' || Number(c.price || 0) <= Number(maxRaw);
+    return matchesText && matchesPrice && matchesLanguage && matchesMax;
+  });
+  if (!filteredClasses.length){
     tutorsGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">No classes available</p>';
     return;
   }
  
-  classesList.forEach(c => {
+  filteredClasses.forEach(c => {
     const remaining = (typeof c.remaining === 'number') ? c.remaining : null;
     const remainingBadge = remaining !== null ? `<span class="badge">${remaining} left</span>` : '';
     const reserved = !!c.reserved;
@@ -984,6 +1032,7 @@ function renderTutors(){
          <div class="tutor-info">
            <div class="tutor-name">${c.tutor || 'Tutor'}</div>
            <div class="tutor-subject">${c.subject || 'Subject'} ${remainingBadge}</div>
+           <div><strong>${c.is_paid ? `R${Number(c.price).toFixed(2)}` : 'Free'}</strong>${c.language ? ` · ${c.language}` : ''}</div>
            <div class="tutor-rating">${ratingStars} <span>(class)</span></div>
          </div>
        </div>
@@ -1009,7 +1058,7 @@ function renderTutors(){
          </button>
          ${
            reserved
-           ? `<button class="btn btn-cancel unbook-btn"><i class="fas fa-times"></i> Cancel</button>`
+           ? `${c.is_paid && c.payment_status !== 'approved' ? `<a class="btn btn-primary" href="/messages/?recipient=${c.tutor_id}&related_session=${c.id}&subject=${encodeURIComponent('Payment proof for ' + c.title)}&body=${encodeURIComponent('Please find my payment proof attached for this class.')}"><i class="fas fa-paperclip"></i> ${c.proof_sent ? 'Send Proof Again' : 'Send Proof'}</a>` : ''}<button class="btn btn-cancel unbook-btn"><i class="fas fa-times"></i> Cancel</button>`
            : isFull
            ? `<button class="btn btn-secondary" disabled><i class="fas fa-ban"></i> Full</button>`
            : `<button class="btn btn-primary book-btn"><i class="fas fa-calendar-plus"></i> Book Session</button>`
@@ -1133,7 +1182,7 @@ function openBookingModal(cls){
 }
 
 async function reserveClass(id){
-  await api(`/api/classes/${id}/reserve`, { method: "POST" });
+  return await api(`/api/classes/${id}/reserve`, { method: "POST" });
 }
 
 async function unreserveClass(id){
@@ -1184,13 +1233,15 @@ function setupEvents(){
   bookingForm.addEventListener('submit', async (e)=> {
     e.preventDefault();
     try{
-      await reserveClass(selectedClassId);
+      const booking = await reserveClass(selectedClassId);
       bookingModal.style.display='none';
       await loadClasses();
       renderTutors();
       renderBookings(bookingFilter.value);
       renderCalendar();
-      alert('Session booked! A confirmation email will be sent with your Teams link.');
+      alert(booking.requires_payment
+        ? 'Booking requested. Please send your proof of payment to the tutor. The class link will only be released after the tutor confirms the funds were received.'
+        : 'Session booked! Your free class is available in your bookings.');
     }catch(err){
       alert(err.message || "Failed to reserve (are you logged in?)");
     }
@@ -1273,6 +1324,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     classesList = [];
   }
   setupEvents();
+  const languageSelect = document.getElementById('languageFilter');
+  [...new Set(classesList.flatMap(c => [c.language, ...(c.tutor_languages || [])]).filter(Boolean))]
+    .sort().forEach(language => languageSelect.add(new Option(language, language)));
+  ['tutorSearch', 'priceFilter', 'languageFilter', 'maxPriceFilter'].forEach(id => {
+    document.getElementById(id).addEventListener(id === 'tutorSearch' || id === 'maxPriceFilter' ? 'input' : 'change', renderTutors);
+  });
   renderTutors();
   renderBookings('all');
   renderCalendar();

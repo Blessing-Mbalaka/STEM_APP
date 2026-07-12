@@ -16,6 +16,8 @@ class CustomUser(AbstractUser):
     display_name = models.CharField(max_length=150, blank=True, default="")
     # Role: tutors can access tutor admin even if not staff
     is_tutor = models.BooleanField(default=False)
+    # A tutor may teach in several of South Africa's official languages.
+    languages = models.JSONField(blank=True, null=True, default=list)
 
     def __str__(self):
         return self.display_name or self.username

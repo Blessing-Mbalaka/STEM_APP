@@ -3,7 +3,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods, require_GET
 from django.contrib.auth.decorators import login_required
-from ..models import ClassSession, Reservation
+from ..models import ClassSession, Reservation, Message, CustomUser
+from decimal import Decimal, InvalidOperation
 from django.utils.timezone import now
 from django.utils import timezone
 from django.conf import settings
@@ -98,7 +99,7 @@ def api_tutor_classes(request):
         return JsonResponse({"error": "forbidden"}, status=403)
 
     if request.method == "GET":
-        qs = ClassSession.objects.select_related('course').order_by('starts_at')
+        qs = ClassSession.objects.select_related('course').filter(created_by=request.user).order_by('starts_at')
         course_id = request.GET.get('course')
         if course_id:
             qs = qs.filter(course_id=course_id)
@@ -112,6 +113,8 @@ def api_tutor_classes(request):
             "location": s.location,
             "capacity": s.capacity,
             "description": s.description,
+            "price": str(s.price) if s.price is not None else None,
+            "language": s.language,
             "tutor": (s.created_by.display_name or s.created_by.username) if s.created_by else None,
         } for s in qs[:300]]
         return JsonResponse({"results": results})
@@ -143,7 +146,19 @@ def api_tutor_classes(request):
     except Exception:
         cap = 0
     desc = payload.get('description') or ''
-    s = ClassSession.objects.create(course=course, title=title, starts_at=sdt, ends_at=edt, location=loc, capacity=cap, description=desc, created_by=request.user)
+    language = (payload.get('language') or '').strip()
+    if language and language not in (request.user.languages or []):
+        return JsonResponse({"error": "Choose one of your registered teaching languages"}, status=400)
+    raw_price = payload.get('price')
+    try:
+        price = Decimal(str(raw_price)) if raw_price not in (None, '') else None
+        if price is not None and price < 0:
+            raise InvalidOperation
+    except (InvalidOperation, ValueError):
+        return JsonResponse({"error": "price must be zero or a positive amount"}, status=400)
+    if price == 0:
+        price = None
+    s = ClassSession.objects.create(course=course, title=title, starts_at=sdt, ends_at=edt, location=loc, capacity=cap, description=desc, created_by=request.user, price=price, language=language)
     return JsonResponse({"id": s.id})
 
 
@@ -152,6 +167,62 @@ def api_tutor_classes(request):
 def api_tutor_class_detail(request, pk: int):
     if not user_can_manage_tutor_admin(request.user):
         return JsonResponse({"error": "forbidden"}, status=403)
-    s = get_object_or_404(ClassSession, pk=pk)
+    s = get_object_or_404(ClassSession, pk=pk, created_by=request.user)
     s.delete()
     return JsonResponse({"ok": True})
+
+
+@require_http_methods(["GET"])
+@login_required
+def api_tutor_payment_requests(request):
+    if not user_can_manage_tutor_admin(request.user):
+        return JsonResponse({"error": "forbidden"}, status=403)
+    qs = Reservation.objects.select_related("user", "session").filter(
+        session__created_by=request.user, session__price__gt=0
+    ).order_by("-created_at")
+    return JsonResponse({"results": [{
+        "id": r.id, "student": r.user.display_name or r.user.username,
+        "student_id": r.user_id, "class_title": r.session.title,
+        "price": str(r.session.price), "payment_status": r.payment_status,
+    } for r in qs[:200]]})
+
+
+@require_http_methods(["PATCH"])
+@login_required
+def api_tutor_payment_request_detail(request, pk):
+    if not user_can_manage_tutor_admin(request.user):
+        return JsonResponse({"error": "forbidden"}, status=403)
+    reservation = get_object_or_404(Reservation, pk=pk, session__created_by=request.user, session__price__gt=0)
+    try:
+        status = json.loads(request.body.decode("utf-8")).get("payment_status")
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    if status not in {"approved", "rejected", "pending"}:
+        return JsonResponse({"error": "Invalid payment status"}, status=400)
+    was_approved = reservation.payment_status == "approved"
+    reservation.payment_status = status
+    reservation.save(update_fields=["payment_status", "updated_at"])
+    notified = False
+    if status == "approved" and not was_approved:
+        system_user, created = CustomUser.objects.get_or_create(
+            username="stem-lms-system",
+            defaults={"display_name": "STEM LMS System", "is_active": False},
+        )
+        if created:
+            system_user.set_unusable_password()
+            system_user.save(update_fields=["password"])
+        Message.objects.create(
+            sender=system_user,
+            recipient=reservation.user,
+            subject=f"Payment received — {reservation.session.title}",
+            body=(
+                f"Payment received. Your payment of R{reservation.session.price:.2f} "
+                f"for {reservation.session.title} has been verified. Your class access is now released.\n\n"
+                f"Class link: {reservation.session.location or 'The tutor will add the class link shortly.'}"
+            ),
+            related_course=reservation.session.course,
+            related_session=reservation.session,
+        )
+        from main.utils.mail import send_class_payment_received_email
+        notified = send_class_payment_received_email(reservation)
+    return JsonResponse({"ok": True, "payment_status": status, "notification_sent": notified})

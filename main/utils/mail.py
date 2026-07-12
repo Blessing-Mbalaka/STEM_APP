@@ -18,6 +18,35 @@ def send_email(subject, message, recipient_list, from_email='stemappza@gmail.com
     )
 
 
+def send_class_payment_received_email(reservation):
+    """Notify a learner only after a tutor has verified funds for a paid class."""
+    user = reservation.user
+    session = reservation.session
+    if not user.email:
+        return False
+    amount = f"R{session.price:.2f}"
+    message = f"""Hello {user.display_name or user.username},
+
+Payment received. Your payment of {amount} for “{session.title}” has been verified by your tutor.
+
+Your class access is now released.
+Class link: {session.location or 'The tutor will add the class link shortly.'}
+Class time: {session.starts_at.strftime('%d %B %Y at %H:%M')}
+
+You can also find this confirmation in your STEM LMS messages.
+
+Regards,
+STEM LMS System
+"""
+    send_email(
+        subject=f"Payment received — {session.title}",
+        message=message,
+        recipient_list=[user.email],
+        fail_silently=True,
+    )
+    return True
+
+
 def send_learner_welcome_email(user):
     """
     Send a welcome email to a new learner after registration.
