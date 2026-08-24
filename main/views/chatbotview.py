@@ -14,7 +14,6 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from .gemini import ask_gemini
 from main.utils.resources import snapshot_resource_links
 from main.utils.yaml_logger import (
     CHATBOT_HISTORY_FILE,
@@ -30,13 +29,18 @@ try:
         ChatbotConversation,
         ChatbotResponse,
         PDFChunk,
-        ChatbotConfig,
     )
 except ImportError:
     ChatbotCache = None  # type: ignore
     ChatbotConversation = None  # type: ignore
     ChatbotResponse = None  # type: ignore
     PDFChunk = None  # type: ignore
+
+try:
+    # Keep runtime provider configuration independent from the optional legacy
+    # cache/RAG models above. Those models may not be installed in every setup.
+    from main.models.chatbot_config import ChatbotConfig
+except ImportError:
     ChatbotConfig = None  # type: ignore
 
 
@@ -104,6 +108,10 @@ except Exception:
 logger = logging.getLogger(__name__)
 
 PROVIDER_UNAVAILABLE_MESSAGE = "Sorry, the chatbot provider is currently unavailable. Please try again later."
+OLLAMA_UNAVAILABLE_MESSAGE = (
+    "Sorry, the local Ollama chatbot is currently unavailable. "
+    "Please make sure Ollama is running and the configured model is installed."
+)
 CHATBOT_MODE_GEMINI = getattr(ChatbotConfig, "MODE_GEMINI", "gemini")
 CHATBOT_MODE_EXTERNAL = getattr(ChatbotConfig, "MODE_EXTERNAL", "external")
 CHATBOT_MODE_OLLAMA = getattr(ChatbotConfig, "MODE_OLLAMA", "ollama")
@@ -206,6 +214,19 @@ def _call_ollama_model(prompt: str, config, *, system_prompt: str | None = None)
     return json.dumps(data, ensure_ascii=False)
 
 
+def _call_gemini_model(prompt: str, config=None, *, system_prompt: str | None = None) -> str:
+    """Load and call Gemini only when Gemini is the selected provider."""
+    from .gemini import ask_gemini
+
+    model_name = (
+        (config.gemini_model or "").strip()
+        if config and getattr(config, "gemini_model", "")
+        else "gemini-2.5-flash-latest"
+    )
+    logger.debug("Dispatching chatbot prompt to Gemini model %s.", model_name)
+    return ask_gemini(prompt, model_name=model_name, system_prompt=system_prompt)
+
+
 def call_primary_model(
     prompt: str,
     *,
@@ -221,27 +242,14 @@ def call_primary_model(
             logger.debug("Dispatching chatbot prompt to Ollama provider.")
             return _call_ollama_model(prompt, config, system_prompt=system_prompt)
 
-        model_name = (
-            (config.gemini_model or "").strip()
-            if config and getattr(config, "gemini_model", "")
-            else "gemini-2.5-flash-latest"
-        )
-        logger.debug("Dispatching chatbot prompt to Gemini model %s.", model_name)
-        return ask_gemini(prompt, model_name=model_name, system_prompt=system_prompt)
+        return _call_gemini_model(prompt, config, system_prompt=system_prompt)
     except Exception as exc:
         logger.exception("Chatbot primary provider failed: %s", exc)
-        if not config or mode == CHATBOT_MODE_GEMINI:
-            return PROVIDER_UNAVAILABLE_MESSAGE
-        try:
-            model_name = (
-                (config.gemini_model or "").strip()
-                if config and getattr(config, "gemini_model", "")
-                else "gemini-2.5-flash-latest"
-            )
-            return ask_gemini(prompt, model_name=model_name, system_prompt=system_prompt)
-        except Exception as fallback_exc:  # pragma: no cover - defensive
-            logger.exception("Gemini fallback after provider failure: %s", fallback_exc)
-            return PROVIDER_UNAVAILABLE_MESSAGE
+        # Provider selection is strict: local and external modes must never require
+        # Gemini credentials just because their selected provider is unavailable.
+        if config and mode == CHATBOT_MODE_OLLAMA:
+            return OLLAMA_UNAVAILABLE_MESSAGE
+        return PROVIDER_UNAVAILABLE_MESSAGE
 
 def _coerce_sources(raw_sources: Any) -> List[Dict[str, Any]]:
     if not raw_sources:
@@ -588,7 +596,7 @@ def search_pdf_knowledge(question: str) -> Dict[str, Any]:
 
 
 def generate_rag_response(question: str, context: str, config=None) -> str:
-    """Use Gemini helper to compose a response using retrieved context."""
+    """Use the selected chatbot provider to compose a response from context."""
     prompt = (
         "You are an academic tutor tasked with answering student questions concisely. "
         "Use the provided context to answer. If the context does not contain the answer, "

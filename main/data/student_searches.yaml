@@ -1460,5 +1460,39 @@
         }
       ]
     }
+  },
+  {
+    "query": "what is the capital of zimbabwe",
+    "timestamp": "2026-08-24T11:07:52.360544+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-164786BD",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        }
+      ]
+    }
   }
 ]
