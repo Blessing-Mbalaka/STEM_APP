@@ -15439,5 +15439,183 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2026-08-24T11:24:35.363108+00:00",
+    "user": {
+      "id": 25,
+      "username": "teststudent@gmail.com"
+    },
+    "question": "please give me the chemical equation for water",
+    "answer": "The chemical equation for the formation of water is:\n\n**2H₂ + O₂ → 2H₂O**\n\nThis represents the reaction where hydrogen gas combines with oxygen gas to produce liquid water.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=please+give+me+the+chemical+equation+for+water",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "please give me the chemical equation for water at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        },
+        {
+          "title": "Gr 12 Business Studies: Business Management (Live)",
+          "description": "Mindset Live show on business management functions",
+          "resource_type": "youtube",
+          "course": "Business Studies Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
+        },
+        {
+          "title": "Gr 12 Economics: Macro & Micro (Live)",
+          "description": "Mindset Live show on macro- and microeconomics",
+          "resource_type": "youtube",
+          "course": "Economics Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T11:30:53.525455+00:00",
+    "user": {
+      "id": 25,
+      "username": "teststudent@gmail.com"
+    },
+    "question": "okay its not H20 or is 2h20 the same?",
+    "answer": "No, they are not the same. **H₂O** refers to the chemical formula for water (two hydrogen atoms bonded to one oxygen atom), while **2h₂O** is an incorrect or ambiguous notation—it could be misinterpreted as two molecules of hydrogen gas (2H₂) plus water, but it is not standard chemical notation. Properly, it should be written as **2H₂O** for two molecules of water.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=okay+its+not+H20+or+is+2h20+the+same%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "okay its not H20 or is 2h20 the same? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        },
+        {
+          "title": "Gr 12 Business Studies: Business Management (Live)",
+          "description": "Mindset Live show on business management functions",
+          "resource_type": "youtube",
+          "course": "Business Studies Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
+        },
+        {
+          "title": "Gr 12 Economics: Macro & Micro (Live)",
+          "description": "Mindset Live show on macro- and microeconomics",
+          "resource_type": "youtube",
+          "course": "Economics Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
+        }
+      ]
+    }
   }
 ]
