@@ -15617,5 +15617,498 @@
         }
       ]
     }
+  },
+  {
+    "timestamp": "2026-08-24T12:55:38.304916+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "please give me the chemical formula for water that we drink",
+    "answer": "The chemical formula for water is **H₂O**, consisting of **two hydrogen atoms** bonded to **one oxygen atom**. This structure allows water to exhibit its unique properties, such as high boiling point and universal solvent capabilities.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=please+give+me+the+chemical+formula+for+water+that+we+drink",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "please give me the chemical formula for water that we drink at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "description": "Live show episodes on literature and poetry analysis",
+          "resource_type": "youtube",
+          "course": "English Home Language Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        },
+        {
+          "title": "Geography Grade 12 – Geomorphology & Climatology (Live)",
+          "description": "Mindset Live show on physical geography topics",
+          "resource_type": "youtube",
+          "course": "Geography Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=KUtWby1bPzE"
+        },
+        {
+          "title": "Gr 12 Business Studies: Business Management (Live)",
+          "description": "Mindset Live show on business management functions",
+          "resource_type": "youtube",
+          "course": "Business Studies Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=6nBe3EoeOA0"
+        },
+        {
+          "title": "Gr 12 Economics: Macro & Micro (Live)",
+          "description": "Mindset Live show on macro- and microeconomics",
+          "resource_type": "youtube",
+          "course": "Economics Grade 12 (NSC)",
+          "learning_style": "visual",
+          "url": "https://www.youtube.com/watch?v=8Y01Wpm2KcA"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:02:44.842169+00:00",
+    "user": {
+      "id": null,
+      "username": "anonymous"
+    },
+    "question": "2 + 2",
+    "answer": "2 + 2 = 4",
+    "sources": [
+      {
+        "title": "Basic arithmetic fact",
+        "snippet": "2 + 2 = 4"
+      }
+    ],
+    "response_type": "arithmetic",
+    "metadata": {
+      "kind": "arithmetic_fact",
+      "operation": "addition",
+      "operands": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:17:24.762269+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "hi please tell me the chemical formula for water",
+    "answer": "The chemical formula for water is **H₂O**, consisting of **two hydrogen atoms** bonded to **one oxygen atom**.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=hi+please+tell+me+the+chemical+formula+for+water",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "hi please tell me the chemical formula for water at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "resource_id": "15",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "description": "",
+          "resource_type": "video",
+          "course": "Life science",
+          "learning_style": "visual",
+          "resource_id": "16",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "description": "Live broadcast on mechanics / motion (Learn Xtra / Mindset) – overview",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "resource_id": "33",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:18:34.347647+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "what is 27 divided by 48 is ?",
+    "answer": "27 divided by 48 equals approximately **0.5625** (or **27/48** in fraction form, which simplifies to **9/16**).",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=what+is+27+divided+by+48+is+%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "what is 27 divided by 48 is ? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Work done by Non-Conservative Forces – Practice",
+          "description": "Worked example for work done by nonconservative forces",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "resource_id": "36",
+          "url": "https://www.youtube.com/watch?v=5mhEvh5kG90"
+        },
+        {
+          "title": "TextBook",
+          "description": "Open-source Textbook written by volunteers from https://www.siyavula.com/downloads/books/science/Gr12_PhysicalSciences_Learner_Eng.pdf",
+          "category": "Physics",
+          "term": "term1",
+          "resource_type": "document",
+          "resource_id": "3",
+          "url": "/media/resources/physics/4274184d34c34020ac42b5c1625992a9.pdf"
+        },
+        {
+          "title": "Solve for X",
+          "description": "",
+          "resource_type": "video",
+          "course": "Mathametics Paper 1| Everything You need to know",
+          "learning_style": "visual",
+          "resource_id": "15",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:22:12.675653+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "is there life science material you can suggest?",
+    "answer": "For foundational biology and genetics, I recommend:\n- **Genetics by Michael Whitfield** (introductory textbook)\n- **Molecular Biology of the Cell** (Alberts et al.) for advanced topics.\n\nFor hands-on lab resources, consider:\n- **Bio-Rad’s lab manuals** (PCR, gel electrophoresis) or **Promega’s protocols** (DNA cloning).",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=is+there+life+science+material+you+can+suggest%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "is there life science material you can suggest? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Life Science Past Paper",
+          "description": "",
+          "category": "Life Science",
+          "term": "past_papers",
+          "resource_type": "document",
+          "resource_id": "25",
+          "url": "/media/resources/life-science/30e17a50ab5d45be8cf8561a886b6d44.pdf"
+        },
+        {
+          "title": "Life Sciences Grade 12 Textbook",
+          "description": "",
+          "category": "Life Science",
+          "term": "term1",
+          "resource_type": "document",
+          "resource_id": "4",
+          "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
+        },
+        {
+          "title": "Life-Sciences-Grade-12-NSC-P1-QP-September-2025-Northern-Cape",
+          "description": "",
+          "category": "Life Science",
+          "term": "other",
+          "resource_type": "document",
+          "resource_id": "21",
+          "url": "/media/resources/life-science/75629fc4dbcc495a833b738b51319e7a.pdf"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:25:24.523239+00:00",
+    "user": {
+      "id": null,
+      "username": "anonymous"
+    },
+    "question": "2 + 2",
+    "answer": "2 + 2 = 4",
+    "sources": [
+      {
+        "title": "Basic arithmetic fact",
+        "snippet": "2 + 2 = 4"
+      }
+    ],
+    "response_type": "arithmetic",
+    "metadata": {
+      "kind": "arithmetic_fact",
+      "operation": "addition",
+      "operands": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:29:05.156058+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "i am struggling with life science",
+    "answer": "Life sciences can be challenging due to complex concepts like molecular biology, genetics, or biochemistry. To improve, focus on breaking down topics into smaller, digestible parts, using visual aids (e.g., diagrams, flowcharts), and practicing problem-solving with past exam questions or lab simulations. Consider active learning techniques like teaching concepts to others or creating study summaries.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=i+am+struggling+with+life+science",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "i am struggling with life science at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Life Science Past Paper",
+          "description": "",
+          "category": "Life Science",
+          "term": "past_papers",
+          "resource_type": "document",
+          "resource_id": "25",
+          "url": "/media/resources/life-science/30e17a50ab5d45be8cf8561a886b6d44.pdf"
+        },
+        {
+          "title": "Life Sciences Grade 12 Textbook",
+          "description": "",
+          "category": "Life Science",
+          "term": "term1",
+          "resource_type": "document",
+          "resource_id": "4",
+          "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
+        },
+        {
+          "title": "Life-Sciences-Grade-12-NSC-P1-QP-September-2025-Northern-Cape",
+          "description": "",
+          "category": "Life Science",
+          "term": "other",
+          "resource_type": "document",
+          "resource_id": "21",
+          "url": "/media/resources/life-science/75629fc4dbcc495a833b738b51319e7a.pdf"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:39:22.538249+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "Please tell me how can i learn and master lifescience for grade 12",
+    "answer": "To excel in **Life Sciences for Grade 12**, focus on:\n1. **Conceptual Understanding**: Master key topics like **cell biology, genetics, ecology, and physiology** by solving textbook problems and reviewing diagrams (e.g., mitosis, DNA replication).\n2. **Active Learning**: Use **practicals** (e.g., microscopes, lab experiments) and **visual aids** (animations, flashcards) to reinforce concepts. Past exam papers (e.g., IB, AP, or provincial boards) are critical for practice.\n\nFor mastery, **consistent revision** (spaced repetition) and **explaining concepts aloud** help solidify knowledge. Consider joining study groups or online forums (e.g., Quizlet, Khan Academy) for peer support.",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=Please+tell+me+how+can+i+learn+and+master+lifescience+for+grade+12",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "Please tell me how can i learn and master lifescience for grade 12 at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "History Grade 12 Live – Mindset Learn",
+          "description": "Live show episodes on history topics for NSC",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "resource_id": "46",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Work, Energy & Power (Grade 11 & 12)",
+          "description": "Covers work, energy, power relationships, conservative vs nonconservative forces",
+          "resource_type": "youtube",
+          "course": "Physics (Physical Sciences) – Grade 12 (Mindset Learn)",
+          "learning_style": "visual",
+          "resource_id": "35",
+          "url": "https://www.youtube.com/watch?v=N9_aOJKdjq0"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "description": "Overview of major historical themes (useful as bridging content)",
+          "resource_type": "youtube",
+          "course": "History Grade 12 (NSC)",
+          "learning_style": "visual",
+          "resource_id": "47",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        }
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:45:38.636010+00:00",
+    "user": {
+      "id": null,
+      "username": "anonymous"
+    },
+    "question": "is there life science material you can suggest?",
+    "answer": "For foundational biology and genetics, I recommend:\n- **Genetics by Michael Whitfield** (introductory textbook)\n- **Molecular Biology of the Cell** (Alberts et al.) for advanced topics.\n\nFor hands-on lab resources, consider:\n- **Bio-Rad’s lab manuals** (PCR, gel electrophoresis) or **Promega’s protocols** (DNA cloning).",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=is+there+life+science+material+you+can+suggest%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "is there life science material you can suggest? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "cached",
+    "metadata": {
+      "from_cache": true
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:45:50.365974+00:00",
+    "user": {
+      "id": null,
+      "username": "anonymous"
+    },
+    "question": "is there life science material you can suggest?",
+    "answer": "For foundational biology and genetics, I recommend:\n- **Genetics by Michael Whitfield** (introductory textbook)\n- **Molecular Biology of the Cell** (Alberts et al.) for advanced topics.\n\nFor hands-on lab resources, consider:\n- **Bio-Rad’s lab manuals** (PCR, gel electrophoresis) or **Promega’s protocols** (DNA cloning).",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=is+there+life+science+material+you+can+suggest%3F",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "is there life science material you can suggest? at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "cached",
+    "metadata": {
+      "from_cache": true
+    }
+  },
+  {
+    "timestamp": "2026-08-24T13:52:48.109727+00:00",
+    "user": {
+      "id": 26,
+      "username": "Rooney@gmail.com"
+    },
+    "question": "hi please help me with maths",
+    "answer": "Of course! Could you clarify your question? For example:\n- **What topic** are you working on (e.g., algebra, calculus, geometry)?\n- **What problem** are you stuck on?\n- **Do you need help with concepts, formulas, or solving steps?**",
+    "sources": [
+      {
+        "title": "View DuckDuckGo results",
+        "url": "https://duckduckgo.com/?q=hi+please+help+me+with+maths",
+        "snippet": "Open the DuckDuckGo results page for more details.",
+        "is_fallback": true,
+        "excerpt": "hi please help me with maths at DuckDuckGo DuckDuckGo You are being redirected to the non-JavaScript site. Click here if it doesn't happen automatically."
+      }
+    ],
+    "response_type": "internet_search",
+    "metadata": {
+      "from_internet": true,
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Grade 12 Math Textbook",
+          "description": "Gr12 Mathematics Learner Eng is available to view and download in PDF format on EduCoast. This resource is suitable for students, educators, and self-learners seeking to enhance their study or teaching materials. It can be previewed online or downloaded for offline access.",
+          "category": "Math",
+          "term": "term1",
+          "resource_type": "document",
+          "resource_id": "2",
+          "url": "/media/resources/math/33eaa17a0318485c882bfe9850216b94.pdf"
+        },
+        {
+          "title": "2023 Grades 10-12 Mathematics ATP Mediation",
+          "description": "",
+          "category": "Math",
+          "term": "atp",
+          "resource_type": "document",
+          "resource_id": "7",
+          "url": "/media/resources/math/3d14ac4693ca4775835db0e7ddc8611b.pptx"
+        },
+        {
+          "title": "2025 March Past Paper",
+          "description": "",
+          "category": "Math",
+          "term": "past_papers",
+          "resource_type": "document",
+          "resource_id": "6",
+          "url": "/media/resources/math/b7aca2023fa14ecfaf23e090d6417583.pdf"
+        }
+      ]
+    }
   }
 ]

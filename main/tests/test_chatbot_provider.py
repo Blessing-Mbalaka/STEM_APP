@@ -1,11 +1,14 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
+from main.models.chatbot_config import ChatbotAnswerCache
 from main.views.chatbotview import (
     OLLAMA_UNAVAILABLE_MESSAGE,
+    cache_response,
     call_primary_model,
+    check_cache,
     get_chatbot_config,
 )
 
@@ -47,3 +50,45 @@ class ChatbotProviderSelectionTests(SimpleTestCase):
         self.assertEqual(response, OLLAMA_UNAVAILABLE_MESSAGE)
         ollama_call.assert_called_once()
         gemini_call.assert_not_called()
+
+
+class ChatbotAnswerCacheTests(TestCase):
+    def setUp(self):
+        self.config = SimpleNamespace(
+            mode="ollama",
+            ollama_api_base_url="http://localhost:11434",
+            ollama_model="ministral-3:3b",
+            allow_internet_search=True,
+        )
+
+    def test_exact_question_is_reused_across_case_and_spacing(self):
+        cache_response(
+            "  What is photosynthesis? ",
+            "Plants convert light into chemical energy.",
+            [{"title": "Biology notes"}],
+            config=self.config,
+        )
+
+        result = check_cache("what   IS photosynthesis?", config=self.config)
+
+        self.assertEqual(result["answer"], "Plants convert light into chemical energy.")
+        self.assertEqual(result["sources"], [{"title": "Biology notes"}])
+        self.assertEqual(ChatbotAnswerCache.objects.get().hit_count, 1)
+
+    def test_provider_model_change_does_not_reuse_old_answer(self):
+        cache_response("Explain gravity", "Cached answer", [], config=self.config)
+        changed_config = SimpleNamespace(
+            **{**vars(self.config), "ollama_model": "tinyllama:latest"}
+        )
+
+        self.assertIsNone(check_cache("Explain gravity", config=changed_config))
+
+    def test_provider_errors_are_not_cached(self):
+        cache_response(
+            "Explain gravity",
+            OLLAMA_UNAVAILABLE_MESSAGE,
+            [],
+            config=self.config,
+        )
+
+        self.assertFalse(ChatbotAnswerCache.objects.exists())

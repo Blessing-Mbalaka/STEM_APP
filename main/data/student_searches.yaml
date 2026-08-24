@@ -1562,5 +1562,195 @@
         }
       ]
     }
+  },
+  {
+    "query": "please give me the chemical formula for water that we drink",
+    "timestamp": "2026-08-24T12:54:57.078104+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        },
+        {
+          "title": "Mindset Learn – English Literature / Poetry Live Show",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        }
+      ]
+    }
+  },
+  {
+    "query": "hi please tell me the chemical formula for water",
+    "timestamp": "2026-08-24T13:16:42.522862+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        },
+        {
+          "title": "Term 1| The Nucleus & DNA",
+          "url": "https://youtu.be/XocvZSQYMlk?list=PLOaNAKtW5HLQOqIIPY7QGcEGHpCm9RgtY"
+        },
+        {
+          "title": "Learn Xtra Live – Motion (Whole Show)",
+          "url": "https://www.youtube.com/playlist?list=PLOaNAKtW5HLQKYasZKPZSuXssMfM5pspL"
+        }
+      ]
+    }
+  },
+  {
+    "query": "what is 27 divided by 48 is ?",
+    "timestamp": "2026-08-24T13:18:15.781081+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Work done by Non-Conservative Forces – Practice",
+          "url": "https://www.youtube.com/watch?v=5mhEvh5kG90"
+        },
+        {
+          "title": "TextBook",
+          "url": "/media/resources/physics/4274184d34c34020ac42b5c1625992a9.pdf"
+        },
+        {
+          "title": "Solve for X",
+          "url": "https://www.youtube.com/watch?si=MrhJDU37soTAyfFU&v=yxuVGGbQC0E&feature=youtu.be"
+        }
+      ]
+    }
+  },
+  {
+    "query": "is there life science material you can suggest?",
+    "timestamp": "2026-08-24T13:21:49.313832+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Life Science Past Paper",
+          "url": "/media/resources/life-science/30e17a50ab5d45be8cf8561a886b6d44.pdf"
+        },
+        {
+          "title": "Life Sciences Grade 12 Textbook",
+          "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
+        },
+        {
+          "title": "Life-Sciences-Grade-12-NSC-P1-QP-September-2025-Northern-Cape",
+          "url": "/media/resources/life-science/75629fc4dbcc495a833b738b51319e7a.pdf"
+        }
+      ]
+    }
+  },
+  {
+    "query": "i am struggling with life science",
+    "timestamp": "2026-08-24T13:27:59.679077+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Life Science Past Paper",
+          "url": "/media/resources/life-science/30e17a50ab5d45be8cf8561a886b6d44.pdf"
+        },
+        {
+          "title": "Life Sciences Grade 12 Textbook",
+          "url": "/media/resources/life-science/b0db2a07a6b345309d3b7f34753121d8.pdf"
+        },
+        {
+          "title": "Life-Sciences-Grade-12-NSC-P1-QP-September-2025-Northern-Cape",
+          "url": "/media/resources/life-science/75629fc4dbcc495a833b738b51319e7a.pdf"
+        }
+      ]
+    }
+  },
+  {
+    "query": "Please tell me how can i learn and master lifescience for grade 12",
+    "timestamp": "2026-08-24T13:38:25.064737+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "History Grade 12 Live – Mindset Learn",
+          "url": "https://www.youtube.com/playlist?list=PL…"
+        },
+        {
+          "title": "Work, Energy & Power (Grade 11 & 12)",
+          "url": "https://www.youtube.com/watch?v=N9_aOJKdjq0"
+        },
+        {
+          "title": "History Grade 11 / 12 – Context & Themes Review",
+          "url": "https://www.youtube.com/watch?v=6c2qeSC_CJg"
+        }
+      ]
+    }
+  },
+  {
+    "query": "hi please help me with maths",
+    "timestamp": "2026-08-24T13:51:56.650452+00:00",
+    "source": "chatbot_internet_search",
+    "actor": {
+      "label": "Learner-D44006C0",
+      "role": "student"
+    },
+    "metadata": {
+      "auto_search": true,
+      "local_resources": [
+        {
+          "title": "Grade 12 Math Textbook",
+          "url": "/media/resources/math/33eaa17a0318485c882bfe9850216b94.pdf"
+        },
+        {
+          "title": "2023 Grades 10-12 Mathematics ATP Mediation",
+          "url": "/media/resources/math/3d14ac4693ca4775835db0e7ddc8611b.pptx"
+        },
+        {
+          "title": "2025 March Past Paper",
+          "url": "/media/resources/math/b7aca2023fa14ecfaf23e090d6417583.pdf"
+        }
+      ]
+    }
   }
 ]

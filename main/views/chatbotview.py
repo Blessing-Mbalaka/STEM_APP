@@ -10,11 +10,12 @@ from urllib.parse import quote_plus
 import logging
 import requests
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from main.utils.resources import snapshot_resource_links
+from main.utils.resources import suggest_resource_links
 from main.utils.yaml_logger import (
     CHATBOT_HISTORY_FILE,
     append_yaml_record,
@@ -25,13 +26,11 @@ from main.utils.yaml_logger import (
 
 try:
     from main.models import (
-        ChatbotCache,
         ChatbotConversation,
         ChatbotResponse,
         PDFChunk,
     )
 except ImportError:
-    ChatbotCache = None  # type: ignore
     ChatbotConversation = None  # type: ignore
     ChatbotResponse = None  # type: ignore
     PDFChunk = None  # type: ignore
@@ -39,8 +38,9 @@ except ImportError:
 try:
     # Keep runtime provider configuration independent from the optional legacy
     # cache/RAG models above. Those models may not be installed in every setup.
-    from main.models.chatbot_config import ChatbotConfig
+    from main.models.chatbot_config import ChatbotAnswerCache, ChatbotConfig
 except ImportError:
+    ChatbotAnswerCache = None  # type: ignore
     ChatbotConfig = None  # type: ignore
 
 
@@ -401,6 +401,12 @@ def chatbot_api(request):
         )
 
     try:
+        suggested_resources = suggest_resource_links(user_question, limit=3)
+    except Exception as exc:  # Suggestions must not block the chatbot itself.
+        logger.warning("Unable to build chatbot resource suggestions: %s", exc)
+        suggested_resources = []
+
+    try:
         conversation = None
         if ChatbotConversation and request.user.is_authenticated:
             conversation = ChatbotConversation.objects.create(
@@ -415,12 +421,11 @@ def chatbot_api(request):
             response_payload = {
                 "response": response_text,
                 "sources": sources,
+                "suggested_resources": suggested_resources,
                 "conversation_id": conversation.id if conversation else None,
                 "from_cache": False,
                 "from_arithmetic": True,
             }
-
-            cache_response(user_question, response_text, sources, request.user)
 
             if ChatbotResponse and conversation:
                 ChatbotResponse.objects.create(
@@ -442,12 +447,13 @@ def chatbot_api(request):
 
             return JsonResponse(response_payload)
 
-        # 1. Cache lookup (per user)
-        cached_response = check_cache(user_question, request.user)
+        # 1. Persistent exact-question cache for the active provider configuration
+        cached_response = check_cache(user_question, config=config)
         if cached_response:
             response_data = {
                 "response": cached_response["answer"],
                 "sources": cached_response.get("sources", []),
+                "suggested_resources": suggested_resources,
                 "from_cache": True,
                 "conversation_id": conversation.id if conversation else None,
             }
@@ -476,11 +482,12 @@ def chatbot_api(request):
             response_data = {
                 "response": response,
                 "sources": rag_result["sources"],
+                "suggested_resources": suggested_resources,
                 "from_cache": False,
                 "has_sources": True,
                 "conversation_id": conversation.id if conversation else None,
             }
-            cache_response(user_question, response, rag_result["sources"], request.user)
+            cache_response(user_question, response, rag_result["sources"], config=config)
             if ChatbotResponse and conversation:
                 ChatbotResponse.objects.create(
                     conversation=conversation,
@@ -500,13 +507,11 @@ def chatbot_api(request):
             return JsonResponse(response_data)
 
         # 3. No match – surface local resources and perform internet search automatically
-        resource_links = snapshot_resource_links()
-        suggested_links = resource_links[:8]
         search_payload = run_internet_search_flow(
             user_question,
             request.user,
             conversation=conversation,
-            local_resources=suggested_links,
+            local_resources=suggested_resources,
             metadata={"auto_search": True},
             config=config,
         )
@@ -520,27 +525,71 @@ def chatbot_api(request):
 # Knowledge base helpers
 # ---------------------------------------------------------------------------
 
-def check_cache(question: str, user) -> Dict[str, Any] | None:
-    """Return cached answer when available for authenticated users."""
-    if not ChatbotCache or not getattr(user, "is_authenticated", False):
+def _normalise_cache_question(question: str) -> str:
+    return " ".join((question or "").casefold().split())
+
+
+def _cache_config_fingerprint(config) -> str:
+    updated_at = getattr(config, "updated_at", None) if config else None
+    if hasattr(updated_at, "isoformat"):
+        updated_at = updated_at.isoformat()
+    provider_settings = {
+        "mode": getattr(config, "mode", CHATBOT_MODE_GEMINI) if config else CHATBOT_MODE_GEMINI,
+        "gemini_model": getattr(config, "gemini_model", "") if config else "",
+        "external_api_base_url": getattr(config, "external_api_base_url", "") if config else "",
+        "external_model": getattr(config, "external_model", "") if config else "",
+        "ollama_api_base_url": getattr(config, "ollama_api_base_url", "") if config else "",
+        "ollama_model": getattr(config, "ollama_model", "") if config else "",
+        "allow_internet_search": getattr(config, "allow_internet_search", True) if config else True,
+        "updated_at": updated_at or "",
+    }
+    encoded = json.dumps(provider_settings, sort_keys=True, default=str).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _is_cacheable_answer(answer: str) -> bool:
+    cleaned = (answer or "").strip()
+    if not cleaned or cleaned in {PROVIDER_UNAVAILABLE_MESSAGE, OLLAMA_UNAVAILABLE_MESSAGE}:
+        return False
+    lowered = cleaned.casefold()
+    return not (
+        lowered.startswith("gemini api key")
+        or lowered.startswith("sorry, there was an error with the ai service")
+    )
+
+
+def check_cache(question: str, *, config=None) -> Dict[str, Any] | None:
+    """Return a recent exact-question answer for the active provider configuration."""
+    if not ChatbotAnswerCache:
         return None
 
-    question_hash = hashlib.md5(question.lower().encode()).hexdigest()
+    normalised = _normalise_cache_question(question)
+    if not normalised:
+        return None
+    question_hash = hashlib.sha256(normalised.encode("utf-8")).hexdigest()
     cutoff = timezone.now() - timedelta(days=7)
-    cache_entry = (
-        ChatbotCache.objects.filter(
-            question_hash=question_hash,
-            created_at__gte=cutoff,
-            user=user,
+    try:
+        cache_entry = (
+            ChatbotAnswerCache.objects.filter(
+                question_hash=question_hash,
+                config_fingerprint=_cache_config_fingerprint(config),
+                created_at__gte=cutoff,
+            )
+            .order_by("-created_at")
+            .first()
         )
-        .order_by("-created_at")
-        .first()
-    )
+    except Exception as exc:  # Cache failures must never break chatbot responses.
+        logger.warning("Unable to read chatbot answer cache: %s", exc)
+        return None
     if not cache_entry:
         return None
+    ChatbotAnswerCache.objects.filter(pk=cache_entry.pk).update(
+        hit_count=F("hit_count") + 1,
+        last_used_at=timezone.now(),
+    )
     return {
         "answer": cache_entry.answer,
-        "sources": json.loads(cache_entry.sources) if cache_entry.sources else [],
+        "sources": cache_entry.sources or [],
     }
 
 
@@ -606,20 +655,33 @@ def generate_rag_response(question: str, context: str, config=None) -> str:
     return call_primary_model(prompt, config=config)
 
 
-def cache_response(question: str, answer: str, sources: List[Dict[str, Any]], user) -> None:
-    """Persist chatbot responses for authenticated users."""
-    if not ChatbotCache or not getattr(user, "is_authenticated", False):
+def cache_response(
+    question: str,
+    answer: str,
+    sources: List[Dict[str, Any]],
+    *,
+    config=None,
+) -> None:
+    """Persist a reusable answer without duplicating the raw analytics question."""
+    if not ChatbotAnswerCache or not _is_cacheable_answer(answer):
         return
 
-    question_hash = hashlib.md5(question.lower().encode()).hexdigest()
-    ChatbotCache.objects.create(
-        question_hash=question_hash,
-        question=question,
-        answer=answer,
-        sources=json.dumps(sources),
-        user=user,
-        created_at=timezone.now(),
-    )
+    normalised = _normalise_cache_question(question)
+    if not normalised:
+        return
+    question_hash = hashlib.sha256(normalised.encode("utf-8")).hexdigest()
+    try:
+        ChatbotAnswerCache.objects.update_or_create(
+            question_hash=question_hash,
+            config_fingerprint=_cache_config_fingerprint(config),
+            defaults={
+                "answer": answer,
+                "sources": sources or [],
+                "created_at": timezone.now(),
+            },
+        )
+    except Exception as exc:  # Cache failures must never break chatbot responses.
+        logger.warning("Unable to write chatbot answer cache: %s", exc)
 
 
 # ---------------------------------------------------------------------------
@@ -926,7 +988,7 @@ def run_internet_search_flow(
     response_text, enriched_results = generate_search_response(query, results, config=config)
 
     conv_id = conversation.id if conversation is not None else conversation_id
-    cache_response(query, response_text, enriched_results, user)
+    cache_response(query, response_text, enriched_results, config=config)
 
     if ChatbotResponse:
         if conversation is not None:

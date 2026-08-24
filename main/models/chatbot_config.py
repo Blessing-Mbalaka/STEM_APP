@@ -86,3 +86,27 @@ class ChatbotConfig(models.Model):
         if include_sensitive:
             payload["external_api_key"] = self.external_api_key
         return payload
+
+
+class ChatbotAnswerCache(models.Model):
+    """Persistent cache of provider answers for exact, non-personalised questions."""
+
+    question_hash = models.CharField(max_length=64)
+    config_fingerprint = models.CharField(max_length=64)
+    answer = models.TextField()
+    sources = models.JSONField(default=list, blank=True)
+    hit_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["question_hash", "config_fingerprint"],
+                name="unique_chatbot_answer_cache",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["created_at"], name="chatbot_cache_created_idx"),
+        ]
+        verbose_name = "Chatbot answer cache"

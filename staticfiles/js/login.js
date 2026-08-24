@@ -250,6 +250,8 @@ function initLoginPage() {
           fd.append("last_name", surname);
           fd.append("role", "tutor");
           fd.append("motivation", motivationEl ? motivationEl.value.trim() : "");
+          Array.from(document.getElementById("tutorLanguages")?.selectedOptions || [])
+            .forEach((option) => fd.append("languages", option.value));
           if (idDocumentEl && idDocumentEl.files.length) {
             fd.append("id_document", idDocumentEl.files[0]);
           }

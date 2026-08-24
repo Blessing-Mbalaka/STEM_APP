@@ -7,7 +7,7 @@ from .classes import ClassSession, Reservation
 from .forum import ForumCategory, Thread, Post, PostLike
 from .message import Message
 from .tutor import TutorSession, TutorApplication, TutorApplicationDocument, TutorMessage
-from .chatbot_config import ChatbotConfig
+from .chatbot_config import ChatbotAnswerCache, ChatbotConfig
 from .survey import (
     CustomUserSurvey,
     CustomUserSurveyQuestion,
@@ -25,7 +25,7 @@ __all__ = [
     "ClassSession", "Reservation",
     "ForumCategory", "Thread", "Post", "PostLike",
     "Message", "TutorSession", "TutorApplication", "TutorApplicationDocument", "TutorMessage",
-    "ChatbotConfig",
+    "ChatbotConfig", "ChatbotAnswerCache",
     "CustomUserSurvey",
     "CustomUserSurveyQuestion",
     "CustomUserSurveyParticipant",
