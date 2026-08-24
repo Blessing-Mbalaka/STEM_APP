@@ -203,7 +203,9 @@ def _call_ollama_model(prompt: str, config, *, system_prompt: str | None = None)
     if system_prompt:
         payload["system"] = system_prompt
 
-    response = requests.post(url, json=payload, timeout=60)
+    # Model cold starts on CPU-only VPS hosts can exceed one minute. Keep the
+    # connection timeout short while allowing enough time for generation.
+    response = requests.post(url, json=payload, timeout=(5, 120))
     response.raise_for_status()
     data = response.json()
     if isinstance(data, dict):

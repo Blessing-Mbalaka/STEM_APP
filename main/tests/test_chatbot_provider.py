@@ -6,6 +6,7 @@ from django.test import SimpleTestCase, TestCase
 from main.models.chatbot_config import ChatbotAnswerCache
 from main.views.chatbotview import (
     OLLAMA_UNAVAILABLE_MESSAGE,
+    _call_ollama_model,
     cache_response,
     call_primary_model,
     check_cache,
@@ -27,6 +28,23 @@ class ChatbotProviderSelectionTests(SimpleTestCase):
 
         self.assertIs(get_chatbot_config(), self.ollama_config)
         load_config.assert_called_once_with()
+
+    @patch("main.views.chatbotview.requests.post")
+    def test_ollama_allows_slow_vps_generation(self, post):
+        post.return_value.json.return_value = {"response": "local answer"}
+
+        response = _call_ollama_model("hello", self.ollama_config)
+
+        self.assertEqual(response, "local answer")
+        post.assert_called_once_with(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "ministral-3:3b",
+                "prompt": "hello",
+                "stream": False,
+            },
+            timeout=(5, 120),
+        )
 
     @patch("main.views.chatbotview._call_gemini_model")
     @patch("main.views.chatbotview._call_ollama_model", return_value="local answer")
